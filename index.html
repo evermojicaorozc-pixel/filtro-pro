@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1220">
+<title>FILTRO PRO 1.2</title>
+<style>
+:root{color-scheme:dark;--bg:#09111e;--panel:#121e30;--line:#293a52;--muted:#9aabc1;--text:#edf4ff;--green:#35d6a0;--red:#ff737d;--yellow:#f4c66a;--blue:#7db8ff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#0c1829,#080e18 65%);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:820px;margin:auto;padding:16px}header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:5px 0 14px}
+h1{font-size:23px;margin:0}.tag{font-size:11px;color:var(--green);border:1px solid #246b55;padding:5px 8px;border-radius:20px;white-space:nowrap}
+p{color:var(--muted);line-height:1.5}.card{background:rgba(18,30,48,.96);border:1px solid var(--line);border-radius:15px;padding:15px;margin:12px 0;box-shadow:0 8px 24px #0002}
+label{display:block;color:var(--muted);font-size:13px;margin:10px 0 6px}
+input,select,button{font:inherit;width:100%;border-radius:10px;border:1px solid var(--line);padding:12px;background:#0b1626;color:var(--text)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{background:#176b53;border:0;font-weight:750;margin-top:12px;cursor:pointer}
+button.secondary{background:#20334c;border:1px solid #38506d}
+button:disabled{opacity:.55;cursor:wait}
+.small{font-size:12px;color:var(--muted)}.kv{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}.kv:last-child{border:0}
+.signal{text-align:center;padding:18px 8px;font-size:28px;font-weight:850;letter-spacing:.3px}.green{color:var(--green)}.red{color:var(--red)}.yellow{color:var(--yellow)}.blue{color:var(--blue)}
+.pill{display:inline-block;font-size:11px;border-radius:15px;padding:4px 8px;background:#183c32;color:#8de7c1;margin:3px 3px 3px 0}
+.notice{border-left:3px solid var(--yellow);padding-left:12px}.notice p{margin:7px 0}
+.status{padding:10px;border-radius:10px;background:#0b1626;color:var(--muted);font-size:13px;line-height:1.45}
+.check{display:flex;align-items:flex-start;gap:9px;margin:10px 0;color:var(--muted);font-size:13px}.check input{width:auto;margin-top:3px}
+footer{font-size:12px;color:var(--muted);padding:12px 2px 25px}
+@media(max-width:430px){main{padding:12px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body><main>
+<header><h1>FILTRO PRO 1.2</h1><span class="tag">MERCADOS REALES · BETA</span></header>
+<p>Analizador técnico experimental. No ejecuta operaciones y no inventa señales: si faltan datos o no hay confirmación, indica <b>NO ENTRAR</b>.</p>
+
+<section class="card">
+<strong>1. Conexión de datos</strong>
+<label for="apikey">Clave API de Twelve Data</label>
+<input id="apikey" type="password" autocomplete="off" placeholder="Pega tu API key aquí">
+<div class="small">La clave solo permanece en esta pestaña mientras esté abierta. No la guardamos ni la enviamos a otro servidor. Usa esta versión únicamente en tu dispositivo; no publiques el archivo con una clave dentro.</div>
+<div class="grid">
+<div><label for="market">Mercado</label><select id="market"><option value="forex">Forex</option><option value="crypto">Criptomonedas</option></select></div>
+<div><label for="asset">Activo</label><select id="asset"><option>EUR/USD</option><option>USD/JPY</option><option>GBP/USD</option></select></div>
+<div><label for="operation">Tipo de operación</label><select id="operation"><option>Binarias</option><option>Digitales</option></select></div>
+<div><label for="tf">Temporalidad de entrada</label><select id="tf"><option value="1min">1 minuto</option><option value="5min">5 minutos</option><option value="15min">15 minutos</option><option value="30min">30 minutos</option><option value="1h">1 hora</option></select></div>
+</div>
+<div style="margin-top:8px"><span class="pill">OTC excluido</span><span class="pill">Sintéticos excluidos</span><span class="pill">Sin auto-operación</span></div>
+<label class="check"><input id="confirm" type="checkbox"> Confirmo que compararé el precio y la hora de Twelve Data con mi plataforma antes de considerar cualquier señal.</label>
+<button id="analyze">Conectar y analizar</button>
+<button class="secondary" id="clear" type="button">Limpiar resultado y clave</button>
+</section>
+
+<section class="card">
+<div class="small">RESULTADO DEL ANÁLISIS</div>
+<div class="signal yellow" id="signal">NO ENTRAR</div>
+<div class="status" id="reason" aria-live="polite">Introduce tu API key y confirma la comparación de cotizaciones. Todavía no hay datos conectados.</div>
+</section>
+
+<section class="card">
+<strong>2. Validaciones del motor</strong>
+<div class="kv"><span>Instrumento y tipo de mercado</span><b id="v-market">Pendiente</b></div>
+<div class="kv"><span>Datos OHLC suficientes</span><b id="v-data">Pendiente</b></div>
+<div class="kv"><span>Tendencia (EMA 9 / EMA 21)</span><b id="v-trend">Pendiente</b></div>
+<div class="kv"><span>Fuerza (RSI 14)</span><b id="v-rsi">Pendiente</b></div>
+<div class="kv"><span>Vela cerrada y rechazo</span><b id="v-candle">Pendiente</b></div>
+<div class="kv"><span>Confirmación temporal mayor</span><b id="v-htf">Pendiente</b></div>
+<div class="kv"><span>Calidad mínima</span><b id="v-quality">Pendiente</b></div>
+</section>
+
+<section class="card">
+<strong>3. Datos recibidos</strong>
+<div class="kv"><span>Activo / proveedor</span><b id="d-symbol">—</b></div>
+<div class="kv"><span>Última vela</span><b id="d-time">—</b></div>
+<div class="kv"><span>Precio de cierre</span><b id="d-close">—</b></div>
+<div class="kv"><span>Temporalidad mayor</span><b id="d-higher">—</b></div>
+<div class="kv"><span>RSI aproximado</span><b id="d-rsi">—</b></div>
+<div class="kv"><span>Coincidencia con plataforma</span><b id="d-match">No verificada</b></div>
+</section>
+
+<section class="card notice">
+<strong>Importante antes de operar</strong>
+<p>Esta versión consulta velas OHLC de Twelve Data y aplica reglas técnicas sencillas. La respuesta del proveedor no garantiza que el precio, la latencia o el horario coincidan con Quotex u otra plataforma. La etiqueta “mercado real” se valida con los metadatos recibidos, pero no demuestra equivalencia con el broker.</p>
+<p>Una señal CALL/PUT es solo una lectura técnica experimental, no una predicción segura ni una recomendación financiera. Prueba primero en demo y registra resultados. Si la API no responde, los datos son insuficientes o la tendencia no coincide, el sistema bloquea la señal.</p>
+<p><b>Seguridad:</b> para publicar esta aplicación en internet, primero hay que mover la clave API a un backend privado. No uses esta versión cliente con una clave que no quieras exponer.</p>
+</section>
+<footer>FILTRO PRO 1.2 · Beta de análisis · No garantiza resultados ni constituye asesoramiento financiero.</footer>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const market=$('market'), asset=$('asset'), tf=$('tf');
+const higherTF={'1min':'5min','5min':'15min','15min':'30min','30min':'1h','1h':'4h'};
+const names={'1min':'1 minuto','5min':'5 minutos','15min':'15 minutos','30min':'30 minutos','1h':'1 hora','4h':'4 horas'};
+function updateAssets(){
+  const list=market.value==='forex'?['EUR/USD','USD/JPY','GBP/USD']:['BTC/USD','ETH/USD'];
+  asset.innerHTML=list.map(x=>`<option>${x}</option>`).join('');
+}
+market.addEventListener('change',updateAssets);
+function setVal(id,val){$(id).textContent=val}
+function resetChecks(){
+  ['v-market','v-data','v-trend','v-rsi','v-candle','v-htf','v-quality'].forEach(x=>setVal(x,'Pendiente'));
+  ['d-symbol','d-time','d-close','d-higher','d-rsi'].forEach(x=>setVal(x,'—'));
+  setVal('d-match','No verificada');
+}
+function result(text,cls,reason){$('signal').textContent=text;$('signal').className='signal '+cls;$('reason').textContent=reason}
+function ema(values,period){
+  const k=2/(period+1);let out=values[0];
+  for(let i=1;i<values.length;i++) out=values[i]*k+out*(1-k);
+  return out;
+}
+function rsi(values,period=14){
+  if(values.length<=period) return null;
+  let gains=0,losses=0;
+  for(let i=values.length-period;i<values.length;i++){
+    const d=values[i]-values[i-1];if(d>0)gains+=d;else losses-=d;
+  }
+  if(losses===0) return 100;
+  return 100-(100/(1+(gains/period)/(losses/period)));
+}
+function parseBars(payload){
+  if(payload.status==='error'||!Array.isArray(payload.values)) throw new Error(payload.message||payload.code||'El proveedor no devolvió velas.');
+  const meta=payload.meta||{};
+  const bars=payload.values.map(x=>({time:x.datetime,o:+x.open,h:+x.high,l:+x.low,c:+x.close}))
+    .filter(x=>[x.o,x.h,x.l,x.c].every(Number.isFinite)).reverse();
+  if(bars.length<35) throw new Error('No hay suficientes velas válidas para analizar (se requieren al menos 35).');
+  return {meta,bars};
+}
+async function getSeries(symbol,interval,key){
+  const url=new URL('https://api.twelvedata.com/time_series');
+  url.searchParams.set('symbol',symbol);url.searchParams.set('interval',interval);
+  url.searchParams.set('outputsize','80');url.searchParams.set('format','JSON');
+  const res=await fetch(url,{headers:{'Authorization':'apikey '+key}});
+  let data;try{data=await res.json()}catch{throw new Error('Respuesta inválida del proveedor.')}
+  if(!res.ok||data.status==='error'||data.code) throw new Error(data.message||`Error de Twelve Data (${res.status}).`);
+  return parseBars(data);
+}
+function marketTypeOk(meta,kind){
+  const t=String(meta.type||'').toLowerCase();
+  if(kind==='forex') return t.includes('currency')||t.includes('forex');
+  return t.includes('cryptocurrency')||t.includes('digital currency')||t.includes('crypto');
+}
+function evaluate(primary,higher){
+  // Se descarta la vela más reciente porque puede seguir formándose.
+  // El análisis usa únicamente la última vela anterior, ya cerrada.
+  const b=primary.bars.slice(0,-1), hb=higher.bars.slice(0,-1);
+  if(b.length<35||hb.length<35) throw new Error('No hay suficientes velas cerradas para analizar.');
+  const closes=b.map(x=>x.c), hcloses=hb.map(x=>x.c);
+  const last=b[b.length-1];
+  const fast=ema(closes.slice(-40),9), slow=ema(closes.slice(-60),21);
+  const hFast=ema(hcloses.slice(-40),9),hSlow=ema(hcloses.slice(-60),21);
+  const rv=rsi(closes,14);
+  const range=Math.max(last.h-last.l,Number.EPSILON), body=Math.abs(last.c-last.o);
+  const upper=last.h-Math.max(last.o,last.c), lower=Math.min(last.o,last.c)-last.l;
+  const bull=last.c>last.o && body/range>=.45 && lower>=upper*.8;
+  const bear=last.c<last.o && body/range>=.45 && upper>=lower*.8;
+  const up=fast>slow && last.c>fast, down=fast<slow && last.c<fast;
+  const hUp=hFast>hSlow, hDown=hFast<hSlow;
+  let direction='NO ENTRAR', cls='yellow', why='No existe una confluencia suficiente.';
+  let score=0;
+  if(up)score+=30;if(down)score+=30;
+  if(rv!==null && rv>=50 && rv<=68 && up)score+=20;
+  if(rv!==null && rv>=32 && rv<=50 && down)score+=20;
+  if(bull&&up)score+=20;if(bear&&down)score+=20;
+  if(up&&hUp&&bull&&rv>=50&&rv<=68){direction='CALL';cls='green';why='Tendencia alcista en ambas temporalidades, RSI sin sobrecompra extrema y vela alcista con cuerpo/rechazo compatibles.';}
+  else if(down&&hDown&&bear&&rv>=32&&rv<=50){direction='PUT';cls='red';why='Tendencia bajista en ambas temporalidades, RSI sin sobreventa extrema y vela bajista con cuerpo/rechazo compatibles.';}
+  else {why='Filtros no alineados: se requiere tendencia, vela y confirmación mayor en la misma dirección. No forzar entrada.';}
+  return {direction,cls,why,score,rv,last,trend:up?'Alcista':down?'Bajista':'Lateral/mixta',higher:hUp?'Alcista':hDown?'Bajista':'Lateral/mixta',candle:bull?'Alcista válida':bear?'Bajista válida':'Sin confirmación'};
+}
+$('analyze').addEventListener('click',async()=>{
+  const key=$('apikey').value.trim();
+  if(!key){result('NO ENTRAR','yellow','Falta la clave API de Twelve Data.');return;}
+  if(!$('confirm').checked){result('NO ENTRAR','yellow','Primero confirma que compararás precio y hora con tu plataforma.');return;}
+  const btn=$('analyze');btn.disabled=true;btn.textContent='Consultando datos…';resetChecks();
+  result('ANALIZANDO','blue','Solicitando velas al proveedor. No cierres esta pestaña.');
+  try{
+    const symbol=asset.value, interval=tf.value, higherInterval=higherTF[interval];
+    const [primary,higher]=await Promise.all([getSeries(symbol,interval,key),getSeries(symbol,higherInterval,key)]);
+    const ok1=marketTypeOk(primary.meta,market.value),ok2=marketTypeOk(higher.meta,market.value);
+    setVal('v-market',ok1&&ok2?'Validado por metadatos':'No coincide / desconocido');
+    if(!ok1||!ok2) throw new Error('El tipo de instrumento devuelto no confirma el mercado elegido. Señal bloqueada.');
+    setVal('v-data','Cerradas: '+(primary.bars.length-1)+' / '+(higher.bars.length-1));
+    const e=evaluate(primary,higher);
+    setVal('v-trend',e.trend);setVal('v-rsi',e.rv===null?'No disponible':e.rv.toFixed(1));
+    setVal('v-candle',e.candle);setVal('v-htf',e.higher);
+    setVal('v-quality',e.score>=70?'Puntaje '+e.score+'/100':'Insuficiente '+e.score+'/100');
+    setVal('d-symbol',`${symbol} · Twelve Data`);
+    setVal('d-time',e.last.time);setVal('d-close',String(e.last.c));
+    setVal('d-higher',names[higherInterval]);setVal('d-rsi',e.rv===null?'—':e.rv.toFixed(1));
+    setVal('d-match','Pendiente de comparar manualmente');
+    if(e.direction==='NO ENTRAR'||e.score<70){
+      result('NO ENTRAR','yellow',e.why+' Puntaje técnico: '+e.score+'/100. El puntaje es una regla interna, no una probabilidad.');
+    }else{
+      result(e.direction,e.cls,e.why+' Puntaje técnico: '+e.score+'/100. Confirma manualmente que precio, hora y vela coincidan con tu plataforma.');
+    }
+  }catch(err){
+    resetChecks();result('NO ENTRAR','yellow',err.message||'Falló la conexión. Revisa la clave, el acceso del plan y la conexión a internet.');
+  }finally{btn.disabled=false;btn.textContent='Conectar y analizar';}
+});
+$('clear').addEventListener('click',()=>{
+  $('apikey').value='';$('confirm').checked=false;resetChecks();
+  result('NO ENTRAR','yellow','Clave y resultados limpiados. Introduce la clave cuando quieras volver a consultar.');
+});
+</script></body></html>
