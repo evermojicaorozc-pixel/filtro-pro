@@ -122,13 +122,13 @@ function parseBars(payload){
   if(bars.length<35) throw new Error('No hay suficientes velas válidas para analizar (se requieren al menos 35).');
   return {meta,bars};
 }
-async function getSeries(symbol,interval,key){
-  const url=new URL('https://api.twelvedata.com/time_series');
-  url.searchParams.set('symbol',symbol);url.searchParams.set('interval',interval);
-  url.searchParams.set('outputsize','80');url.searchParams.set('format','JSON');
-  const res=await fetch(url,{headers:{'Authorization':'apikey '+key}});
-  let data;try{data=await res.json()}catch{throw new Error('Respuesta inválida del proveedor.')}
-  if(!res.ok||data.status==='error'||data.code) throw new Error(data.message||`Error de Twelve Data (${res.status}).`);
+async function getSeries(symbol,interval){
+  const url=new URL('https://filtro-pro-api.evermojicaorozc.workers.dev/time_series');
+  url.searchParams.set('symbol',symbol);
+  url.searchParams.set('interval',interval);
+  const res=await fetch(url);
+  let data;try{data=await res.json()}catch{throw new Error('Respuesta inválida del servidor.')}
+  if(!res.ok||data.status==='error'||data.code) throw new Error(data.message||`Error del servidor (${res.status}).`);
   return parseBars(data);
 }
 function marketTypeOk(meta,kind){
@@ -164,14 +164,13 @@ function evaluate(primary,higher){
   return {direction,cls,why,score,rv,last,trend:up?'Alcista':down?'Bajista':'Lateral/mixta',higher:hUp?'Alcista':hDown?'Bajista':'Lateral/mixta',candle:bull?'Alcista válida':bear?'Bajista válida':'Sin confirmación'};
 }
 $('analyze').addEventListener('click',async()=>{
-  const key=$('apikey').value.trim();
-  if(!key){result('NO ENTRAR','yellow','Falta la clave API de Twelve Data.');return;}
+  
   if(!$('confirm').checked){result('NO ENTRAR','yellow','Primero confirma que compararás precio y hora con tu plataforma.');return;}
   const btn=$('analyze');btn.disabled=true;btn.textContent='Consultando datos…';resetChecks();
   result('ANALIZANDO','blue','Solicitando velas al proveedor. No cierres esta pestaña.');
   try{
     const symbol=asset.value, interval=tf.value, higherInterval=higherTF[interval];
-    const [primary,higher]=await Promise.all([getSeries(symbol,interval,key),getSeries(symbol,higherInterval,key)]);
+    const [primary,higher]=await Promise.all([getSeries(symbol,interval),getSeries(symbol,higherInterval)]);
     const ok1=marketTypeOk(primary.meta,market.value),ok2=marketTypeOk(higher.meta,market.value);
     setVal('v-market',ok1&&ok2?'Validado por metadatos':'No coincide / desconocido');
     if(!ok1||!ok2) throw new Error('El tipo de instrumento devuelto no confirma el mercado elegido. Señal bloqueada.');
