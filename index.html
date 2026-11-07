@@ -4,51 +4,178 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0b1220">
-<title>FILTRO PRO 2.0</title>
+<title>FILTRO PRO 3.0</title>
+
 <style>
 :root{
  color-scheme:dark;
- --bg:#09111e;--panel:#121e30;--line:#293a52;
- --muted:#9aabc1;--text:#edf4ff;
- --green:#35d6a0;--red:#ff737d;
- --yellow:#f4c66a;--blue:#7db8ff
+ --bg:#09111e;
+ --panel:#121e30;
+ --line:#293a52;
+ --muted:#9aabc1;
+ --text:#edf4ff;
+ --green:#35d6a0;
+ --red:#ff737d;
+ --yellow:#f4c66a;
+ --blue:#7db8ff
 }
 *{box-sizing:border-box}
 body{
- margin:0;background:linear-gradient(160deg,#0c1829,#080e18 65%);
+ margin:0;
+ background:linear-gradient(160deg,#0c1829,#080e18 65%);
  color:var(--text);
  font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif
 }
-main{max-width:820px;margin:auto;padding:16px}
-header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:5px 0 14px}
-h1{font-size:23px;margin:0}
-.tag{font-size:11px;color:var(--green);border:1px solid #246b55;padding:5px 8px;border-radius:20px}
+main{max-width:850px;margin:auto;padding:15px}
+header{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:10px;
+ margin:5px 0 14px
+}
+h1{font-size:24px;margin:0}
+.tag{
+ font-size:11px;
+ color:var(--green);
+ border:1px solid #246b55;
+ padding:5px 8px;
+ border-radius:20px
+}
 p{color:var(--muted);line-height:1.5}
-.card{background:rgba(18,30,48,.96);border:1px solid var(--line);border-radius:15px;padding:15px;margin:12px 0;box-shadow:0 8px 24px #0002}
-label{display:block;color:var(--muted);font-size:13px;margin:10px 0 6px}
-input,select,button{font:inherit;width:100%;border-radius:10px;border:1px solid var(--line);padding:12px;background:#0b1626;color:var(--text)}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-button{background:#176b53;border:0;font-weight:750;margin-top:12px;cursor:pointer}
-button.secondary{background:#20334c;border:1px solid #38506d}
+.card{
+ background:rgba(18,30,48,.96);
+ border:1px solid var(--line);
+ border-radius:15px;
+ padding:15px;
+ margin:12px 0;
+ box-shadow:0 8px 24px #0002
+}
+label{
+ display:block;
+ color:var(--muted);
+ font-size:13px;
+ margin:10px 0 6px
+}
+input,select,button{
+ font:inherit;
+ width:100%;
+ border-radius:10px;
+ border:1px solid var(--line);
+ padding:12px;
+ background:#0b1626;
+ color:var(--text)
+}
+.grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:10px
+}
+button{
+ background:#176b53;
+ border:0;
+ font-weight:750;
+ margin-top:12px;
+ cursor:pointer
+}
+button.secondary{
+ background:#20334c;
+ border:1px solid #38506d
+}
 button:disabled{opacity:.55;cursor:wait}
 .small{font-size:12px;color:var(--muted)}
-.kv{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
-.kv:last-child{border:0}
-.signal{text-align:center;padding:18px 8px;font-size:28px;font-weight:850}
+.pill{
+ display:inline-block;
+ font-size:11px;
+ border-radius:15px;
+ padding:4px 8px;
+ background:#183c32;
+ color:#8de7c1;
+ margin:3px
+}
+.status{
+ padding:11px;
+ border-radius:10px;
+ background:#0b1626;
+ color:var(--muted);
+ font-size:13px;
+ line-height:1.5
+}
+.check{
+ display:flex;
+ align-items:flex-start;
+ gap:9px;
+ margin:10px 0;
+ color:var(--muted);
+ font-size:13px
+}
+.check input{width:auto;margin-top:3px}
+.signal{
+ text-align:center;
+ padding:16px 8px;
+ font-size:27px;
+ font-weight:850
+}
 .green{color:var(--green)}
 .red{color:var(--red)}
 .yellow{color:var(--yellow)}
 .blue{color:var(--blue)}
-.pill{display:inline-block;font-size:11px;border-radius:15px;padding:4px 8px;background:#183c32;color:#8de7c1;margin:3px}
-.notice{border-left:3px solid var(--yellow);padding-left:12px}
+.kv{
+ display:flex;
+ justify-content:space-between;
+ gap:12px;
+ padding:9px 0;
+ border-bottom:1px solid var(--line)
+}
+.kv:last-child{border:0}
+.signal-card{
+ background:#0b1626;
+ border:1px solid var(--line);
+ border-radius:13px;
+ padding:15px;
+ margin-top:12px
+}
+.signal-card.call{border-left:4px solid var(--green)}
+.signal-card.put{border-left:4px solid var(--red)}
+.signal-card h3{margin:0;font-size:19px}
+.signal-card .direction{
+ font-size:24px;
+ font-weight:900;
+ text-align:center;
+ padding:12px 0
+}
+.signal-data{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:10px;
+ margin-top:8px
+}
+.signal-data div{
+ background:#142238;
+ border-radius:9px;
+ padding:10px
+}
+.signal-data span{
+ display:block;
+ font-size:11px;
+ color:var(--muted);
+ margin-bottom:4px
+}
+.signal-data b{font-size:14px}
+.notice{
+ border-left:3px solid var(--yellow);
+ padding-left:12px
+}
 .notice p{margin:7px 0}
-.status{padding:10px;border-radius:10px;background:#0b1626;color:var(--muted);font-size:13px;line-height:1.45}
-.check{display:flex;align-items:flex-start;gap:9px;margin:10px 0;color:var(--muted);font-size:13px}
-.check input{width:auto;margin-top:3px}
-footer{font-size:12px;color:var(--muted);padding:12px 2px 25px}
+footer{
+ font-size:12px;
+ color:var(--muted);
+ padding:12px 2px 25px
+}
 @media(max-width:430px){
  main{padding:12px}
  .grid{grid-template-columns:1fr}
+ .signal-data{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
@@ -57,132 +184,126 @@ footer{font-size:12px;color:var(--muted);padding:12px 2px 25px}
 <main>
 
 <header>
-<h1>FILTRO PRO 2.0</h1>
-<span class="tag">MOTOR MEJORADO</span>
+ <h1>FILTRO PRO 3.0</h1>
+ <span class="tag">ESCÁNER MULTIMERCADO</span>
 </header>
 
 <p>
-Analizador técnico experimental con velas OHLC reales.
-Detecta condiciones CALL, PUT o NO ENTRAR.
-No ejecuta operaciones.
+Analizador técnico experimental de mercados.
+Busca oportunidades de compra y venta usando velas OHLC.
+No ejecuta operaciones automáticamente.
 </p>
 
 <section class="card">
-<strong>1. CONFIGURACIÓN</strong>
+ <strong>1. ANÁLISIS INDIVIDUAL</strong>
 
-<div class="small" style="margin-top:8px">
-Conexión mediante servidor privado Cloudflare + Twelve Data.
-</div>
+ <div class="small" style="margin-top:8px">
+ Conexión mediante Cloudflare + Twelve Data.
+ </div>
 
-<div class="grid">
-<div>
-<label for="market">Mercado</label>
-<select id="market">
-<option value="forex">Forex</option>
-<option value="crypto">Criptomonedas</option>
-</select>
-</div>
+ <div class="grid">
+  <div>
+   <label for="market">Mercado</label>
+   <select id="market">
+    <option value="forex">Forex</option>
+    <option value="crypto">Criptomonedas</option>
+   </select>
+  </div>
 
-<div>
-<label for="asset">Activo</label>
-<select id="asset">
-<option>EUR/USD</option>
-<option>USD/JPY</option>
-<option>GBP/USD</option>
-</select>
-</div>
+  <div>
+   <label for="asset">Activo</label>
+   <select id="asset">
+    <option>EUR/USD</option>
+   </select>
+  </div>
 
-<div>
-<label for="operation">Tipo de operación</label>
-<select id="operation">
-<option>Binarias</option>
-<option>Digitales</option>
-</select>
-</div>
+  <div>
+   <label for="operation">Tipo de operación</label>
+   <select id="operation">
+    <option>Binarias</option>
+    <option>Digitales</option>
+   </select>
+  </div>
 
-<div>
-<label for="tf">Temporalidad de entrada</label>
-<select id="tf">
-<option value="1min">1 minuto</option>
-<option value="5min">5 minutos</option>
-<option value="15min">15 minutos</option>
-<option value="30min">30 minutos</option>
-<option value="1h">1 hora</option>
-</select>
-</div>
-</div>
+  <div>
+   <label for="tf">Intervalo de análisis</label>
+   <select id="tf">
+    <option value="1min">1 minuto</option>
+    <option value="5min">5 minutos</option>
+    <option value="15min">15 minutos</option>
+   </select>
+  </div>
+ </div>
 
-<div style="margin-top:8px">
-<span class="pill">OTC excluido</span>
-<span class="pill">Sin sintéticos</span>
-<span class="pill">Sin auto-operación</span>
-</div>
+ <div style="margin-top:8px">
+  <span class="pill">OTC excluido</span>
+  <span class="pill">Sintéticos excluidos</span>
+  <span class="pill">Sin auto-operación</span>
+ </div>
 
-<label class="check">
-<input id="confirm" type="checkbox">
-Confirmo que compararé precio, hora y velas con mi plataforma.
-</label>
+ <label class="check">
+  <input id="confirm" type="checkbox">
+  Confirmo que compararé precio y hora con mi plataforma.
+ </label>
 
-<button id="analyze">CONECTAR Y ANALIZAR</button>
-<button class="secondary" id="clear" type="button">LIMPIAR RESULTADOS</button>
+ <button id="analyze">ANALIZAR ACTIVO</button>
+ <button class="secondary" id="clear" type="button">
+  LIMPIAR RESULTADOS
+ </button>
 </section>
 
 <section class="card">
-<div class="small">RESULTADO DEL ANÁLISIS</div>
-<div class="signal yellow" id="signal">NO ENTRAR</div>
-<div class="status" id="reason">
-Esperando análisis.
-</div>
+ <strong>RESULTADO INDIVIDUAL</strong>
+ <div class="signal yellow" id="signal">NO ENTRAR</div>
+ <div class="status" id="reason">
+  Esperando análisis.
+ </div>
 </section>
 
 <section class="card">
-<strong>2. VALIDACIONES DEL MOTOR</strong>
-<div class="kv"><span>Mercado</span><b id="v-market">Pendiente</b></div>
-<div class="kv"><span>Datos OHLC</span><b id="v-data">Pendiente</b></div>
-<div class="kv"><span>Tendencia EMA</span><b id="v-trend">Pendiente</b></div>
-<div class="kv"><span>RSI 14</span><b id="v-rsi">Pendiente</b></div>
-<div class="kv"><span>Vela cerrada</span><b id="v-candle">Pendiente</b></div>
-<div class="kv"><span>Temporalidad mayor</span><b id="v-htf">Pendiente</b></div>
-<div class="kv"><span>Calidad técnica</span><b id="v-quality">Pendiente</b></div>
-</section>
+ <strong>2. ESCÁNER MULTIMERCADO</strong>
 
-<section class="card">
-<strong>3. DATOS RECIBIDOS</strong>
-<div class="kv"><span>Activo</span><b id="d-symbol">—</b></div>
-<div class="kv"><span>Última vela cerrada</span><b id="d-time">—</b></div>
-<div class="kv"><span>Precio de cierre</span><b id="d-close">—</b></div>
-<div class="kv"><span>Temporalidad mayor</span><b id="d-higher">—</b></div>
-<div class="kv"><span>RSI</span><b id="d-rsi">—</b></div>
-<div class="kv"><span>Precio comparado</span><b id="d-match">No verificado</b></div>
-</section>
+ <p class="small">
+  8 pares Forex + 2 criptomonedas.
+  3 intervalos de análisis por activo.
+  Total: 30 escenarios.
+ </p>
 
-<section class="card">
-<strong>4. ESCÁNER DE SEÑALES</strong>
-<div class="small">5 pares · 3 temporalidades · 15 escenarios</div>
-<button id="scanAll" type="button">ESCANEAR 15 ESCENARIOS</button>
-<div id="scanStatus" class="status">Esperando escaneo.</div>
-<div id="scanResults"></div>
+ <div class="status" id="scanStatus">
+  Escáner detenido. Presiona el botón para comenzar.
+ </div>
+
+ <button id="scanAll">
+  ESCANEAR 30 ESCENARIOS
+ </button>
+
+ <button class="secondary" id="clearScan">
+  LIMPIAR SEÑALES
+ </button>
+
+ <div id="scanSummary" class="small" style="margin-top:12px"></div>
+ <div id="scanResults"></div>
 </section>
 
 <section class="card notice">
-<strong>IMPORTANTE</strong>
-<p>
-Las señales son lecturas técnicas experimentales.
-No representan probabilidades garantizadas de ganar.
-</p>
-<p>
-Twelve Data y tu plataforma pueden tener diferencias
-de precio, horario y latencia. Verifica siempre las
-cotizaciones antes de considerar una operación.
-</p>
-<p>
-Prueba primero en una cuenta demo. No aumentes el
-riesgo por recibir una señal.
-</p>
+ <strong>IMPORTANTE</strong>
+ <p>
+ Las señales son lecturas técnicas experimentales.
+ No garantizan resultados ni ganancias.
+ </p>
+ <p>
+ La hora mostrada corresponde al momento de detección
+ de la oportunidad, no garantiza que siga vigente.
+ Comprueba el precio y la cotización en tu plataforma.
+ </p>
+ <p>
+ Prueba primero en demo. No operes una señal si el
+ precio ya se ha movido o la oportunidad ha pasado.
+ </p>
 </section>
 
 <footer>
-FILTRO PRO 2.0 · Motor técnico experimental.
+ FILTRO PRO 3.0 · Motor experimental · Horario de Nicaragua.
 </footer>
 
 </main>
@@ -197,51 +318,60 @@ const tf=$('tf');
 const higherTF={
  '1min':'5min',
  '5min':'15min',
- '15min':'30min',
- '30min':'1h',
- '1h':'4h'
+ '15min':'30min'
 };
 
 const names={
  '1min':'1 minuto',
  '5min':'5 minutos',
  '15min':'15 minutos',
- '30min':'30 minutos',
- '1h':'1 hora',
- '4h':'4 horas'
+ '30min':'30 minutos'
+};
+
+const assets={
+ forex:[
+  'EUR/USD',
+  'GBP/USD',
+  'USD/JPY',
+  'AUD/USD',
+  'USD/CAD',
+  'NZD/USD',
+  'USD/CHF',
+  'EUR/JPY'
+ ],
+ crypto:[
+  'BTC/USD',
+  'ETH/USD'
+ ]
 };
 
 function updateAssets(){
- const list=market.value==='forex'
- ?['EUR/USD','USD/JPY','GBP/USD','AUD/USD','USD/CAD']
- :['BTC/USD','ETH/USD'];
-
- asset.innerHTML=list.map(x=>`<option>${x}</option>`).join('');
+ const list=assets[market.value];
+ asset.innerHTML=list.map(x=>
+  `<option value="${x}">${x}</option>`
+ ).join('');
 }
 
 market.addEventListener('change',updateAssets);
 
-function setVal(id,val){
- $(id).textContent=val;
+function localTime(date=new Date()){
+ return new Intl.DateTimeFormat('es-NI',{
+  timeZone:'America/Managua',
+  hour:'2-digit',
+  minute:'2-digit',
+  second:'2-digit',
+  hour12:true
+ }).format(date);
+}
+
+function setVal(id,value){
+ $(id).textContent=value;
 }
 
 function result(text,cls,reason){
  $('signal').textContent=text;
  $('signal').className='signal '+cls;
  $('reason').textContent=reason;
-}
-
-function resetChecks(){
- [
- 'v-market','v-data','v-trend','v-rsi',
- 'v-candle','v-htf','v-quality'
- ].forEach(x=>setVal(x,'Pendiente'));
-
- [
- 'd-symbol','d-time','d-close','d-higher','d-rsi'
- ].forEach(x=>setVal(x,'—'));
-
- setVal('d-match','No verificado');
 }
 
 function ema(values,period){
@@ -272,15 +402,17 @@ function rsi(values,period=14){
  if(loss===0)return 100;
  if(gain===0)return 0;
 
- const rs=(gain/period)/(loss/period);
-
+ const rs=gain/loss;
  return 100-(100/(1+rs));
 }
 
 function parseBars(payload){
 
  if(payload.status==='error'||!Array.isArray(payload.values)){
-  throw new Error(payload.message||payload.code||'El proveedor no devolvió velas.');
+  throw new Error(
+   payload.message||payload.code||
+   'El proveedor no devolvió velas.'
+  );
  }
 
  const meta=payload.meta||{};
@@ -292,11 +424,13 @@ function parseBars(payload){
   l:+x.low,
   c:+x.close
  }))
- .filter(x=>[x.o,x.h,x.l,x.c].every(Number.isFinite))
+ .filter(x=>
+  [x.o,x.h,x.l,x.c].every(Number.isFinite)
+ )
  .reverse();
 
  if(bars.length<35){
-  throw new Error('No hay suficientes velas válidas.');
+  throw new Error('Datos insuficientes.');
  }
 
  return {meta,bars};
@@ -305,7 +439,7 @@ function parseBars(payload){
 async function getSeries(symbol,interval){
 
  const url=new URL(
- 'https://filtro-pro-api.evermojicaorozc.workers.dev/time_series'
+  'https://filtro-pro-api.evermojicaorozc.workers.dev/time_series'
  );
 
  url.searchParams.set('symbol',symbol);
@@ -326,7 +460,9 @@ async function getSeries(symbol,interval){
   }
 
   if(!res.ok||data.status==='error'||data.code){
-   throw new Error(data.message||`Error del servidor ${res.status}`);
+   throw new Error(
+    data.message||`Error del servidor ${res.status}`
+   );
   }
 
   return parseBars(data);
@@ -334,7 +470,7 @@ async function getSeries(symbol,interval){
  }catch(err){
 
   if(err.name==='AbortError'){
-   throw new Error('Tiempo de espera agotado al consultar datos.');
+   throw new Error('Tiempo de espera agotado.');
   }
 
   throw err;
@@ -374,52 +510,47 @@ function marketTypeOk(meta,kind){
 
 function evaluate(primary,higher){
 
- // Excluir la vela que todavía se está formando.
- const b=primary.bars.slice(0,-1);
- const hb=higher.bars.slice(0,-1);
+ // No utilizar la vela que todavía se está formando.
+ const bars=primary.bars.slice(0,-1);
+ const higherBars=higher.bars.slice(0,-1);
 
- if(b.length<35||hb.length<35){
+ if(bars.length<35||higherBars.length<35){
   throw new Error('No hay suficientes velas cerradas.');
  }
 
- const closes=b.map(x=>x.c);
- const hcloses=hb.map(x=>x.c);
+ const closes=bars.map(x=>x.c);
+ const higherCloses=higherBars.map(x=>x.c);
 
- const last=b[b.length-1];
- const previous=b[b.length-2];
+ const last=bars[bars.length-1];
 
  const fast=ema(closes.slice(-40),9);
  const slow=ema(closes.slice(-60),21);
 
- const hFast=ema(hcloses.slice(-40),9);
- const hSlow=ema(hcloses.slice(-60),21);
+ const hFast=ema(higherCloses.slice(-40),9);
+ const hSlow=ema(higherCloses.slice(-60),21);
 
  const rv=rsi(closes,14);
 
  if([fast,slow,hFast,hSlow,rv].some(x=>x===null)){
-  throw new Error('No se pudieron calcular los indicadores.');
+  throw new Error('No se pudieron calcular los datos.');
  }
 
- const range=Math.max(last.h-last.l,Number.EPSILON);
- const body=Math.abs(last.c-last.o);
-
- const upper=last.h-Math.max(last.o,last.c);
- const lower=Math.min(last.o,last.c)-last.l;
-
- const bodyRatio=body/range;
+ const range=Math.max(
+  last.h-last.l,
+  Number.EPSILON
+ );
 
  const bullish=last.c>last.o;
  const bearish=last.c<last.o;
 
- const bullCandle=bullish&&(
-  bodyRatio>=0.35||
-  (lower/range>=0.40&&last.c>last.l+range*0.55)
- );
+ const closePosition=(last.c-last.l)/range;
 
- const bearCandle=bearish&&(
-  bodyRatio>=0.35||
-  (upper/range>=0.40&&last.c<last.h-range*0.55)
- );
+ // Confirmación de vela algo más flexible.
+ const bullCandle=
+  bullish&&closePosition>=0.60;
+
+ const bearCandle=
+  bearish&&closePosition<=0.40;
 
  const up=fast>slow&&last.c>fast;
  const down=fast<slow&&last.c<fast;
@@ -427,72 +558,119 @@ function evaluate(primary,higher){
  const hUp=hFast>hSlow;
  const hDown=hFast<hSlow;
 
- const rising=fast>ema(closes.slice(-41,-1),9);
- const falling=fast<ema(closes.slice(-41,-1),9);
+ const previousFast=ema(closes.slice(-41,-1),9);
+
+ const rising=previousFast!==null&&fast>previousFast;
+ const falling=previousFast!==null&&fast<previousFast;
 
  let call=0;
  let put=0;
 
- // Tendencia principal: 25 puntos.
  if(up)call+=25;
  if(down)put+=25;
 
- // Precio respecto a EMA 9: 10 puntos.
  if(last.c>fast)call+=10;
  if(last.c<fast)put+=10;
 
- // Momentum de la media: 5 puntos.
  if(rising)call+=5;
  if(falling)put+=5;
 
- // RSI: 15 puntos.
- if(rv>=50&&rv<=68)call+=15;
- if(rv>=32&&rv<=50)put+=15;
+ // Rangos orientativos más flexibles.
+ if(rv>=45&&rv<=70)call+=15;
+ if(rv>=30&&rv<=55)put+=15;
 
- // Vela de confirmación: 15 puntos.
  if(bullCandle)call+=15;
  if(bearCandle)put+=15;
 
- // Confirmación de temporalidad superior: 20 puntos.
  if(hUp)call+=20;
  if(hDown)put+=20;
 
- // Cierre favorable dentro del rango: 10 puntos.
- if(bullish&&last.c>=last.l+range*0.65)call+=10;
- if(bearish&&last.c<=last.h-range*0.35)put+=10;
+ if(bullish&&closePosition>=0.65)call+=10;
+ if(bearish&&closePosition<=0.35)put+=10;
 
  let direction='NO ENTRAR';
  let cls='yellow';
  let score=Math.max(call,put);
- let why='Los filtros no muestran una confluencia suficiente.';
 
- if(call>=65&&call>put&&up&&hUp&&rv>=50&&rv<=68&&bullCandle){
+ let why='No hay confirmación suficiente.';
+
+ // Exige tendencia, confirmación mayor y vela.
+ if(
+  call>=65&&call>put&&
+  up&&hUp&&bullCandle
+ ){
   direction='CALL';
   cls='green';
   score=call;
-  why='Confluencia alcista: tendencia principal y mayor alineadas, RSI favorable y vela cerrada de confirmación.';
+  why='Se detectó una posible oportunidad alcista confirmada.';
  }
 
- else if(put>=65&&put>call&&down&&hDown&&rv>=32&&rv<=50&&bearCandle){
+ else if(
+  put>=65&&put>call&&
+  down&&hDown&&bearCandle
+ ){
   direction='PUT';
   cls='red';
   score=put;
-  why='Confluencia bajista: tendencia principal y mayor alineadas, RSI favorable y vela cerrada de confirmación.';
+  why='Se detectó una posible oportunidad bajista confirmada.';
  }
 
  return {
-  direction,cls,score,call,put,why,rv,last,
-  trend:up?'Alcista':down?'Bajista':'Lateral/mixta',
-  higher:hUp?'Alcista':hDown?'Bajista':'Lateral/mixta',
-  candle:bullCandle?'Alcista válida':
-         bearCandle?'Bajista válida':'Sin confirmación'
+  direction,
+  cls,
+  score,
+  call,
+  put,
+  why,
+  last
  };
 }
+
+function expiry(interval){
+ if(interval==='1min')return '1 minuto';
+ if(interval==='5min')return '5 minutos';
+ return '15 minutos';
+}
+
+function safe(value){
+ return String(value).replace(/[&<>"']/g,c=>({
+  '&':'&amp;',
+  '<':'&lt;',
+  '>':'&gt;',
+  '"':'&quot;',
+  "'":'&#39;'
+ }[c]));
+}
+
+async function analyzeOne(symbol,interval,kind){
+
+ const higherInterval=higherTF[interval];
+
+ const [primary,higher]=await Promise.all([
+  getSeries(symbol,interval),
+  getSeries(symbol,higherInterval)
+ ]);
+
+ if(
+  !marketTypeOk(primary.meta,kind)||
+  !marketTypeOk(higher.meta,kind)
+ ){
+  throw new Error('Mercado no validado por metadatos.');
+ }
+
+ return evaluate(primary,higher);
+}
+
+// ANÁLISIS INDIVIDUAL
 
 $('analyze').addEventListener('click',async()=>{
 
  if(!$('confirm').checked){
-  result('NO ENTRAR','yellow','Primero confirma la comparación con tu plataforma.');
+  result(
+   'NO ENTRAR',
+   'yellow',
+   'Confirma primero la comparación con tu plataforma.'
+  );
   return;
  }
 
@@ -501,65 +679,31 @@ $('analyze').addEventListener('click',async()=>{
  btn.disabled=true;
  btn.textContent='ANALIZANDO...';
 
- resetChecks();
-
- result('ANALIZANDO','blue','Solicitando velas reales al proveedor.');
+ result('ANALIZANDO','blue','Consultando datos del mercado.');
 
  try{
 
-  const symbol=asset.value;
-  const interval=tf.value;
-  const higherInterval=higherTF[interval];
-
-  const [primary,higher]=await Promise.all([
-   getSeries(symbol,interval),
-   getSeries(symbol,higherInterval)
-  ]);
-
-  const ok1=marketTypeOk(primary.meta,market.value);
-  const ok2=marketTypeOk(higher.meta,market.value);
-
-  setVal('v-market',ok1&&ok2?'Validado':'No validado');
-
-  if(!ok1||!ok2){
-   throw new Error('Los metadatos no confirman el tipo de mercado. Revisa la respuesta del proveedor.');
-  }
-
-  setVal('v-data','Cerradas: '+(primary.bars.length-1));
-
-  const e=evaluate(primary,higher);
-
-  setVal('v-trend',e.trend);
-  setVal('v-rsi',e.rv.toFixed(1));
-  setVal('v-candle',e.candle);
-  setVal('v-htf',e.higher);
-
-  setVal('v-quality',e.score+'/100');
-
-  setVal('d-symbol',symbol+' · Twelve Data');
-  setVal('d-time',e.last.time);
-  setVal('d-close',String(e.last.c));
-  setVal('d-higher',names[higherInterval]);
-  setVal('d-rsi',e.rv.toFixed(1));
-  setVal('d-match','Comparación manual pendiente');
+  const e=await analyzeOne(
+   asset.value,
+   tf.value,
+   market.value
+  );
 
   if(e.direction==='NO ENTRAR'){
    result(
     'NO ENTRAR',
     'yellow',
-    e.why+' CALL: '+e.call+'/100. PUT: '+e.put+'/100.'
+    e.why
    );
   }else{
    result(
     e.direction,
     e.cls,
-    e.why+' Puntaje técnico: '+e.score+'/100. Verifica precio y horario.'
+    e.why+' Puntaje técnico interno: '+e.score+'/100.'
    );
   }
 
  }catch(err){
-
-  resetChecks();
 
   result(
    'NO ENTRAR',
@@ -570,10 +714,12 @@ $('analyze').addEventListener('click',async()=>{
  }finally{
 
   btn.disabled=false;
-  btn.textContent='CONECTAR Y ANALIZAR';
+  btn.textContent='ANALIZAR ACTIVO';
 
  }
 });
+
+// ESCÁNER MULTIMERCADO
 
 $('scanAll').addEventListener('click',async()=>{
 
@@ -582,146 +728,217 @@ $('scanAll').addEventListener('click',async()=>{
  const output=$('scanResults');
 
  if(!$('confirm').checked){
-  status.textContent='Confirma primero la comparación con tu plataforma.';
+  status.textContent=
+   'Confirma primero que compararás los precios con tu plataforma.';
   return;
  }
 
- if(market.value!=='forex'){
-  status.textContent='El escáner está configurado para Forex.';
-  return;
- }
+ const scenarios=[];
 
- const pairs=['EUR/USD','GBP/USD','USD/JPY','AUD/USD','USD/CAD'];
- const intervals=['1min','5min','15min'];
+ assets.forex.forEach(symbol=>{
+  ['1min','5min','15min'].forEach(interval=>{
+   scenarios.push({
+    symbol,
+    interval,
+    kind:'forex'
+   });
+  });
+ });
+
+ assets.crypto.forEach(symbol=>{
+  ['1min','5min','15min'].forEach(interval=>{
+   scenarios.push({
+    symbol,
+    interval,
+    kind:'crypto'
+   });
+  });
+ });
 
  const cache=new Map();
  const signals=[];
  const errors=[];
 
+ let requestQueue=Promise.resolve();
+
  const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 
- const safe=s=>String(s).replace(/[&<>"']/g,c=>({
-  '&':'&amp;',
-  '<':'&lt;',
-  '>':'&gt;',
-  '"':'&quot;',
-  "'":'&#39;'
- }[c]));
-
- btn.disabled=true;
- output.innerHTML='';
- status.textContent='Preparando escáner...';
-
- async function candles(symbol,interval){
+ function queuedSeries(symbol,interval){
 
   const key=symbol+'_'+interval;
 
-  if(!cache.has(key)){
-
-   if(cache.size>0){
-    await wait(7500);
-   }
-
-   cache.set(key,getSeries(symbol,interval));
+  if(cache.has(key)){
+   return cache.get(key);
   }
 
-  return cache.get(key);
+  // Una consulta nueva cada 8 segundos para cuidar la API.
+  const task=requestQueue.then(()=>getSeries(symbol,interval));
+
+  requestQueue=task.then(
+   ()=>wait(8000),
+   ()=>wait(8000)
+  );
+
+  cache.set(key,task);
+
+  return task;
  }
+
+ async function queuedAnalysis(item){
+
+  const higherInterval=higherTF[item.interval];
+
+  const [primary,higher]=await Promise.all([
+   queuedSeries(item.symbol,item.interval),
+   queuedSeries(item.symbol,higherInterval)
+  ]);
+
+  if(
+   !marketTypeOk(primary.meta,item.kind)||
+   !marketTypeOk(higher.meta,item.kind)
+  ){
+   throw new Error('Tipo de mercado no validado.');
+  }
+
+  return evaluate(primary,higher);
+ }
+
+ btn.disabled=true;
+ btn.textContent='ESCANEANDO...';
+
+ output.innerHTML='';
+ $('scanSummary').textContent='';
+
+ let completed=0;
 
  try{
 
-  let completed=0;
+  for(const item of scenarios){
 
-  for(const symbol of pairs){
+   status.textContent=
+    'Analizando '+(completed+1)+' de '+scenarios.length+
+    ': '+item.symbol+' · '+names[item.interval];
 
-   for(const interval of intervals){
+   try{
 
-    completed++;
+    const e=await queuedAnalysis(item);
 
-    status.textContent=
-     'Analizando '+completed+' de 15: '+
-     symbol+' · '+names[interval];
+    if(e.direction!=='NO ENTRAR'){
 
-    try{
+     signals.push({
+      symbol:item.symbol,
+      kind:item.kind,
+      interval:item.interval,
+      direction:e.direction,
+      cls:e.cls,
+      price:e.last.c,
+      detected:new Date(),
+      expiry:expiry(item.interval)
+     });
 
-     const higherInterval=higherTF[interval];
-
-     const [primary,higher]=await Promise.all([
-      candles(symbol,interval),
-      candles(symbol,higherInterval)
-     ]);
-
-     if(!marketTypeOk(primary.meta,'forex')||
-        !marketTypeOk(higher.meta,'forex')){
-      throw new Error('Mercado no validado.');
-     }
-
-     const e=evaluate(primary,higher);
-
-     if(e.direction!=='NO ENTRAR'){
-      signals.push({symbol,interval,e});
-     }
-
-    }catch(err){
-
-     errors.push(symbol+' '+names[interval]+': '+err.message);
-
+     renderSignals();
     }
 
+   }catch(err){
+
+    errors.push(
+     item.symbol+' '+names[item.interval]+': '+err.message
+    );
+
    }
+
+   completed++;
+
+   status.textContent=
+    'Analizando '+completed+' de '+scenarios.length+
+    ' escenarios. Señales encontradas: '+signals.length;
   }
 
-  if(signals.length){
-
-   output.innerHTML=signals.map(s=>`
-    <div class="card">
-     <strong>${safe(s.symbol)}</strong>
-     <div class="signal ${safe(s.e.cls)}">
-      ${safe(s.e.direction)}
-     </div>
-     <div>Temporalidad: ${safe(names[s.interval])}</div>
-     <div>Precio de referencia: ${safe(s.e.last.c)}</div>
-     <div>Calidad técnica: ${safe(s.e.score)}/100</div>
-     <div>RSI: ${safe(s.e.rv.toFixed(1))}</div>
-     <div>Vela: ${safe(s.e.last.time)}</div>
-     <div class="small">${safe(s.e.why)}</div>
-    </div>
-   `).join('');
-
-  }else{
-
-   output.textContent=
-    'No se encontraron señales que cumplan los filtros. No fuerces entradas.';
-
-  }
+  renderSignals();
 
   status.textContent=
-   'Escaneo terminado. '+signals.length+
-   ' señales de 15 escenarios. Errores: '+errors.length+
-   '. '+new Date().toLocaleTimeString('es-NI',{
-    timeZone:'America/Managua'
-   });
+   'Escaneo terminado: '+completed+' escenarios revisados.';
+
+  $('scanSummary').textContent=
+   signals.length+' oportunidades encontradas · '+
+   errors.length+' errores · '+localTime();
+
+  if(errors.length){
+   $('scanSummary').textContent+=
+    '. Algunos activos no pudieron analizarse.';
+  }
+
+  if(!signals.length){
+   output.innerHTML=
+    '<div class="status">No se encontraron oportunidades confirmadas. No fuerces entradas.</div>';
+  }
 
  }catch(err){
 
-  status.textContent='Error: '+err.message;
+  status.textContent='Error del escáner: '+err.message;
 
  }finally{
 
   btn.disabled=false;
+  btn.textContent='ESCANEAR 30 ESCENARIOS';
 
+ }
+
+ function renderSignals(){
+
+  output.innerHTML=signals.map(s=>{
+
+   const isCall=s.direction==='CALL';
+
+   return `
+    <div class="signal-card ${isCall?'call':'put'}">
+
+     <h3>${safe(s.symbol)}</h3>
+
+     <div class="direction ${isCall?'green':'red'}">
+      ${isCall?'COMPRAR · CALL':'VENDER · PUT'}
+     </div>
+
+     <div class="signal-data">
+
+      <div>
+       <span>Hora sugerida de entrada</span>
+       <b>${safe(localTime(s.detected))}</b>
+      </div>
+
+      <div>
+       <span>Duración de operación</span>
+       <b>${safe(s.expiry)}</b>
+      </div>
+
+      <div>
+       <span>Precio de referencia</span>
+       <b>${safe(s.price)}</b>
+      </div>
+
+      <div>
+       <span>Mercado</span>
+       <b>${s.kind==='forex'?'Forex':'Cripto'}</b>
+      </div>
+
+     </div>
+
+     <p class="small">
+      Hora de detección. Verifica que el precio siga vigente
+      antes de considerar una entrada.
+     </p>
+
+    </div>
+   `;
+
+  }).join('');
  }
 
 });
 
+// LIMPIAR
+
 $('clear').addEventListener('click',()=>{
-
- $('confirm').checked=false;
-
- resetChecks();
-
- $('scanResults').innerHTML='';
- $('scanStatus').textContent='Esperando escaneo.';
 
  result(
   'NO ENTRAR',
@@ -731,7 +948,16 @@ $('clear').addEventListener('click',()=>{
 
 });
 
+$('clearScan').addEventListener('click',()=>{
+
+ $('scanResults').innerHTML='';
+ $('scanSummary').textContent='';
+ $('scanStatus').textContent='Escáner detenido. Esperando nuevo análisis.';
+
+});
+
+updateAssets();
+
 </script>
 </body>
 </html>
-
