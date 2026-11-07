@@ -4,187 +4,64 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0b1220">
-<title>FILTRO PRO 3.0</title>
-
+<title>FILTRO PRO 3.1</title>
 <style>
 :root{
  color-scheme:dark;
- --bg:#09111e;
- --panel:#121e30;
- --line:#293a52;
- --muted:#9aabc1;
- --text:#edf4ff;
- --green:#35d6a0;
- --red:#ff737d;
- --yellow:#f4c66a;
- --blue:#7db8ff
+ --bg:#09111e;--panel:#121e30;--line:#293a52;
+ --muted:#9aabc1;--text:#edf4ff;
+ --green:#35d6a0;--red:#ff737d;
+ --yellow:#f4c66a;--blue:#7db8ff
 }
 *{box-sizing:border-box}
 body{
- margin:0;
- background:linear-gradient(160deg,#0c1829,#080e18 65%);
+ margin:0;background:linear-gradient(160deg,#0c1829,#080e18 65%);
  color:var(--text);
  font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif
 }
 main{max-width:850px;margin:auto;padding:15px}
-header{
- display:flex;
- justify-content:space-between;
- align-items:center;
- gap:10px;
- margin:5px 0 14px
-}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:5px 0 14px}
 h1{font-size:24px;margin:0}
-.tag{
- font-size:11px;
- color:var(--green);
- border:1px solid #246b55;
- padding:5px 8px;
- border-radius:20px
-}
+.tag{font-size:11px;color:var(--green);border:1px solid #246b55;padding:5px 8px;border-radius:20px}
 p{color:var(--muted);line-height:1.5}
-.card{
- background:rgba(18,30,48,.96);
- border:1px solid var(--line);
- border-radius:15px;
- padding:15px;
- margin:12px 0;
- box-shadow:0 8px 24px #0002
-}
-label{
- display:block;
- color:var(--muted);
- font-size:13px;
- margin:10px 0 6px
-}
-input,select,button{
- font:inherit;
- width:100%;
- border-radius:10px;
- border:1px solid var(--line);
- padding:12px;
- background:#0b1626;
- color:var(--text)
-}
-.grid{
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:10px
-}
-button{
- background:#176b53;
- border:0;
- font-weight:750;
- margin-top:12px;
- cursor:pointer
-}
-button.secondary{
- background:#20334c;
- border:1px solid #38506d
-}
+.card{background:rgba(18,30,48,.96);border:1px solid var(--line);border-radius:15px;padding:15px;margin:12px 0;box-shadow:0 8px 24px #0002}
+label{display:block;color:var(--muted);font-size:13px;margin:10px 0 6px}
+input,select,button{font:inherit;width:100%;border-radius:10px;border:1px solid var(--line);padding:12px;background:#0b1626;color:var(--text)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{background:#176b53;border:0;font-weight:750;margin-top:12px;cursor:pointer}
+button.secondary{background:#20334c;border:1px solid #38506d}
 button:disabled{opacity:.55;cursor:wait}
 .small{font-size:12px;color:var(--muted)}
-.pill{
- display:inline-block;
- font-size:11px;
- border-radius:15px;
- padding:4px 8px;
- background:#183c32;
- color:#8de7c1;
- margin:3px
-}
-.status{
- padding:11px;
- border-radius:10px;
- background:#0b1626;
- color:var(--muted);
- font-size:13px;
- line-height:1.5
-}
-.check{
- display:flex;
- align-items:flex-start;
- gap:9px;
- margin:10px 0;
- color:var(--muted);
- font-size:13px
-}
+.pill{display:inline-block;font-size:11px;border-radius:15px;padding:4px 8px;background:#183c32;color:#8de7c1;margin:3px}
+.status{padding:11px;border-radius:10px;background:#0b1626;color:var(--muted);font-size:13px;line-height:1.5}
+.check{display:flex;align-items:flex-start;gap:9px;margin:10px 0;color:var(--muted);font-size:13px}
 .check input{width:auto;margin-top:3px}
-.signal{
- text-align:center;
- padding:16px 8px;
- font-size:27px;
- font-weight:850
-}
-.green{color:var(--green)}
-.red{color:var(--red)}
-.yellow{color:var(--yellow)}
-.blue{color:var(--blue)}
-.kv{
- display:flex;
- justify-content:space-between;
- gap:12px;
- padding:9px 0;
- border-bottom:1px solid var(--line)
-}
-.kv:last-child{border:0}
-.signal-card{
- background:#0b1626;
- border:1px solid var(--line);
- border-radius:13px;
- padding:15px;
- margin-top:12px
-}
+.signal{text-align:center;padding:16px 8px;font-size:27px;font-weight:850}
+.green{color:var(--green)}.red{color:var(--red)}
+.yellow{color:var(--yellow)}.blue{color:var(--blue)}
+.signal-card{background:#0b1626;border:1px solid var(--line);border-radius:13px;padding:15px;margin-top:12px}
 .signal-card.call{border-left:4px solid var(--green)}
 .signal-card.put{border-left:4px solid var(--red)}
 .signal-card h3{margin:0;font-size:19px}
-.signal-card .direction{
- font-size:24px;
- font-weight:900;
- text-align:center;
- padding:12px 0
-}
-.signal-data{
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:10px;
- margin-top:8px
-}
-.signal-data div{
- background:#142238;
- border-radius:9px;
- padding:10px
-}
-.signal-data span{
- display:block;
- font-size:11px;
- color:var(--muted);
- margin-bottom:4px
-}
+.signal-card .direction{font-size:24px;font-weight:900;text-align:center;padding:12px 0}
+.signal-data{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.signal-data div{background:#142238;border-radius:9px;padding:10px}
+.signal-data span{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}
 .signal-data b{font-size:14px}
-.notice{
- border-left:3px solid var(--yellow);
- padding-left:12px
-}
+.notice{border-left:3px solid var(--yellow);padding-left:12px}
 .notice p{margin:7px 0}
-footer{
- font-size:12px;
- color:var(--muted);
- padding:12px 2px 25px
-}
+footer{font-size:12px;color:var(--muted);padding:12px 2px 25px}
 @media(max-width:430px){
- main{padding:12px}
- .grid{grid-template-columns:1fr}
+ main{padding:12px}.grid{grid-template-columns:1fr}
  .signal-data{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
-
 <body>
 <main>
 
 <header>
- <h1>FILTRO PRO 3.0</h1>
+ <h1>FILTRO PRO 3.1</h1>
  <span class="tag">ESCÁNER MULTIMERCADO</span>
 </header>
 
@@ -196,7 +73,6 @@ No ejecuta operaciones automáticamente.
 
 <section class="card">
  <strong>1. ANÁLISIS INDIVIDUAL</strong>
-
  <div class="small" style="margin-top:8px">
  Conexión mediante Cloudflare + Twelve Data.
  </div>
@@ -209,14 +85,10 @@ No ejecuta operaciones automáticamente.
     <option value="crypto">Criptomonedas</option>
    </select>
   </div>
-
   <div>
    <label for="asset">Activo</label>
-   <select id="asset">
-    <option>EUR/USD</option>
-   </select>
+   <select id="asset"><option>EUR/USD</option></select>
   </div>
-
   <div>
    <label for="operation">Tipo de operación</label>
    <select id="operation">
@@ -224,7 +96,6 @@ No ejecuta operaciones automáticamente.
     <option>Digitales</option>
    </select>
   </div>
-
   <div>
    <label for="tf">Intervalo de análisis</label>
    <select id="tf">
@@ -247,39 +118,29 @@ No ejecuta operaciones automáticamente.
  </label>
 
  <button id="analyze">ANALIZAR ACTIVO</button>
- <button class="secondary" id="clear" type="button">
-  LIMPIAR RESULTADOS
- </button>
+ <button class="secondary" id="clear" type="button">LIMPIAR RESULTADOS</button>
 </section>
 
 <section class="card">
  <strong>RESULTADO INDIVIDUAL</strong>
  <div class="signal yellow" id="signal">NO ENTRAR</div>
- <div class="status" id="reason">
-  Esperando análisis.
- </div>
+ <div class="status" id="reason">Esperando análisis.</div>
 </section>
 
 <section class="card">
  <strong>2. ESCÁNER MULTIMERCADO</strong>
-
  <p class="small">
-  8 pares Forex + 2 criptomonedas.
-  3 intervalos de análisis por activo.
-  Total: 30 escenarios.
+ 8 pares Forex + 2 criptomonedas.
+ 3 intervalos de análisis por activo.
+ Total: 30 escenarios.
  </p>
 
  <div class="status" id="scanStatus">
-  Escáner detenido. Presiona el botón para comenzar.
+ Escáner detenido. Presiona el botón para comenzar.
  </div>
 
- <button id="scanAll">
-  ESCANEAR 30 ESCENARIOS
- </button>
-
- <button class="secondary" id="clearScan">
-  LIMPIAR SEÑALES
- </button>
+ <button id="scanAll">ESCANEAR 30 ESCENARIOS</button>
+ <button class="secondary" id="clearScan">LIMPIAR SEÑALES</button>
 
  <div id="scanSummary" class="small" style="margin-top:12px"></div>
  <div id="scanResults"></div>
@@ -292,9 +153,9 @@ No ejecuta operaciones automáticamente.
  No garantizan resultados ni ganancias.
  </p>
  <p>
- La hora mostrada corresponde al momento de detección
- de la oportunidad, no garantiza que siga vigente.
- Comprueba el precio y la cotización en tu plataforma.
+ La hora mostrada es la hora de última confirmación,
+ no una promesa de entrada futura. Comprueba el precio
+ y la cotización en tu plataforma.
  </p>
  <p>
  Prueba primero en demo. No operes una señal si el
@@ -303,7 +164,7 @@ No ejecuta operaciones automáticamente.
 </section>
 
 <footer>
- FILTRO PRO 3.0 · Motor experimental · Horario de Nicaragua.
+ FILTRO PRO 3.1 · Motor experimental · Horario de Nicaragua.
 </footer>
 
 </main>
@@ -330,19 +191,10 @@ const names={
 
 const assets={
  forex:[
-  'EUR/USD',
-  'GBP/USD',
-  'USD/JPY',
-  'AUD/USD',
-  'USD/CAD',
-  'NZD/USD',
-  'USD/CHF',
-  'EUR/JPY'
+  'EUR/USD','GBP/USD','USD/JPY','AUD/USD',
+  'USD/CAD','NZD/USD','USD/CHF','EUR/JPY'
  ],
- crypto:[
-  'BTC/USD',
-  'ETH/USD'
- ]
+ crypto:['BTC/USD','ETH/USD']
 };
 
 function updateAssets(){
@@ -351,7 +203,6 @@ function updateAssets(){
   `<option value="${x}">${x}</option>`
  ).join('');
 }
-
 market.addEventListener('change',updateAssets);
 
 function localTime(date=new Date()){
@@ -364,50 +215,41 @@ function localTime(date=new Date()){
  }).format(date);
 }
 
-function setVal(id,value){
- $(id).textContent=value;
-}
-
 function result(text,cls,reason){
  $('signal').textContent=text;
  $('signal').className='signal '+cls;
  $('reason').textContent=reason;
 }
 
+function wait(ms){
+ return new Promise(resolve=>setTimeout(resolve,ms));
+}
+
 function ema(values,period){
  if(values.length<period)return null;
-
  const k=2/(period+1);
  let value=values[0];
-
  for(let i=1;i<values.length;i++){
   value=values[i]*k+value*(1-k);
  }
-
  return value;
 }
 
 function rsi(values,period=14){
  if(values.length<=period)return null;
-
  let gain=0,loss=0;
-
  for(let i=values.length-period;i<values.length;i++){
   const change=values[i]-values[i-1];
-
   if(change>0)gain+=change;
   else loss-=change;
  }
-
  if(loss===0)return 100;
  if(gain===0)return 0;
-
  const rs=gain/loss;
  return 100-(100/(1+rs));
 }
 
 function parseBars(payload){
-
  if(payload.status==='error'||!Array.isArray(payload.values)){
   throw new Error(
    payload.message||payload.code||
@@ -416,7 +258,6 @@ function parseBars(payload){
  }
 
  const meta=payload.meta||{};
-
  const bars=payload.values.map(x=>({
   time:x.datetime,
   o:+x.open,
@@ -424,20 +265,16 @@ function parseBars(payload){
   l:+x.low,
   c:+x.close
  }))
- .filter(x=>
-  [x.o,x.h,x.l,x.c].every(Number.isFinite)
- )
+ .filter(x=>[x.o,x.h,x.l,x.c].every(Number.isFinite))
  .reverse();
 
  if(bars.length<35){
   throw new Error('Datos insuficientes.');
  }
-
  return {meta,bars};
 }
 
 async function getSeries(symbol,interval){
-
  const url=new URL(
   'https://filtro-pro-api.evermojicaorozc.workers.dev/time_series'
  );
@@ -450,7 +287,6 @@ async function getSeries(symbol,interval){
 
  try{
   const res=await fetch(url,{signal:controller.signal});
-
   let data;
 
   try{
@@ -464,17 +300,13 @@ async function getSeries(symbol,interval){
     data.message||`Error del servidor ${res.status}`
    );
   }
-
   return parseBars(data);
 
  }catch(err){
-
   if(err.name==='AbortError'){
    throw new Error('Tiempo de espera agotado.');
   }
-
   throw err;
-
  }finally{
   clearTimeout(timer);
  }
@@ -488,7 +320,6 @@ function normalizeText(value){
 }
 
 function marketTypeOk(meta,kind){
-
  const text=normalizeText(
   Object.entries(meta||{})
   .map(([key,value])=>key+' '+value)
@@ -509,8 +340,7 @@ function marketTypeOk(meta,kind){
 }
 
 function evaluate(primary,higher){
-
- // No utilizar la vela que todavía se está formando.
+ // Se excluye la vela que todavía se está formando.
  const bars=primary.bars.slice(0,-1);
  const higherBars=higher.bars.slice(0,-1);
 
@@ -520,46 +350,32 @@ function evaluate(primary,higher){
 
  const closes=bars.map(x=>x.c);
  const higherCloses=higherBars.map(x=>x.c);
-
  const last=bars[bars.length-1];
 
  const fast=ema(closes.slice(-40),9);
  const slow=ema(closes.slice(-60),21);
-
  const hFast=ema(higherCloses.slice(-40),9);
  const hSlow=ema(higherCloses.slice(-60),21);
-
  const rv=rsi(closes,14);
 
  if([fast,slow,hFast,hSlow,rv].some(x=>x===null)){
   throw new Error('No se pudieron calcular los datos.');
  }
 
- const range=Math.max(
-  last.h-last.l,
-  Number.EPSILON
- );
-
+ const range=Math.max(last.h-last.l,Number.EPSILON);
  const bullish=last.c>last.o;
  const bearish=last.c<last.o;
-
  const closePosition=(last.c-last.l)/range;
 
- // Confirmación de vela algo más flexible.
- const bullCandle=
-  bullish&&closePosition>=0.60;
-
- const bearCandle=
-  bearish&&closePosition<=0.40;
+ const bullCandle=bullish&&closePosition>=0.60;
+ const bearCandle=bearish&&closePosition<=0.40;
 
  const up=fast>slow&&last.c>fast;
  const down=fast<slow&&last.c<fast;
-
  const hUp=hFast>hSlow;
  const hDown=hFast<hSlow;
 
  const previousFast=ema(closes.slice(-41,-1),9);
-
  const rising=previousFast!==null&&fast>previousFast;
  const falling=previousFast!==null&&fast<previousFast;
 
@@ -568,20 +384,16 @@ function evaluate(primary,higher){
 
  if(up)call+=25;
  if(down)put+=25;
-
  if(last.c>fast)call+=10;
  if(last.c<fast)put+=10;
-
  if(rising)call+=5;
  if(falling)put+=5;
 
- // Rangos orientativos más flexibles.
  if(rv>=45&&rv<=70)call+=15;
  if(rv>=30&&rv<=55)put+=15;
 
  if(bullCandle)call+=15;
  if(bearCandle)put+=15;
-
  if(hUp)call+=20;
  if(hDown)put+=20;
 
@@ -591,39 +403,21 @@ function evaluate(primary,higher){
  let direction='NO ENTRAR';
  let cls='yellow';
  let score=Math.max(call,put);
-
  let why='No hay confirmación suficiente.';
 
- // Exige tendencia, confirmación mayor y vela.
- if(
-  call>=65&&call>put&&
-  up&&hUp&&bullCandle
- ){
+ if(call>=65&&call>put&&up&&hUp&&bullCandle){
   direction='CALL';
   cls='green';
   score=call;
-  why='Se detectó una posible oportunidad alcista confirmada.';
- }
-
- else if(
-  put>=65&&put>call&&
-  down&&hDown&&bearCandle
- ){
+  why='Posible oportunidad alcista confirmada.';
+ }else if(put>=65&&put>call&&down&&hDown&&bearCandle){
   direction='PUT';
   cls='red';
   score=put;
-  why='Se detectó una posible oportunidad bajista confirmada.';
+  why='Posible oportunidad bajista confirmada.';
  }
 
- return {
-  direction,
-  cls,
-  score,
-  call,
-  put,
-  why,
-  last
- };
+ return {direction,cls,score,call,put,why,last};
 }
 
 function expiry(interval){
@@ -634,95 +428,57 @@ function expiry(interval){
 
 function safe(value){
  return String(value).replace(/[&<>"']/g,c=>({
-  '&':'&amp;',
-  '<':'&lt;',
-  '>':'&gt;',
-  '"':'&quot;',
-  "'":'&#39;'
+  '&':'&amp;','<':'&lt;','>':'&gt;',
+  '"':'&quot;',"'":'&#39;'
  }[c]));
 }
 
 async function analyzeOne(symbol,interval,kind){
-
  const higherInterval=higherTF[interval];
-
  const [primary,higher]=await Promise.all([
   getSeries(symbol,interval),
   getSeries(symbol,higherInterval)
  ]);
 
- if(
-  !marketTypeOk(primary.meta,kind)||
-  !marketTypeOk(higher.meta,kind)
- ){
+ if(!marketTypeOk(primary.meta,kind)||
+    !marketTypeOk(higher.meta,kind)){
   throw new Error('Mercado no validado por metadatos.');
  }
-
  return evaluate(primary,higher);
 }
 
 // ANÁLISIS INDIVIDUAL
-
 $('analyze').addEventListener('click',async()=>{
-
  if(!$('confirm').checked){
-  result(
-   'NO ENTRAR',
-   'yellow',
-   'Confirma primero la comparación con tu plataforma.'
-  );
+  result('NO ENTRAR','yellow',
+   'Confirma primero la comparación con tu plataforma.');
   return;
  }
 
  const btn=$('analyze');
-
  btn.disabled=true;
  btn.textContent='ANALIZANDO...';
-
  result('ANALIZANDO','blue','Consultando datos del mercado.');
 
  try{
-
-  const e=await analyzeOne(
-   asset.value,
-   tf.value,
-   market.value
-  );
+  const e=await analyzeOne(asset.value,tf.value,market.value);
 
   if(e.direction==='NO ENTRAR'){
-   result(
-    'NO ENTRAR',
-    'yellow',
-    e.why
-   );
+   result('NO ENTRAR','yellow',e.why);
   }else{
-   result(
-    e.direction,
-    e.cls,
-    e.why+' Puntaje técnico interno: '+e.score+'/100.'
-   );
+   result(e.direction,e.cls,
+    e.why+' Puntaje técnico interno: '+e.score+'/100.');
   }
-
  }catch(err){
-
-  result(
-   'NO ENTRAR',
-   'yellow',
-   err.message||'Error de conexión.'
-  );
-
+  result('NO ENTRAR','yellow',err.message||'Error de conexión.');
  }finally{
-
   btn.disabled=false;
   btn.textContent='ANALIZAR ACTIVO';
-
  }
 });
 
 // ESCÁNER MULTIMERCADO
-
 $('scanAll').addEventListener('click',async()=>{
-
  const btn=$('scanAll');
  const status=$('scanStatus');
  const output=$('scanResults');
@@ -737,41 +493,29 @@ $('scanAll').addEventListener('click',async()=>{
 
  assets.forex.forEach(symbol=>{
   ['1min','5min','15min'].forEach(interval=>{
-   scenarios.push({
-    symbol,
-    interval,
-    kind:'forex'
-   });
+   scenarios.push({symbol,interval,kind:'forex'});
   });
  });
 
  assets.crypto.forEach(symbol=>{
   ['1min','5min','15min'].forEach(interval=>{
-   scenarios.push({
-    symbol,
-    interval,
-    kind:'crypto'
-   });
+   scenarios.push({symbol,interval,kind:'crypto'});
   });
  });
 
- const cache=new Map();
  const signals=[];
  const errors=[];
-
+ const cache=new Map();
  let requestQueue=Promise.resolve();
 
- const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-
- function queuedSeries(symbol,interval){
-
+ // Cola: separa las consultas para cuidar el límite de la API.
+ function queuedSeries(symbol,interval,forceFresh=false){
   const key=symbol+'_'+interval;
 
-  if(cache.has(key)){
+  if(!forceFresh&&cache.has(key)){
    return cache.get(key);
   }
 
-  // Una consulta nueva cada 8 segundos para cuidar la API.
   const task=requestQueue.then(()=>getSeries(symbol,interval));
 
   requestQueue=task.then(
@@ -779,52 +523,84 @@ $('scanAll').addEventListener('click',async()=>{
    ()=>wait(8000)
   );
 
-  cache.set(key,task);
-
+  if(!forceFresh)cache.set(key,task);
   return task;
  }
 
- async function queuedAnalysis(item){
-
+ async function queuedAnalysis(item,forceFresh=false){
   const higherInterval=higherTF[item.interval];
 
   const [primary,higher]=await Promise.all([
-   queuedSeries(item.symbol,item.interval),
-   queuedSeries(item.symbol,higherInterval)
+   queuedSeries(item.symbol,item.interval,forceFresh),
+   queuedSeries(item.symbol,higherInterval,forceFresh)
   ]);
 
-  if(
-   !marketTypeOk(primary.meta,item.kind)||
-   !marketTypeOk(higher.meta,item.kind)
-  ){
+  if(!marketTypeOk(primary.meta,item.kind)||
+     !marketTypeOk(higher.meta,item.kind)){
    throw new Error('Tipo de mercado no validado.');
   }
 
   return evaluate(primary,higher);
  }
 
+ function renderSignals(){
+  output.innerHTML=signals.map(s=>{
+   const isCall=s.direction==='CALL';
+
+   return `
+    <div class="signal-card ${isCall?'call':'put'}">
+     <h3>${safe(s.symbol)}</h3>
+
+     <div class="direction ${isCall?'green':'red'}">
+      ${isCall?'COMPRAR · CALL':'VENDER · PUT'}
+     </div>
+
+     <div class="signal-data">
+      <div>
+       <span>Hora de última confirmación</span>
+       <b>${safe(localTime(s.detected))}</b>
+      </div>
+      <div>
+       <span>Duración de operación</span>
+       <b>${safe(s.expiry)}</b>
+      </div>
+      <div>
+       <span>Precio de referencia</span>
+       <b>${safe(s.price)}</b>
+      </div>
+      <div>
+       <span>Mercado</span>
+       <b>${s.kind==='forex'?'Forex':'Cripto'}</b>
+      </div>
+     </div>
+
+     <p class="small">
+      Señal revisada nuevamente. Comprueba el precio
+      en tu plataforma antes de considerar una entrada.
+     </p>
+    </div>
+   `;
+  }).join('');
+ }
+
  btn.disabled=true;
  btn.textContent='ESCANEANDO...';
-
  output.innerHTML='';
  $('scanSummary').textContent='';
 
  let completed=0;
 
  try{
-
+  // PRIMERA VUELTA: analizar los 30 escenarios.
   for(const item of scenarios){
-
    status.textContent=
     'Analizando '+(completed+1)+' de '+scenarios.length+
     ': '+item.symbol+' · '+names[item.interval];
 
    try{
-
-    const e=await queuedAnalysis(item);
+    const e=await queuedAnalysis(item,false);
 
     if(e.direction!=='NO ENTRAR'){
-
      signals.push({
       symbol:item.symbol,
       kind:item.kind,
@@ -835,129 +611,94 @@ $('scanAll').addEventListener('click',async()=>{
       detected:new Date(),
       expiry:expiry(item.interval)
      });
-
-     renderSignals();
     }
-
    }catch(err){
-
     errors.push(
      item.symbol+' '+names[item.interval]+': '+err.message
     );
-
    }
 
    completed++;
-
    status.textContent=
-    'Analizando '+completed+' de '+scenarios.length+
-    ' escenarios. Señales encontradas: '+signals.length;
+    'Primera revisión: '+completed+' de '+scenarios.length+
+    '. Señales encontradas: '+signals.length;
   }
 
+  // SEGUNDA VUELTA: pedir datos nuevos para cada señal.
+  const candidates=signals.slice();
+  const confirmedSignals=[];
+  let verifyErrors=0;
+
+  status.textContent=
+   'Primera revisión terminada. Segunda revisión de '+
+   candidates.length+' señales...';
+
+  for(let i=0;i<candidates.length;i++){
+   const s=candidates[i];
+
+   status.textContent=
+    'Comprobando señal '+(i+1)+' de '+candidates.length+
+    ': '+s.symbol;
+
+   try{
+    // forceFresh=true evita reutilizar las velas de la primera vuelta.
+    const fresh=await queuedAnalysis({
+     symbol:s.symbol,
+     interval:s.interval,
+     kind:s.kind
+    },true);
+
+    // Solo se conserva si sigue confirmando la misma dirección.
+    if(fresh.direction===s.direction){
+     s.price=fresh.last.c;
+     s.detected=new Date();
+     confirmedSignals.push(s);
+    }
+   }catch(err){
+    verifyErrors++;
+   }
+  }
+
+  // Mostrar únicamente las señales que pasaron la segunda revisión.
+  signals.splice(0,signals.length,...confirmedSignals);
   renderSignals();
 
   status.textContent=
-   'Escaneo terminado: '+completed+' escenarios revisados.';
+   'Escaneo y segunda revisión terminados.';
 
   $('scanSummary').textContent=
-   signals.length+' oportunidades encontradas · '+
-   errors.length+' errores · '+localTime();
-
-  if(errors.length){
-   $('scanSummary').textContent+=
-    '. Algunos activos no pudieron analizarse.';
-  }
+   candidates.length+' señales iniciales · '+
+   signals.length+' siguen confirmadas · '+
+   (candidates.length-signals.length)+' descartadas · '+
+   (errors.length+verifyErrors)+' errores · '+localTime();
 
   if(!signals.length){
    output.innerHTML=
-    '<div class="status">No se encontraron oportunidades confirmadas. No fuerces entradas.</div>';
+    '<div class="status">Ninguna señal mantuvo la confirmación en la segunda revisión. NO ENTRAR.</div>';
   }
 
  }catch(err){
-
   status.textContent='Error del escáner: '+err.message;
-
  }finally{
-
   btn.disabled=false;
   btn.textContent='ESCANEAR 30 ESCENARIOS';
-
  }
-
- function renderSignals(){
-
-  output.innerHTML=signals.map(s=>{
-
-   const isCall=s.direction==='CALL';
-
-   return `
-    <div class="signal-card ${isCall?'call':'put'}">
-
-     <h3>${safe(s.symbol)}</h3>
-
-     <div class="direction ${isCall?'green':'red'}">
-      ${isCall?'COMPRAR · CALL':'VENDER · PUT'}
-     </div>
-
-     <div class="signal-data">
-
-      <div>
-       <span>Hora sugerida de entrada</span>
-       <b>${safe(localTime(s.detected))}</b>
-      </div>
-
-      <div>
-       <span>Duración de operación</span>
-       <b>${safe(s.expiry)}</b>
-      </div>
-
-      <div>
-       <span>Precio de referencia</span>
-       <b>${safe(s.price)}</b>
-      </div>
-
-      <div>
-       <span>Mercado</span>
-       <b>${s.kind==='forex'?'Forex':'Cripto'}</b>
-      </div>
-
-     </div>
-
-     <p class="small">
-      Hora de detección. Verifica que el precio siga vigente
-      antes de considerar una entrada.
-     </p>
-
-    </div>
-   `;
-
-  }).join('');
- }
-
 });
 
-// LIMPIAR
-
+// LIMPIAR RESULTADOS
 $('clear').addEventListener('click',()=>{
-
- result(
-  'NO ENTRAR',
-  'yellow',
-  'Resultados limpiados. Esperando nuevo análisis.'
- );
-
+ result('NO ENTRAR','yellow',
+  'Resultados limpiados. Esperando nuevo análisis.');
 });
 
 $('clearScan').addEventListener('click',()=>{
-
  $('scanResults').innerHTML='';
  $('scanSummary').textContent='';
- $('scanStatus').textContent='Escáner detenido. Esperando nuevo análisis.';
-
+ $('scanStatus').textContent=
+  'Escáner detenido. Esperando nuevo análisis.';
 });
 
 updateAssets();
-
 </script>
 </body>
 </html>
