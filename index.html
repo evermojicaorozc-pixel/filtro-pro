@@ -1,704 +1,405 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0b1220">
-<title>FILTRO PRO 3.1</title>
+<title>FILTRO PRO 4.0</title>
 <style>
-:root{
- color-scheme:dark;
- --bg:#09111e;--panel:#121e30;--line:#293a52;
- --muted:#9aabc1;--text:#edf4ff;
- --green:#35d6a0;--red:#ff737d;
- --yellow:#f4c66a;--blue:#7db8ff
-}
+:root{color-scheme:dark;--bg:#08111f;--panel:#142238;--line:#293d58;--text:#edf4ff;--muted:#9aacc4;--green:#24d18a;--red:#ff647c;--yellow:#f3c969}
 *{box-sizing:border-box}
-body{
- margin:0;background:linear-gradient(160deg,#0c1829,#080e18 65%);
- color:var(--text);
- font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif
-}
-main{max-width:850px;margin:auto;padding:15px}
-header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:5px 0 14px}
-h1{font-size:24px;margin:0}
-.tag{font-size:11px;color:var(--green);border:1px solid #246b55;padding:5px 8px;border-radius:20px}
-p{color:var(--muted);line-height:1.5}
-.card{background:rgba(18,30,48,.96);border:1px solid var(--line);border-radius:15px;padding:15px;margin:12px 0;box-shadow:0 8px 24px #0002}
-label{display:block;color:var(--muted);font-size:13px;margin:10px 0 6px}
-input,select,button{font:inherit;width:100%;border-radius:10px;border:1px solid var(--line);padding:12px;background:#0b1626;color:var(--text)}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-button{background:#176b53;border:0;font-weight:750;margin-top:12px;cursor:pointer}
-button.secondary{background:#20334c;border:1px solid #38506d}
-button:disabled{opacity:.55;cursor:wait}
-.small{font-size:12px;color:var(--muted)}
-.pill{display:inline-block;font-size:11px;border-radius:15px;padding:4px 8px;background:#183c32;color:#8de7c1;margin:3px}
-.status{padding:11px;border-radius:10px;background:#0b1626;color:var(--muted);font-size:13px;line-height:1.5}
-.check{display:flex;align-items:flex-start;gap:9px;margin:10px 0;color:var(--muted);font-size:13px}
-.check input{width:auto;margin-top:3px}
-.signal{text-align:center;padding:16px 8px;font-size:27px;font-weight:850}
-.green{color:var(--green)}.red{color:var(--red)}
-.yellow{color:var(--yellow)}.blue{color:var(--blue)}
-.signal-card{background:#0b1626;border:1px solid var(--line);border-radius:13px;padding:15px;margin-top:12px}
-.signal-card.call{border-left:4px solid var(--green)}
-.signal-card.put{border-left:4px solid var(--red)}
-.signal-card h3{margin:0;font-size:19px}
-.signal-card .direction{font-size:24px;font-weight:900;text-align:center;padding:12px 0}
-.signal-data{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
-.signal-data div{background:#142238;border-radius:9px;padding:10px}
-.signal-data span{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}
-.signal-data b{font-size:14px}
-.notice{border-left:3px solid var(--yellow);padding-left:12px}
-.notice p{margin:7px 0}
-footer{font-size:12px;color:var(--muted);padding:12px 2px 25px}
-@media(max-width:430px){
- main{padding:12px}.grid{grid-template-columns:1fr}
- .signal-data{grid-template-columns:1fr 1fr}
-}
+body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,Arial}
+main{max-width:950px;margin:auto;padding:18px 13px}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+h1{font-size:25px;margin:5px 0}
+h2{font-size:16px;margin:0 0 13px}
+.sub,.small{color:var(--muted);font-size:12px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:15px;margin:13px 0}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+button,select{padding:12px;border-radius:10px;border:1px solid #405879;background:#203653;color:white;font-weight:bold}
+button{cursor:pointer;flex:1}
+button:disabled{opacity:.5}
+.real{background:#145342}.otc{background:#493d75}
+.status{padding:12px;background:#0b1728;border:1px solid var(--line);border-radius:10px;margin-top:12px;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px}
+.metric{background:#0b1728;padding:12px;border-radius:10px;border:1px solid var(--line)}
+.metric b{display:block;font-size:22px;margin-top:5px}
+.signal{background:#0b1728;border:1px solid var(--line);padding:13px;border-radius:11px;margin-top:9px}
+.signalhead{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.call{color:var(--green)}.put{color:var(--red)}.wait{color:var(--yellow)}
+.tag{font-size:11px;color:var(--muted)}
 </style>
 </head>
 <body>
 <main>
 
 <header>
- <h1>FILTRO PRO 3.1</h1>
- <span class="tag">ESCÁNER MULTIMERCADO</span>
+<div>
+<h1>FILTRO PRO <span style="color:#65aaff">4.0</span></h1>
+<div class="sub">ESCÁNER DE OPCIONES DIGITALES</div>
+</div>
+<span class="tag" id="apiState">Conectando...</span>
 </header>
 
-<p>
-Analizador técnico experimental de mercados.
-Busca oportunidades de compra y venta usando velas OHLC.
-No ejecuta operaciones automáticamente.
+<section class="panel">
+<h2>1. SELECCIONAR MERCADO</h2>
+<div class="row">
+<button class="real" id="realBtn">ANALIZAR REAL</button>
+<button class="otc" id="otcBtn">ANALIZAR OTC</button>
+<select id="expiry">
+<option value="1min">1 minuto</option>
+<option value="5min">5 minutos</option>
+</select>
+</div>
+<div class="status" id="status">Listo para analizar.</div>
+<p class="small">La temporalidad del gráfico coincide con el vencimiento seleccionado.</p>
+</section>
+
+<section class="panel">
+<h2>2. RESUMEN</h2>
+<div class="grid">
+<div class="metric">Activos revisados<b id="checked">0</b></div>
+<div class="metric">Señales encontradas<b id="found">0</b></div>
+<div class="metric">Mejor puntuación<b id="best">—</b></div>
+</div>
+</section>
+
+<section class="panel">
+<div class="row">
+<h2 style="flex:1">3. RESULTADOS</h2>
+<button id="clearBtn">LIMPIAR</button>
+</div>
+<div id="results" class="small">Todavía no hay análisis.</div>
+</section>
+
+<section class="panel">
+<h2>4. CONEXIONES</h2>
+<button id="testBtn">PROBAR CONEXIONES</button>
+<p class="small" id="healthText">Pendiente.</p>
+<p class="small" id="usageText">Uso OTC sin consultar.</p>
+</section>
+
+<p class="small">
+FILTRO PRO es un analizador experimental. No ejecuta operaciones.
+Las señales no garantizan ganancias. Comprueba siempre los precios
+y horarios en Quotex antes de operar.
 </p>
-
-<section class="card">
- <strong>1. ANÁLISIS INDIVIDUAL</strong>
- <div class="small" style="margin-top:8px">
- Conexión mediante Cloudflare + Twelve Data.
- </div>
-
- <div class="grid">
-  <div>
-   <label for="market">Mercado</label>
-   <select id="market">
-    <option value="forex">Forex</option>
-    <option value="crypto">Criptomonedas</option>
-   </select>
-  </div>
-  <div>
-   <label for="asset">Activo</label>
-   <select id="asset"><option>EUR/USD</option></select>
-  </div>
-  <div>
-   <label for="operation">Tipo de operación</label>
-   <select id="operation">
-    <option>Binarias</option>
-    <option>Digitales</option>
-   </select>
-  </div>
-  <div>
-   <label for="tf">Intervalo de análisis</label>
-   <select id="tf">
-    <option value="1min">1 minuto</option>
-    <option value="5min">5 minutos</option>
-    <option value="15min">15 minutos</option>
-   </select>
-  </div>
- </div>
-
- <div style="margin-top:8px">
-  <span class="pill">OTC excluido</span>
-  <span class="pill">Sintéticos excluidos</span>
-  <span class="pill">Sin auto-operación</span>
- </div>
-
- <label class="check">
-  <input id="confirm" type="checkbox">
-  Confirmo que compararé precio y hora con mi plataforma.
- </label>
-
- <button id="analyze">ANALIZAR ACTIVO</button>
- <button class="secondary" id="clear" type="button">LIMPIAR RESULTADOS</button>
-</section>
-
-<section class="card">
- <strong>RESULTADO INDIVIDUAL</strong>
- <div class="signal yellow" id="signal">NO ENTRAR</div>
- <div class="status" id="reason">Esperando análisis.</div>
-</section>
-
-<section class="card">
- <strong>2. ESCÁNER MULTIMERCADO</strong>
- <p class="small">
- 8 pares Forex + 2 criptomonedas.
- 3 intervalos de análisis por activo.
- Total: 30 escenarios.
- </p>
-
- <div class="status" id="scanStatus">
- Escáner detenido. Presiona el botón para comenzar.
- </div>
-
- <button id="scanAll">ESCANEAR 30 ESCENARIOS</button>
- <button class="secondary" id="clearScan">LIMPIAR SEÑALES</button>
-
- <div id="scanSummary" class="small" style="margin-top:12px"></div>
- <div id="scanResults"></div>
-</section>
-
-<section class="card notice">
- <strong>IMPORTANTE</strong>
- <p>
- Las señales son lecturas técnicas experimentales.
- No garantizan resultados ni ganancias.
- </p>
- <p>
- La hora mostrada es la hora de última confirmación,
- no una promesa de entrada futura. Comprueba el precio
- y la cotización en tu plataforma.
- </p>
- <p>
- Prueba primero en demo. No operes una señal si el
- precio ya se ha movido o la oportunidad ha pasado.
- </p>
-</section>
-
-<footer>
- FILTRO PRO 3.1 · Motor experimental · Horario de Nicaragua.
-</footer>
 
 </main>
 
 <script>
+"use strict";
+
+const API="https://filtro-pro-api.evermojicaorozc.workers.dev";
 const $=id=>document.getElementById(id);
 
-const market=$('market');
-const asset=$('asset');
-const tf=$('tf');
+const REAL_ASSETS=[
+"EUR/USD","GBP/USD","USD/JPY","AUD/USD","USD/CAD"
+];
 
-const higherTF={
- '1min':'5min',
- '5min':'15min',
- '15min':'30min'
+let history=[];
+
+function status(msg,bad=false){
+$("status").textContent=msg;
+$("status").style.color=bad?"#ff8798":"#b8c9de";
+}
+
+async function getJson(path){
+const r=await fetch(API+path,{cache:"no-store"});
+let d;
+try{d=await r.json()}catch{throw Error("Respuesta inválida")}
+if(!r.ok||d.error)throw Error(d.error||"Error del servidor");
+return d;
+}
+
+async function health(){
+try{
+const d=await getJson("/health");
+$("apiState").textContent=d.ok?"API CONECTADA":"ERROR";
+$("healthText").textContent=
+"REAL: "+(d.realConfigured?"Configurado":"Falta clave")+
+" | OTC: "+(d.otcConfigured?"Configurado":"Falta clave");
+}catch(e){
+$("apiState").textContent="DESCONECTADA";
+$("healthText").textContent=e.message;
+}
+}
+
+function ema(v,p){
+if(v.length<p)return [];
+let k=2/(p+1);
+let prev=v.slice(0,p).reduce((a,b)=>a+b,0)/p;
+let out=[];
+out[p-1]=prev;
+for(let i=p;i<v.length;i++){
+prev=v[i]*k+prev*(1-k);
+out[i]=prev;
+}
+return out;
+}
+
+function rsi(v,p=14){
+if(v.length<=p)return 50;
+let g=0,l=0;
+for(let i=1;i<=p;i++){
+let d=v[i]-v[i-1];
+if(d>0)g+=d;
+else l-=d;
+}
+let ag=g/p,al=l/p;
+for(let i=p+1;i<v.length;i++){
+let d=v[i]-v[i-1];
+ag=(ag*(p-1)+Math.max(0,d))/p;
+al=(al*(p-1)+Math.max(0,-d))/p;
+}
+if(al===0)return 100;
+return 100-100/(1+ag/al);
+}
+
+function analyze(candles,gaps){
+if(!Array.isArray(candles)||candles.length<45)
+return {direction:"NO ENTRAR",score:0,reason:"Historial insuficiente."};
+
+if((gaps?.runs||0)>0||(gaps?.missingBars||0)>0)
+return {direction:"NO ENTRAR",score:0,reason:"Hay huecos en los datos."};
+
+let sorted=[...candles].sort((a,b)=>a.time-b.time);
+let closed=sorted.slice(0,-1);
+
+if(closed.length<40)
+return {direction:"NO ENTRAR",score:0,reason:"Faltan velas cerradas."};
+
+let values=closed.map(c=>Number(c.close));
+let fast=ema(values,9);
+let slow=ema(values,21);
+let last=closed[closed.length-1];
+let prev=closed[closed.length-2];
+let R=rsi(values);
+
+let up=0,down=0;
+
+let trendUp=fast.at(-1)>slow.at(-1)&&last.close>fast.at(-1);
+let trendDown=fast.at(-1)<slow.at(-1)&&last.close<fast.at(-1);
+
+if(trendUp)up+=35;
+if(trendDown)down+=35;
+
+if(last.close>last.open)up+=20;
+if(last.close<last.open)down+=20;
+
+if(last.close>last.open&&prev.close>prev.open)up+=15;
+if(last.close<last.open&&prev.close<prev.open)down+=15;
+
+if(R>52&&R<72)up+=25;
+if(R<48&&R>28)down+=25;
+
+if(R>=72)up-=20;
+if(R<=28)down-=20;
+
+let direction=
+up>=75&&up>down?"CALL":
+down>=75&&down>up?"PUT":"NO ENTRAR";
+
+let score=Math.max(up,down);
+
+return {
+direction,
+score:Math.max(0,Math.min(100,score)),
+reason:
+"EMA "+(trendUp?"alcista":trendDown?"bajista":"sin alineación")+
+" | RSI "+R.toFixed(1)+
+" | Vela "+(last.close>last.open?"alcista":last.close<last.open?"bajista":"neutral"),
+price:last.close,
+time:last.datetime||new Date(last.time*1000).toLocaleString()
 };
-
-const names={
- '1min':'1 minuto',
- '5min':'5 minutos',
- '15min':'15 minutos',
- '30min':'30 minutos'
-};
-
-const assets={
- forex:[
-  'EUR/USD','GBP/USD','USD/JPY','AUD/USD',
-  'USD/CAD','NZD/USD','USD/CHF','EUR/JPY'
- ],
- crypto:['BTC/USD','ETH/USD']
-};
-
-function updateAssets(){
- const list=assets[market.value];
- asset.innerHTML=list.map(x=>
-  `<option value="${x}">${x}</option>`
- ).join('');
-}
-market.addEventListener('change',updateAssets);
-
-function localTime(date=new Date()){
- return new Intl.DateTimeFormat('es-NI',{
-  timeZone:'America/Managua',
-  hour:'2-digit',
-  minute:'2-digit',
-  second:'2-digit',
-  hour12:true
- }).format(date);
 }
 
-function result(text,cls,reason){
- $('signal').textContent=text;
- $('signal').className='signal '+cls;
- $('reason').textContent=reason;
+function addResult(s){
+history.unshift(s);
+if(history.length>40)history.length=40;
+render();
 }
 
-function wait(ms){
- return new Promise(resolve=>setTimeout(resolve,ms));
+function render(){
+const box=$("results");
+box.innerHTML="";
+if(!history.length){
+box.textContent="No hay resultados.";
+return;
+}
+history.forEach(s=>{
+let div=document.createElement("div");
+div.className="signal";
+
+let head=document.createElement("div");
+head.className="signalhead";
+
+let name=document.createElement("b");
+name.textContent=s.symbol+" | "+s.market;
+
+let direction=document.createElement("b");
+direction.className=
+s.direction==="CALL"?"call":
+s.direction==="PUT"?"put":"wait";
+direction.textContent=s.direction;
+
+let score=document.createElement("span");
+score.className="tag";
+score.textContent=s.expiry+" | "+s.score+"% técnico";
+
+let reason=document.createElement("p");
+reason.className="small";
+reason.textContent=s.reason;
+
+let price=document.createElement("p");
+price.className="small";
+price.textContent="Precio: "+(s.price??"—")+" | "+(s.time||"");
+
+head.append(name,direction,score);
+div.append(head,reason,price);
+box.append(div);
+});
 }
 
-function ema(values,period){
- if(values.length<period)return null;
- const k=2/(period+1);
- let value=values[0];
- for(let i=1;i<values.length;i++){
-  value=values[i]*k+value*(1-k);
- }
- return value;
+function otcSymbols(data){
+if(!Array.isArray(data.symbols))return [];
+return data.symbols.filter(x=>
+/^[A-Z]{6}_otc$/.test(x.symbol)&&x.open===true
+).slice(0,5);
 }
 
-function rsi(values,period=14){
- if(values.length<=period)return null;
- let gain=0,loss=0;
- for(let i=values.length-period;i<values.length;i++){
-  const change=values[i]-values[i-1];
-  if(change>0)gain+=change;
-  else loss-=change;
- }
- if(loss===0)return 100;
- if(gain===0)return 0;
- const rs=gain/loss;
- return 100-(100/(1+rs));
+async function scan(market){
+let expiry=$("expiry").value;
+
+$("realBtn").disabled=true;
+$("otcBtn").disabled=true;
+$("testBtn").disabled=true;
+
+$("checked").textContent="…";
+$("found").textContent="…";
+$("best").textContent="…";
+
+status("Analizando "+market+"...");
+
+try{
+let assets=[];
+
+if(market==="REAL"){
+assets=REAL_ASSETS.map(symbol=>({symbol}));
+}else{
+let catalog=await getJson("/otc_symbols");
+assets=otcSymbols(catalog);
+if(!assets.length)
+throw Error("No hay pares OTC abiertos y permitidos.");
 }
 
-function parseBars(payload){
- if(payload.status==='error'||!Array.isArray(payload.values)){
-  throw new Error(
-   payload.message||payload.code||
-   'El proveedor no devolvió velas.'
-  );
- }
+let results=[];
 
- const meta=payload.meta||{};
- const bars=payload.values.map(x=>({
-  time:x.datetime,
-  o:+x.open,
-  h:+x.high,
-  l:+x.low,
-  c:+x.close
- }))
- .filter(x=>[x.o,x.h,x.l,x.c].every(Number.isFinite))
- .reverse();
+for(const asset of assets){
+try{
+let path=market==="REAL"
+?"/time_series?symbol="+encodeURIComponent(asset.symbol)+"&interval="+expiry
+:"/otc_time_series?symbol="+encodeURIComponent(asset.symbol)+"&interval="+expiry;
 
- if(bars.length<35){
-  throw new Error('Datos insuficientes.');
- }
- return {meta,bars};
+let data=await getJson(path);
+
+if(market==="OTC"&&data.open===false){
+results.push({
+symbol:asset.symbol,market,expiry,
+direction:"NO ENTRAR",score:0,
+reason:"Activo cerrado en Quotex."
+});
+continue;
 }
 
-async function getSeries(symbol,interval){
- const url=new URL(
-  'https://filtro-pro-api.evermojicaorozc.workers.dev/time_series'
- );
-
- url.searchParams.set('symbol',symbol);
- url.searchParams.set('interval',interval);
-
- const controller=new AbortController();
- const timer=setTimeout(()=>controller.abort(),25000);
-
- try{
-  const res=await fetch(url,{signal:controller.signal});
-  let data;
-
-  try{
-   data=await res.json();
-  }catch{
-   throw new Error('Respuesta inválida del servidor.');
-  }
-
-  if(!res.ok||data.status==='error'||data.code){
-   throw new Error(
-    data.message||`Error del servidor ${res.status}`
-   );
-  }
-  return parseBars(data);
-
- }catch(err){
-  if(err.name==='AbortError'){
-   throw new Error('Tiempo de espera agotado.');
-  }
-  throw err;
- }finally{
-  clearTimeout(timer);
- }
-}
-
-function normalizeText(value){
- return String(value||'')
- .normalize('NFD')
- .replace(/[\u0300-\u036f]/g,'')
- .toLowerCase();
-}
-
-function marketTypeOk(meta,kind){
- const text=normalizeText(
-  Object.entries(meta||{})
-  .map(([key,value])=>key+' '+value)
-  .join(' ')
- );
-
- if(kind==='forex'){
-  return text.includes('currency')||
-         text.includes('forex')||
-         text.includes('moneda fisica')||
-         text.includes('physical currency');
- }
-
- return text.includes('cryptocurrency')||
-        text.includes('digital currency')||
-        text.includes('crypto')||
-        text.includes('criptomoneda');
-}
-
-function evaluate(primary,higher){
- // Se excluye la vela que todavía se está formando.
- const bars=primary.bars.slice(0,-1);
- const higherBars=higher.bars.slice(0,-1);
-
- if(bars.length<35||higherBars.length<35){
-  throw new Error('No hay suficientes velas cerradas.');
- }
-
- const closes=bars.map(x=>x.c);
- const higherCloses=higherBars.map(x=>x.c);
- const last=bars[bars.length-1];
-
- const fast=ema(closes.slice(-40),9);
- const slow=ema(closes.slice(-60),21);
- const hFast=ema(higherCloses.slice(-40),9);
- const hSlow=ema(higherCloses.slice(-60),21);
- const rv=rsi(closes,14);
-
- if([fast,slow,hFast,hSlow,rv].some(x=>x===null)){
-  throw new Error('No se pudieron calcular los datos.');
- }
-
- const range=Math.max(last.h-last.l,Number.EPSILON);
- const bullish=last.c>last.o;
- const bearish=last.c<last.o;
- const closePosition=(last.c-last.l)/range;
-
- const bullCandle=bullish&&closePosition>=0.60;
- const bearCandle=bearish&&closePosition<=0.40;
-
- const up=fast>slow&&last.c>fast;
- const down=fast<slow&&last.c<fast;
- const hUp=hFast>hSlow;
- const hDown=hFast<hSlow;
-
- const previousFast=ema(closes.slice(-41,-1),9);
- const rising=previousFast!==null&&fast>previousFast;
- const falling=previousFast!==null&&fast<previousFast;
-
- let call=0;
- let put=0;
-
- if(up)call+=25;
- if(down)put+=25;
- if(last.c>fast)call+=10;
- if(last.c<fast)put+=10;
- if(rising)call+=5;
- if(falling)put+=5;
-
- if(rv>=45&&rv<=70)call+=15;
- if(rv>=30&&rv<=55)put+=15;
-
- if(bullCandle)call+=15;
- if(bearCandle)put+=15;
- if(hUp)call+=20;
- if(hDown)put+=20;
-
- if(bullish&&closePosition>=0.65)call+=10;
- if(bearish&&closePosition<=0.35)put+=10;
-
- let direction='NO ENTRAR';
- let cls='yellow';
- let score=Math.max(call,put);
- let why='No hay confirmación suficiente.';
-
- if(call>=65&&call>put&&up&&hUp&&bullCandle){
-  direction='CALL';
-  cls='green';
-  score=call;
-  why='Posible oportunidad alcista confirmada.';
- }else if(put>=65&&put>call&&down&&hDown&&bearCandle){
-  direction='PUT';
-  cls='red';
-  score=put;
-  why='Posible oportunidad bajista confirmada.';
- }
-
- return {direction,cls,score,call,put,why,last};
-}
-
-function expiry(interval){
- if(interval==='1min')return '1 minuto';
- if(interval==='5min')return '5 minutos';
- return '15 minutos';
-}
-
-function safe(value){
- return String(value).replace(/[&<>"']/g,c=>({
-  '&':'&amp;','<':'&lt;','>':'&gt;',
-  '"':'&quot;',"'":'&#39;'
- }[c]));
-}
-
-async function analyzeOne(symbol,interval,kind){
- const higherInterval=higherTF[interval];
- const [primary,higher]=await Promise.all([
-  getSeries(symbol,interval),
-  getSeries(symbol,higherInterval)
- ]);
-
- if(!marketTypeOk(primary.meta,kind)||
-    !marketTypeOk(higher.meta,kind)){
-  throw new Error('Mercado no validado por metadatos.');
- }
- return evaluate(primary,higher);
-}
-
-// ANÁLISIS INDIVIDUAL
-$('analyze').addEventListener('click',async()=>{
- if(!$('confirm').checked){
-  result('NO ENTRAR','yellow',
-   'Confirma primero la comparación con tu plataforma.');
-  return;
- }
-
- const btn=$('analyze');
- btn.disabled=true;
- btn.textContent='ANALIZANDO...';
- result('ANALIZANDO','blue','Consultando datos del mercado.');
-
- try{
-  const e=await analyzeOne(asset.value,tf.value,market.value);
-
-  if(e.direction==='NO ENTRAR'){
-   result('NO ENTRAR','yellow',e.why);
-  }else{
-   result(e.direction,e.cls,
-    e.why+' Puntaje técnico interno: '+e.score+'/100.');
-  }
- }catch(err){
-  result('NO ENTRAR','yellow',err.message||'Error de conexión.');
- }finally{
-  btn.disabled=false;
-  btn.textContent='ANALIZAR ACTIVO';
- }
+results.push({
+symbol:asset.symbol,
+market,
+expiry,
+...analyze(data.candles,data.gaps)
 });
 
-// ESCÁNER MULTIMERCADO
-$('scanAll').addEventListener('click',async()=>{
- const btn=$('scanAll');
- const status=$('scanStatus');
- const output=$('scanResults');
+}catch(e){
+results.push({
+symbol:asset.symbol,market,expiry,
+direction:"NO ENTRAR",score:0,
+reason:e.message
+});
+}
+}
 
- if(!$('confirm').checked){
-  status.textContent=
-   'Confirma primero que compararás los precios con tu plataforma.';
-  return;
- }
+$("checked").textContent=assets.length;
 
- const scenarios=[];
+let signals=results.filter(x=>x.direction!=="NO ENTRAR");
+$("found").textContent=signals.length;
+$("best").textContent=signals.length?
+Math.max(...signals.map(x=>x.score))+"%":"—";
 
- assets.forex.forEach(symbol=>{
-  ['1min','5min','15min'].forEach(interval=>{
-   scenarios.push({symbol,interval,kind:'forex'});
-  });
- });
+results.reverse().forEach(addResult);
 
- assets.crypto.forEach(symbol=>{
-  ['1min','5min','15min'].forEach(interval=>{
-   scenarios.push({symbol,interval,kind:'crypto'});
-  });
- });
+status(signals.length?
+"Análisis terminado. Verifica las señales en Quotex.":
+"No hay confirmación suficiente. NO ENTRAR.",
+!signals.length);
 
- const signals=[];
- const errors=[];
- const cache=new Map();
- let requestQueue=Promise.resolve();
+}catch(e){
+$("checked").textContent="0";
+$("found").textContent="0";
+$("best").textContent="—";
+status(e.message,true);
+}finally{
+$("realBtn").disabled=false;
+$("otcBtn").disabled=false;
+$("testBtn").disabled=false;
+}
+}
 
- // Cola: separa las consultas para cuidar el límite de la API.
- function queuedSeries(symbol,interval,forceFresh=false){
-  const key=symbol+'_'+interval;
+async function test(){
+$("testBtn").disabled=true;
+status("Probando conexiones...");
+try{
+let h=await getJson("/health");
 
-  if(!forceFresh&&cache.has(key)){
-   return cache.get(key);
-  }
+$("healthText").textContent=
+"Worker activo | REAL: "+(h.realConfigured?"OK":"FALTA CLAVE")+
+" | OTC: "+(h.otcConfigured?"OK":"FALTA CLAVE");
 
-  const task=requestQueue.then(()=>getSeries(symbol,interval));
+if(h.otcConfigured){
+try{
+let u=await getJson("/otc_usage");
+let r=u.requests||{};
+$("usageText").textContent=
+"OTCharts: "+(u.planName||u.plan||"Plan")+
+" | Restantes: "+(r.remaining??"no indicado")+
+" | Cuota: "+(r.quota??"no indicada")+
+" | Periodo: "+(r.per||"no indicado");
+}catch(e){
+$("usageText").textContent="Uso OTC: "+e.message;
+}
+}
 
-  requestQueue=task.then(
-   ()=>wait(8000),
-   ()=>wait(8000)
-  );
+status("Conexión comprobada.");
+}catch(e){
+status(e.message,true);
+$("healthText").textContent=e.message;
+}finally{
+$("testBtn").disabled=false;
+}
+}
 
-  if(!forceFresh)cache.set(key,task);
-  return task;
- }
+$("realBtn").addEventListener("click",()=>scan("REAL"));
+$("otcBtn").addEventListener("click",()=>scan("OTC"));
 
- async function queuedAnalysis(item,forceFresh=false){
-  const higherInterval=higherTF[item.interval];
-
-  const [primary,higher]=await Promise.all([
-   queuedSeries(item.symbol,item.interval,forceFresh),
-   queuedSeries(item.symbol,higherInterval,forceFresh)
-  ]);
-
-  if(!marketTypeOk(primary.meta,item.kind)||
-     !marketTypeOk(higher.meta,item.kind)){
-   throw new Error('Tipo de mercado no validado.');
-  }
-
-  return evaluate(primary,higher);
- }
-
- function renderSignals(){
-  output.innerHTML=signals.map(s=>{
-   const isCall=s.direction==='CALL';
-
-   return `
-    <div class="signal-card ${isCall?'call':'put'}">
-     <h3>${safe(s.symbol)}</h3>
-
-     <div class="direction ${isCall?'green':'red'}">
-      ${isCall?'COMPRAR · CALL':'VENDER · PUT'}
-     </div>
-
-     <div class="signal-data">
-      <div>
-       <span>Hora de última confirmación</span>
-       <b>${safe(localTime(s.detected))}</b>
-      </div>
-      <div>
-       <span>Duración de operación</span>
-       <b>${safe(s.expiry)}</b>
-      </div>
-      <div>
-       <span>Precio de referencia</span>
-       <b>${safe(s.price)}</b>
-      </div>
-      <div>
-       <span>Mercado</span>
-       <b>${s.kind==='forex'?'Forex':'Cripto'}</b>
-      </div>
-     </div>
-
-     <p class="small">
-      Señal revisada nuevamente. Comprueba el precio
-      en tu plataforma antes de considerar una entrada.
-     </p>
-    </div>
-   `;
-  }).join('');
- }
-
- btn.disabled=true;
- btn.textContent='ESCANEANDO...';
- output.innerHTML='';
- $('scanSummary').textContent='';
-
- let completed=0;
-
- try{
-  // PRIMERA VUELTA: analizar los 30 escenarios.
-  for(const item of scenarios){
-   status.textContent=
-    'Analizando '+(completed+1)+' de '+scenarios.length+
-    ': '+item.symbol+' · '+names[item.interval];
-
-   try{
-    const e=await queuedAnalysis(item,false);
-
-    if(e.direction!=='NO ENTRAR'){
-     signals.push({
-      symbol:item.symbol,
-      kind:item.kind,
-      interval:item.interval,
-      direction:e.direction,
-      cls:e.cls,
-      price:e.last.c,
-      detected:new Date(),
-      expiry:expiry(item.interval)
-     });
-    }
-   }catch(err){
-    errors.push(
-     item.symbol+' '+names[item.interval]+': '+err.message
-    );
-   }
-
-   completed++;
-   status.textContent=
-    'Primera revisión: '+completed+' de '+scenarios.length+
-    '. Señales encontradas: '+signals.length;
-  }
-
-  // SEGUNDA VUELTA: pedir datos nuevos para cada señal.
-  const candidates=signals.slice();
-  const confirmedSignals=[];
-  let verifyErrors=0;
-
-  status.textContent=
-   'Primera revisión terminada. Segunda revisión de '+
-   candidates.length+' señales...';
-
-  for(let i=0;i<candidates.length;i++){
-   const s=candidates[i];
-
-   status.textContent=
-    'Comprobando señal '+(i+1)+' de '+candidates.length+
-    ': '+s.symbol;
-
-   try{
-    // forceFresh=true evita reutilizar las velas de la primera vuelta.
-    const fresh=await queuedAnalysis({
-     symbol:s.symbol,
-     interval:s.interval,
-     kind:s.kind
-    },true);
-
-    // Solo se conserva si sigue confirmando la misma dirección.
-    if(fresh.direction===s.direction){
-     s.price=fresh.last.c;
-     s.detected=new Date();
-     confirmedSignals.push(s);
-    }
-   }catch(err){
-    verifyErrors++;
-   }
-  }
-
-  // Mostrar únicamente las señales que pasaron la segunda revisión.
-  signals.splice(0,signals.length,...confirmedSignals);
-  renderSignals();
-
-  status.textContent=
-   'Escaneo y segunda revisión terminados.';
-
-  $('scanSummary').textContent=
-   candidates.length+' señales iniciales · '+
-   signals.length+' siguen confirmadas · '+
-   (candidates.length-signals.length)+' descartadas · '+
-   (errors.length+verifyErrors)+' errores · '+localTime();
-
-  if(!signals.length){
-   output.innerHTML=
-    '<div class="status">Ninguna señal mantuvo la confirmación en la segunda revisión. NO ENTRAR.</div>';
-  }
-
- }catch(err){
-  status.textContent='Error del escáner: '+err.message;
- }finally{
-  btn.disabled=false;
-  btn.textContent='ESCANEAR 30 ESCENARIOS';
- }
+$("clearBtn").addEventListener("click",()=>{
+history=[];
+render();
+$("checked").textContent="0";
+$("found").textContent="0";
+$("best").textContent="—";
 });
 
-// LIMPIAR RESULTADOS
-$('clear').addEventListener('click',()=>{
- result('NO ENTRAR','yellow',
-  'Resultados limpiados. Esperando nuevo análisis.');
-});
+$("testBtn").addEventListener("click",test);
 
-$('clearScan').addEventListener('click',()=>{
- $('scanResults').innerHTML='';
- $('scanSummary').textContent='';
- $('scanStatus').textContent=
-  'Escáner detenido. Esperando nuevo análisis.';
-});
-
-updateAssets();
+health();
 </script>
 </body>
 </html>
