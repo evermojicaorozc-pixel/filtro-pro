@@ -197,6 +197,106 @@ $('analyze').addEventListener('click',async()=>{
   }catch(err){
     resetChecks();result('NO ENTRAR','yellow',err.message||'Falló la conexión. Revisa la clave, el acceso del plan y la conexión a internet.');
   }finally{btn.disabled=false;btn.textContent='Conectar y analizar';}
+});$('scanAll').addEventListener('click',async()=>{
+  const scanBtn=$('scanAll');
+  const status=$('scanStatus');
+  const output=$('scanResults');
+
+  if(!$('confirm').checked){
+    status.textContent='Primero confirma la comparación de precios y horarios.';
+    return;
+  }
+
+  if(market.value!=='forex'){
+    status.textContent='Este escáner está configurado para Forex.';
+    return;
+  }
+
+  const pairs=['EUR/USD','GBP/USD','USD/JPY','AUD/USD','USD/CAD'];
+  const intervals=['1min','5min','15min'];
+  const cache=new Map();
+  const signals=[];
+  const errors=[];
+
+  const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+  const safe=s=>String(s).replace(/[&<>"']/g,c=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+
+  scanBtn.disabled=true;
+  output.innerHTML='';
+  status.textContent='Iniciando escáner...';
+
+  async function candles(symbol,interval){
+    const key=symbol+'_'+interval;
+    if(!cache.has(key)){
+      if(cache.size>0) await wait(7500);
+      cache.set(key,getSeries(symbol,interval));
+    }
+    return cache.get(key);
+  }
+
+  try{
+    let completed=0;
+
+    for(const symbol of pairs){
+      for(const interval of intervals){
+        completed++;
+        status.textContent='Analizando '+completed+' de 15: '+symbol+' · '+names[interval];
+
+        try{
+          const higherInterval=higherTF[interval];
+
+          const [primary,higher]=await Promise.all([
+            candles(symbol,interval),
+            candles(symbol,higherInterval)
+          ]);
+
+          if(!marketTypeOk(primary.meta,'forex')||
+             !marketTypeOk(higher.meta,'forex')){
+            throw new Error('Mercado no validado');
+          }
+
+          const e=evaluate(primary,higher);
+
+          if(e.direction!=='NO ENTRAR'&&e.score>=70){
+            signals.push({
+              symbol,interval,e
+            });
+          }
+        }catch(err){
+          errors.push(symbol+' '+names[interval]+': '+err.message);
+        }
+      }
+    }
+
+    if(signals.length){
+      output.innerHTML=signals.map(s=>`
+        <div class="card">
+          <strong>${safe(s.symbol)}</strong>
+          <div class="signal ${safe(s.e.cls)}">${safe(s.e.direction)}</div>
+          <div>Temporalidad: ${safe(names[s.interval])}</div>
+          <div>Precio de referencia: ${safe(s.e.last.c)}</div>
+          <div>Puntaje: ${safe(s.e.score)}/100</div>
+          <div>Vela cerrada: ${safe(s.e.last.time)}</div>
+          <div class="small">${safe(s.e.why)}</div>
+        </div>
+      `).join('');
+    }else{
+      output.textContent='No se encontraron señales que cumplan todos los filtros. No forzar entradas.';
+    }
+
+    status.textContent='Escaneo terminado. '+signals.length+
+      ' señales válidas de 15 escenarios. Errores: '+errors.length+
+      '. Consulta completada: '+new Date().toLocaleTimeString('es-NI',{
+        timeZone:'America/Managua'
+      })+' (Nicaragua).';
+
+  }catch(err){
+    status.textContent='Error del escáner: '+err.message;
+  }finally{
+    scanBtn.disabled=false;
+  }
 });
 $('clear').addEventListener('click',()=>{
   $('apikey').value='';$('confirm').checked=false;resetChecks();
