@@ -1,10 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FILTRO PRO 5.0</title>
+<title>FILTRO PRO 5.1</title>
+
 <style>
 *{box-sizing:border-box}
 body{
@@ -35,10 +35,10 @@ button:disabled{opacity:.45}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .metric{
  background:#172b40;border-radius:9px;padding:12px;
- text-align:center
+ text-align:center;min-width:0
 }
 .metric small{display:block;color:#9aafc5;font-size:11px}
-.metric strong{display:block;font-size:17px;margin-top:7px}
+.metric strong{display:block;font-size:17px;margin-top:7px;overflow-wrap:anywhere}
 .signal{text-align:center;padding:22px 10px}
 .signal h2{font-size:32px;margin:8px}
 .call{color:#37e5a5}
@@ -51,17 +51,19 @@ button:disabled{opacity:.45}
 footer{text-align:center;color:#647d96;font-size:11px;padding:20px}
 </style>
 </head>
+
 <body>
 <div class="app">
 
 <header>
-<h1>FILTRO PRO 5.0</h1>
+<h1>FILTRO PRO 5.1</h1>
 <div class="sub">ESCÁNER TÉCNICO · OPCIONES DIGITALES</div>
 <div class="status" id="connection">Conectando con API...</div>
 </header>
 
 <div class="panel">
 <h3>1. SELECCIONAR MERCADO</h3>
+
 <select id="market">
 <option value="REAL">MERCADO REAL</option>
 <option value="OTC">MERCADO OTC</option>
@@ -82,7 +84,7 @@ footer{text-align:center;color:#647d96;font-size:11px;padding:20px}
 <option value="5">5 MINUTOS</option>
 </select>
 
-<button class="secondary" id="refresh" onclick="loadSymbols()">
+<button class="secondary" id="refresh">
 ACTUALIZAR ACTIVOS
 </button>
 </div>
@@ -100,12 +102,15 @@ ACTUALIZAR ACTIVOS
 
 <div class="panel">
 <h3>2. ANÁLISIS AUTOMÁTICO</h3>
-<button class="real" id="realButton" onclick="analyze('REAL')">
+
+<button class="real" id="realButton">
 ANALIZAR REAL
 </button>
-<button class="otc" id="otcButton" onclick="analyze('OTC')">
+
+<button class="otc" id="otcButton">
 ANALIZAR OTC
 </button>
+
 <div class="status" id="progress">Esperando análisis...</div>
 </div>
 
@@ -119,6 +124,7 @@ Selecciona un activo y analiza el mercado.
 
 <div class="panel">
 <h3>3. INDICADORES TÉCNICOS</h3>
+
 <div class="grid">
 <div class="metric">
 <small>EMA 9</small>
@@ -161,6 +167,7 @@ una probabilidad comprobada de ganar.
 
 <div class="panel">
 <h3>5. HISTORIAL Y NIVELES</h3>
+
 <div class="grid">
 <div class="metric">
 <small>SOPORTE</small>
@@ -179,6 +186,7 @@ una probabilidad comprobada de ganar.
 <strong id="lastCandle">---</strong>
 </div>
 </div>
+
 <div class="status" id="historyStatus">
 Los niveles históricos se consultan en REAL.
 </div>
@@ -190,9 +198,10 @@ Los niveles históricos se consultan en REAL.
 </div>
 
 <footer>
-FILTRO PRO 5.0 · ANÁLISIS EXPERIMENTAL
+FILTRO PRO 5.1 · ANÁLISIS EXPERIMENTAL
 <br>Las señales no garantizan resultados financieros.
 </footer>
+
 </div>
 
 <script>
@@ -202,22 +211,25 @@ const API =
 "https://filtro-pro-api.evermojicaorozc.workers.dev";
 
 const REAL_ASSETS = [
-"EUR/USD",
-"GBP/USD",
-"USD/JPY",
-"AUD/USD",
-"USD/CAD"
+ "EUR/USD",
+ "GBP/USD",
+ "USD/JPY",
+ "AUD/USD",
+ "USD/CAD"
 ];
 
 let busy = false;
 
 const $ = id => document.getElementById(id);
 
-function log(message, error=false){
+function log(message,error=false){
  const el=$("log");
  const line=document.createElement("div");
+
  line.className=error?"bad":"good";
- line.textContent=new Date().toLocaleTimeString()+" · "+message;
+ line.textContent=
+  new Date().toLocaleTimeString()+" · "+message;
+
  el.prepend(line);
 }
 
@@ -226,25 +238,37 @@ function reset(){
  $("result").className="wait";
  $("reason").textContent="Analizando...";
  $("score").textContent="---";
- ["ema9","ema21","rsi","macd","adx","atr",
+
+ [
+  "ema9","ema21","rsi","macd","adx","atr",
   "support","resistance","price","lastCandle",
-  "candleCount","source"].forEach(id=>$(id).textContent="---");
+  "candleCount","source"
+ ].forEach(id=>{
+  $(id).textContent="---";
+ });
 }
 
 async function api(path){
  const controller=new AbortController();
  const timer=setTimeout(()=>controller.abort(),20000);
+
  try{
   const response=await fetch(API+path,{
    method:"GET",
    cache:"no-store",
    signal:controller.signal
   });
+
   const data=await response.json();
+
   if(!response.ok || data.error){
-   throw new Error(data.error || "Error HTTP "+response.status);
+   throw new Error(
+    data.error || "Error HTTP "+response.status
+   );
   }
+
   return data;
+
  }finally{
   clearTimeout(timer);
  }
@@ -252,13 +276,15 @@ async function api(path){
 
 function extractSymbols(data){
  let list=data.symbols || data.data || data.results || [];
+
  if(!Array.isArray(list) && list && typeof list==="object"){
   list=list.symbols || list.data || [];
  }
- if(!Array.isArray(list)) return [];
+
+ if(!Array.isArray(list))return [];
 
  return list.map(x=>{
-  if(typeof x==="string") return x;
+  if(typeof x==="string")return x;
   return x.symbol || x.name || x.code || "";
  }).filter(x=>/^[A-Z]{6}_otc$/i.test(x));
 }
@@ -266,10 +292,14 @@ function extractSymbols(data){
 async function health(){
  try{
   const h=await api("/health");
+
   $("connection").textContent=
-   "API CONECTADA · REAL "+(h.realConfigured?"OK":"NO")+
+   "API CONECTADA · REAL "+
+   (h.realConfigured?"OK":"NO")+
    " · OTC "+(h.otcConfigured?"OK":"NO");
+
   log("Conexión con Cloudflare correcta.");
+
  }catch(e){
   $("connection").textContent="API SIN CONEXIÓN";
   log("Error de conexión: "+e.message,true);
@@ -279,14 +309,17 @@ async function health(){
 async function loadSymbols(){
  const market=$("market").value;
  const select=$("symbol");
+
  select.innerHTML="";
 
  if(market==="REAL"){
   REAL_ASSETS.forEach(s=>{
    const o=document.createElement("option");
-   o.value=s;o.textContent=s;
+   o.value=s;
+   o.textContent=s;
    select.appendChild(o);
   });
+
   log("Activos REAL cargados.");
   return;
  }
@@ -297,38 +330,77 @@ async function loadSymbols(){
  try{
   const data=await api("/otc_symbols");
   const symbols=extractSymbols(data);
+
   if(!symbols.length){
    throw new Error("La API no devolvió pares OTC válidos.");
   }
 
   symbols.sort();
+
   symbols.forEach(s=>{
    const o=document.createElement("option");
-   o.value=s;o.textContent=s;
+   o.value=s;
+   o.textContent=s;
    select.appendChild(o);
   });
 
-  $("progress").textContent=symbols.length+" activos OTC encontrados.";
+  $("progress").textContent=
+   symbols.length+" activos OTC encontrados.";
+
   log(symbols.length+" activos OTC cargados.");
+
  }catch(e){
-  $("progress").textContent="No se pudieron cargar los activos OTC.";
+  $("progress").textContent=
+   "No se pudieron cargar los activos OTC.";
+
   log("OTC: "+e.message,true);
+
  }finally{
   $("refresh").disabled=false;
  }
 }
 
 $("market").addEventListener("change",loadSymbols);
+$("refresh").addEventListener("click",loadSymbols);
+
+/* =====================================
+   NORMALIZACIÓN DE VELAS
+   Prioriza el timestamp Unix del Worker.
+===================================== */
+
+function candleTimestamp(c){
+ const raw=c.time ?? c.timestamp;
+
+ if(raw!==undefined && raw!==null && raw!==""){
+  const numeric=Number(raw);
+
+  if(Number.isFinite(numeric)){
+   return numeric<1000000000000
+    ? numeric*1000
+    : numeric;
+  }
+
+  const parsed=Date.parse(raw);
+  if(Number.isFinite(parsed))return parsed;
+ }
+
+ const fallback=c.datetime || c.date;
+
+ if(!fallback)return NaN;
+
+ const parsed=Date.parse(fallback);
+ return Number.isFinite(parsed)?parsed:NaN;
+}
 
 function normalizeCandles(data){
  let list=data.candles || data.values || data.data || [];
- if(!Array.isArray(list)) return [];
+
+ if(!Array.isArray(list))return [];
 
  return list.map(c=>{
-  const time=c.datetime || c.time || c.date || c.timestamp;
   return {
-   time:time,
-   ts:typeof time==="number"?time*1000:Date.parse(time),
+   time:c.time ?? c.datetime ?? c.date ?? c.timestamp,
+   ts:candleTimestamp(c),
    open:Number(c.open),
    high:Number(c.high),
    low:Number(c.low),
@@ -344,34 +416,74 @@ function normalizeCandles(data){
  ).sort((a,b)=>a.ts-b.ts);
 }
 
+/* =====================================
+   INDICADORES
+===================================== */
+
 function ema(values,period){
+ if(!values.length)return null;
+
  const k=2/(period+1);
  let result=values[0];
+
  for(let i=1;i<values.length;i++){
   result=values[i]*k+result*(1-k);
  }
+
  return result;
 }
 
+/* RSI CORREGIDO */
 function rsi(values,period=14){
  if(values.length<=period)return null;
- let gains=0,losses=0;
+
+ let gains=0;
+ let losses=0;
+
  for(let i=values.length-period;i<values.length;i++){
   const d=values[i]-values[i-1];
-  if(d>0)gains+=d;
-  else loss-=d;
+
+  if(d>0){
+   gains+=d;
+  }else if(d<0){
+   losses+=Math.abs(d);
+  }
  }
- const ag=gains/period;
- const al=losses/period;
- if(al===0)return 100;
- return 100-(100/(1+ag/al));
+
+ const averageGain=gains/period;
+ const averageLoss=losses/period;
+
+ if(averageGain===0 && averageLoss===0)return 50;
+ if(averageLoss===0)return 100;
+ if(averageGain===0)return 0;
+
+ const rs=averageGain/averageLoss;
+
+ return 100-(100/(1+rs));
+}
+
+function seriesEMA(values,period){
+ if(!values.length)return [];
+
+ const k=2/(period+1);
+ let v=values[0];
+ const out=[v];
+
+ for(let i=1;i<values.length;i++){
+  v=values[i]*k+v*(1-k);
+  out.push(v);
+ }
+
+ return out;
 }
 
 function macd(values){
  const fast=seriesEMA(values,12);
  const slow=seriesEMA(values,26);
+
  const line=fast.map((v,i)=>v-slow[i]);
  const signal=seriesEMA(line,9);
+
  return {
   value:line[line.length-1],
   signal:signal[signal.length-1],
@@ -379,57 +491,70 @@ function macd(values){
  };
 }
 
-function seriesEMA(values,period){
- const k=2/(period+1);
- let v=values[0];
- const out=[v];
- for(let i=1;i<values.length;i++){
-  v=values[i]*k+v*(1-k);
-  out.push(v);
- }
- return out;
-}
-
 function adx(candles,period=14){
- const tr=[],plus=[],minus=[];
+ const tr=[];
+ const plus=[];
+ const minus=[];
+
  for(let i=1;i<candles.length;i++){
-  const a=candles[i],p=candles[i-1];
+  const a=candles[i];
+  const p=candles[i-1];
+
   tr.push(Math.max(
    a.high-a.low,
    Math.abs(a.high-p.close),
    Math.abs(a.low-p.close)
   ));
+
   const up=a.high-p.high;
   const down=p.low-a.low;
+
   plus.push(up>down&&up>0?up:0);
   minus.push(down>up&&down>0?down:0);
  }
- if(tr.length<period*2)return null;
 
- const smooth=a=>a.slice(-period).reduce((x,y)=>x+y,0)/period;
+ if(tr.length<period)return null;
+
+ const smooth=a=>
+  a.slice(-period).reduce((x,y)=>x+y,0)/period;
+
  const t=smooth(tr);
+
  if(t===0)return 0;
+
  const p=100*smooth(plus)/t;
  const m=100*smooth(minus)/t;
+
  return 100*Math.abs(p-m)/Math.max(p+m,0.000001);
 }
 
 function atr(candles,period=14){
  const values=[];
+
  for(let i=1;i<candles.length;i++){
-  const a=candles[i],p=candles[i-1];
+  const a=candles[i];
+  const p=candles[i-1];
+
   values.push(Math.max(
    a.high-a.low,
    Math.abs(a.high-p.close),
    Math.abs(a.low-p.close)
   ));
  }
+
  if(values.length<period)return null;
- return values.slice(-period).reduce((a,b)=>a+b,0)/period;
+
+ return values.slice(-period)
+  .reduce((a,b)=>a+b,0)/period;
 }
 
-function analyzeTechnical(candles,interval){
+/* =====================================
+   ANÁLISIS TÉCNICO
+===================================== */
+
+function analyzeTechnical(candles){
  const close=candles.map(c=>c.close);
+
  const e9=ema(close,9);
  const e21=ema(close,21);
  const rv=rsi(close);
@@ -441,12 +566,16 @@ function analyzeTechnical(candles,interval){
  const previous=candles[candles.length-2];
  const before=candles[candles.length-3];
 
- const bullCandle=last.close>last.open &&
+ const bullCandle=
+  last.close>last.open &&
   previous.close>previous.open;
- const bearCandle=last.close<last.open &&
+
+ const bearCandle=
+  last.close<last.open &&
   previous.close<previous.open;
 
- let call=0,put=0;
+ let call=0;
+ let put=0;
 
  if(e9>e21)call+=20;
  if(e9<e21)put+=20;
@@ -465,13 +594,20 @@ function analyzeTechnical(candles,interval){
  if(bullCandle)call+=20;
  if(bearCandle)put+=20;
 
- if(last.close>previous.close &&
-    previous.close>before.close)call+=10;
- if(last.close<previous.close &&
-    previous.close<before.close)put+=10;
+ if(
+  last.close>previous.close &&
+  previous.close>before.close
+ )call+=10;
 
- const direction=call>=80&&call>put?"CALL":
-                 put>=80&&put>call?"PUT":"NO ENTRAR";
+ if(
+  last.close<previous.close &&
+  previous.close<before.close
+ )put+=10;
+
+ const direction=
+  call>=80&&call>put?"CALL":
+  put>=80&&put>call?"PUT":
+  "NO ENTRAR";
 
  return {
   direction,
@@ -479,11 +615,12 @@ function analyzeTechnical(candles,interval){
   e9,e21,rv,mc,ax,at,
   price:last.close,
   last,
-  reason:direction==="CALL"?
-   "Tendencia alcista y confirmaciones técnicas.":
+  reason:
+   direction==="CALL"?
+    "Tendencia alcista y confirmaciones técnicas.":
    direction==="PUT"?
-   "Tendencia bajista y confirmaciones técnicas.":
-   "No hay suficientes confirmaciones. Esperar."
+    "Tendencia bajista y confirmaciones técnicas.":
+    "No hay suficientes confirmaciones. Esperar."
  };
 }
 
@@ -492,27 +629,44 @@ function displayAnalysis(a){
  const isPut=a.direction==="PUT";
 
  $("result").textContent=a.direction;
- $("result").className=isCall?"call":isPut?"put":"wait";
+ $("result").className=
+  isCall?"call":isPut?"put":"wait";
+
  $("reason").textContent=a.reason;
 
- const fmt=n=>n===null||!Number.isFinite(n)?"N/D":n.toFixed(5);
+ const fmt=n=>
+  n===null||!Number.isFinite(n)
+   ?"N/D"
+   :n.toFixed(5);
 
  $("ema9").textContent=fmt(a.e9);
  $("ema21").textContent=fmt(a.e21);
- $("rsi").textContent=a.rv===null?"N/D":a.rv.toFixed(2);
+ $("rsi").textContent=
+  a.rv===null?"N/D":a.rv.toFixed(2);
  $("macd").textContent=fmt(a.mc.value);
- $("adx").textContent=a.ax===null?"N/D":a.ax.toFixed(2);
+ $("adx").textContent=
+  a.ax===null?"N/D":a.ax.toFixed(2);
  $("atr").textContent=fmt(a.at);
  $("price").textContent=fmt(a.price);
- $("lastCandle").textContent=new Date(a.last.ts).toLocaleTimeString();
+
+ $("lastCandle").textContent=
+  new Date(a.last.ts).toLocaleTimeString();
+
  $("score").textContent=a.score+"/100";
 }
 
+/* =====================================
+   ANÁLISIS PRINCIPAL
+===================================== */
+
 async function analyze(market){
  if(busy)return;
+
  busy=true;
+
  $("realButton").disabled=true;
  $("otcButton").disabled=true;
+
  reset();
 
  try{
@@ -524,9 +678,12 @@ async function analyze(market){
   const symbol=$("symbol").value;
   const interval=$("interval").value;
 
-  if(!symbol)throw new Error("Selecciona un activo.");
+  if(!symbol){
+   throw new Error("Selecciona un activo.");
+  }
 
   $("progress").textContent="Descargando velas...";
+
   log("Iniciando "+market+" · "+symbol+" · "+interval);
 
   const path=market==="REAL"?
@@ -536,6 +693,7 @@ async function analyze(market){
    "&interval="+interval;
 
   const data=await api(path);
+
   let candles=normalizeCandles(data);
 
   if(candles.length<60){
@@ -545,8 +703,10 @@ async function analyze(market){
   const now=Date.now();
   const duration=interval==="1min"?60000:300000;
 
-  // Eliminar velas que todavía están formándose.
-  candles=candles.filter(c=>c.ts+duration<=now);
+  // Solo utilizar velas completamente cerradas.
+  candles=candles.filter(c=>
+   c.ts+duration<=now
+  );
 
   if(candles.length<60){
    throw new Error("No hay suficientes velas cerradas.");
@@ -555,18 +715,22 @@ async function analyze(market){
   const last=candles[candles.length-1];
   const age=now-(last.ts+duration);
 
-  // No analizar datos excesivamente atrasados.
+  // Evitar analizar cotizaciones atrasadas.
   if(age>duration*5){
-   throw new Error("Las cotizaciones están atrasadas. No entrar.");
+   throw new Error(
+    "Las cotizaciones están atrasadas. No entrar."
+   );
   }
 
   $("source").textContent=data.source||"API";
   $("candleCount").textContent=candles.length;
 
-  const result=analyzeTechnical(candles,interval);
+  const result=analyzeTechnical(candles);
+
   displayAnalysis(result);
 
   $("progress").textContent="Análisis completado.";
+
   log("Análisis técnico completado.");
 
   if(market==="REAL"){
@@ -582,17 +746,27 @@ async function analyze(market){
   $("result").textContent="NO ENTRAR";
   $("result").className="wait";
   $("reason").textContent=e.message;
+
   $("progress").textContent="Análisis detenido.";
+
   log(e.message,true);
+
  }finally{
   busy=false;
+
   $("realButton").disabled=false;
   $("otcButton").disabled=false;
  }
 }
 
+/* =====================================
+   HISTORIAL Y NIVELES
+===================================== */
+
 async function loadHistory(symbol){
- $("historyStatus").textContent="Consultando histórico anual...";
+ $("historyStatus").textContent=
+  "Consultando histórico anual...";
+
  try{
   const data=await api(
    "/history_levels?symbol="+encodeURIComponent(symbol)
@@ -603,8 +777,11 @@ async function loadHistory(symbol){
 
   const value=x=>{
    if(typeof x==="number")return x;
-   if(x && typeof x==="object")
+
+   if(x && typeof x==="object"){
     return Number(x.price||x.level||x.value);
+   }
+
    return Number(x);
   };
 
@@ -619,18 +796,34 @@ async function loadHistory(symbol){
 
   $("historyStatus").textContent=
    "Histórico: "+(data.daysCovered||0)+
-   " días · "+(data.candlesCount||0)+" velas diarias.";
+   " días · "+(data.candlesCount||0)+
+   " velas diarias.";
 
   log("Histórico anual consultado.");
+
  }catch(e){
   $("historyStatus").textContent=
    "Histórico no disponible: "+e.message;
+
   log("Histórico: "+e.message,true);
  }
 }
 
-$("realButton").addEventListener("click",()=>analyze("REAL"));
-$("otcButton").addEventListener("click",()=>analyze("OTC"));
+/* =====================================
+   BOTONES
+===================================== */
+
+$("realButton").addEventListener(
+ "click",()=>analyze("REAL")
+);
+
+$("otcButton").addEventListener(
+ "click",()=>analyze("OTC")
+);
+
+/* =====================================
+   INICIO
+===================================== */
 
 (async()=>{
  await health();
