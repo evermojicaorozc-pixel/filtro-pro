@@ -1,305 +1,598 @@
 <!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#08111f">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>FILTRO PRO 4.3</title>
+<style>
+:root{color-scheme:dark;--bg:#08111f;--panel:#111d2e;--line:#263750;--text:#e8f0fb;--muted:#91a4bd;--green:#24d18a;--red:#ff647c;--yellow:#f3c969}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 20% 0%,#132844 0,#08111f 45%);color:var(--text);font:15px system-ui,Arial,sans-serif}
+main{max-width:980px;margin:auto;padding:18px 14px 50px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:25px;letter-spacing:1px;margin:0}
+.sub,.muted,.small{color:var(--muted);font-size:12px}
+.panel{background:linear-gradient(160deg,#142238,#0e1929);border:1px solid var(--line);border-radius:16px;padding:15px;margin:12px 0;box-shadow:0 12px 35px #0003}
+h2{font-size:15px;margin:0 0 12px}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+button,select{border:1px solid #344b69;background:#162740;color:var(--text);padding:12px 14px;border-radius:11px;font-weight:700;font-size:14px}
+button{cursor:pointer}
+button:disabled{opacity:.45;cursor:wait}
+.real{background:#174c43;border-color:#247c68}
+.otc{background:#493d75;border-color:#7560b5}
+.status{padding:10px 12px;border-radius:10px;background:#0a1524;border:1px solid var(--line);color:var(--muted);font-size:13px;margin-top:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.metric,.signal{background:#0a1626;border:1px solid var(--line);border-radius:12px;padding:12px}
+.metric b{display:block;font-size:20px;margin-top:5px}
+.signal{margin-top:9px}
+.signalHead{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.direction{font-weight:900;font-size:20px}
+.call{color:var(--green)}
+.put{color:var(--red)}
+.wait{color:var(--yellow)}
+.tag,.pill{font-size:11px;border:1px solid var(--line);border-radius:99px;padding:5px 8px;color:var(--muted)}
+.small{line-height:1.5}
+hr{border:0;border-top:1px solid var(--line);margin:12px 0}
+.foot{font-size:11px;color:#8093ac;line-height:1.5}
+@media(max-width:520px){main{padding:14px 10px 35px}h1{font-size:22px}button{flex:1}}
+</style>
+</head>
+<body>
+<main>
+<div class="top">
+ <div>
+  <h1>FILTRO PRO <span style="color:#6eaeff">4.3</span></h1>
+  <div class="sub">ESCÁNER EXPERIMENTAL · OPCIONES DIGITALES</div>
+ </div>
+ <div class="pill" id="apiState">Conectando API…</div>
+</div>
 
-<html lang="es">  
-<head>  
-<meta charset="utf-8">  
-<meta name="viewport" content="width=device-width,initial-scale=1">  
-<meta name="theme-color" content="#08111f">  
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">  
-<meta http-equiv="Pragma" content="no-cache">  
-<meta http-equiv="Expires" content="0">  
-<title>FILTRO PRO 4.3</title>  
-<style>  
-:root{color-scheme:dark;--bg:#08111f;--panel:#111d2e;--panel2:#0c1727;--line:#263750;--text:#e8f0fb;--muted:#91a4bd;--green:#24d18a;--red:#ff647c;--yellow:#f3c969;--blue:#69a9ff}  
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0%,#132844 0,#08111f 45%);color:var(--text);font:15px system-ui,Arial,sans-serif}  
-main{max-width:980px;margin:auto;padding:18px 14px 50px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}  
-h1{font-size:25px;letter-spacing:1px;margin:0}.sub{color:var(--muted);font-size:12px;margin-top:4px}  
-.pill{border:1px solid var(--line);border-radius:99px;padding:7px 11px;color:var(--muted);font-size:12px}  
-.panel{background:linear-gradient(160deg,#142238,#0e1929);border:1px solid var(--line);border-radius:16px;padding:15px;margin:12px 0;box-shadow:0 12px 35px #0003}  
-h2{font-size:15px;margin:0 0 12px;color:#d9e8fb}.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}  
-button,select{border:1px solid #344b69;background:#162740;color:var(--text);padding:12px 14px;border-radius:11px;font-weight:700;font-size:14px}  
-button{cursor:pointer}button:disabled{opacity:.45;cursor:wait}.primary{background:#1b65bd;border-color:#3486e8}.real{background:#174c43;border-color:#247c68}.otc{background:#493d75;border-color:#7560b5}  
-select{min-width:135px}.small{font-size:12px;color:var(--muted);line-height:1.5}.status{padding:10px 12px;border-radius:10px;background:#0a1524;border:1px solid var(--line);color:var(--muted);font-size:13px;margin-top:10px}  
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}.metric{background:#0a1626;border:1px solid var(--line);border-radius:12px;padding:12px}.metric b{display:block;font-size:20px;margin-top:5px}.muted{color:var(--muted);font-size:12px}  
-.signal{border:1px solid var(--line);border-radius:13px;padding:13px;background:#0b1728;margin-top:9px}.signalHead{display:flex;justify-content:space-between;gap:8px;align-items:center}.direction{font-weight:900;font-size:20px}.call{color:var(--green)}.put{color:var(--red)}.wait{color:var(--yellow)}  
-.tag{font-size:11px;border:1px solid var(--line);border-radius:99px;padding:4px 8px;color:var(--muted)}.good{color:var(--green)}.bad{color:var(--red)}  
-hr{border:0;border-top:1px solid var(--line);margin:12px 0}.foot{font-size:11px;color:#8093ac;line-height:1.5}  
-@media(max-width:520px){main{padding:14px 10px 35px}h1{font-size:22px}button{flex:1}}  
-</style>  
-</head>  
-<body>  
-<main>  
-  <div class="top">  
-    <div><h1>FILTRO PRO <span style="color:#6eaeff">4.3</span></h1><div class="sub">ESCÁNER EXPERIMENTAL · OPCIONES DIGITALES</div></div>  
-    <div class="pill" id="apiState">Conectando API…</div>  
-  </div>    <section class="panel">  
-    <h2>1. Selecciona el mercado</h2>  
-    <div class="row">  
-      <button class="real" id="realBtn">ANALIZAR REAL</button>  
-      <button class="otc" id="otcBtn">ANALIZAR OTC</button>  
-      <label class="muted" for="expiry">Vencimiento</label>  
-      <select id="expiry"><option value="1min">1 minuto</option><option value="5min">5 minutos</option></select>  
-    </div>  
-    <div class="status" id="status">Listo. Selecciona REAL u OTC para iniciar el análisis.</div>  
-    <p class="small">El vencimiento es el tiempo de la operación, no el historial. Solo se analizan velas cerradas. La entrada sugerida es para una vela posterior; confirma el precio en Quotex. REAL consulta niveles diarios de hasta 365 días; OTC usa sus propias velas.</p>  
-  </section>    <section class="panel">  
-    <div class="row" style="justify-content:space-between">  
-      <h2 style="margin:0">2. Resumen del escáner</h2>  
-      <span class="tag" id="marketTag">SIN ANÁLISIS</span>  
-    </div>  
-    <div class="grid" style="margin-top:12px">  
-      <div class="metric"><span class="muted">Activos revisados</span><b id="checked">0</b></div>  
-      <div class="metric"><span class="muted">Señales encontradas</span><b id="found">0</b></div>  
-      <div class="metric"><span class="muted">Mejor confianza técnica</span><b id="best">—</b></div>  
-    </div>  
-  </section>    <section class="panel">  
-    <div class="row" style="justify-content:space-between"><h2 style="margin:0">3. Señales y resultados</h2><button id="clearBtn" style="padding:8px 10px;font-size:12px">Limpiar</button></div>  
-    <div id="results"><p class="small">Aquí aparecerán los resultados del análisis. Si no hay confirmación suficiente, mostrará NO ENTRAR.</p></div>  
-  </section>    <section class="panel">  
-    <h2>4. Estado de conexión</h2>  
-    <div class="row"><button id="testBtn">PROBAR CONEXIONES</button><span class="small" id="healthText">Comprobación pendiente.</span></div>  
-    <hr>  
-    <p class="small" id="usageText">Uso OTC: sin consultar.</p>  
-  </section>  
-  <p class="foot">FILTRO PRO 4.3 usa solo velas cerradas, bloquea marcas de tiempo futuras y calcula la entrada sugerida para la próxima vela. Incluye EMA, RSI, MACD, ADX y ATR. No ejecuta operaciones. CALL/PUT son resultados experimentales de reglas técnicas y niveles históricos, no predicciones seguras. Comprueba siempre activo, precio, horario y vela en Quotex. Una señal puede fallar incluso con alta puntuación.</p>  
-</main>  
-<script>  
-"use strict";  
-const API = "https://filtro-pro-api.evermojicaorozc.workers.dev";  
-const $ = id => document.getElementById(id);  
-const REAL_ASSETS = ["EUR/USD","GBP/USD","USD/JPY","AUD/USD","USD/CAD"];  
-let currentMarket = "";  
-let history = [];  function setStatus(msg, bad=false) {
-$("status").textContent = msg;
-$("status").style.color = bad ? "#ff8798" : "#b8c9de";
+<section class="panel">
+<h2>1. Selecciona el mercado</h2>
+<div class="row">
+<button class="real" id="realBtn">ANALIZAR REAL</button>
+<button class="otc" id="otcBtn">ANALIZAR OTC</button>
+<label class="muted" for="expiry">Vencimiento</label>
+<select id="expiry">
+<option value="1min">1 minuto</option>
+<option value="5min">5 minutos</option>
+</select>
+</div>
+<div class="status" id="status">Listo. Selecciona REAL u OTC.</div>
+<p class="small">Solo analiza velas cerradas. La entrada sugerida corresponde a una vela posterior. El historial anual es independiente del vencimiento. Confirma siempre el precio y horario en Quotex.</p>
+</section>
+
+<section class="panel">
+<h2>2. Resumen del escáner</h2>
+<div class="grid">
+<div class="metric"><span class="muted">Activos revisados</span><b id="checked">0</b></div>
+<div class="metric"><span class="muted">Señales encontradas</span><b id="found">0</b></div>
+<div class="metric"><span class="muted">Mejor confianza técnica</span><b id="best">—</b></div>
+</div>
+</section>
+
+<section class="panel">
+<div class="row" style="justify-content:space-between">
+<h2>3. Señales y resultados</h2>
+<button id="clearBtn">Limpiar</button>
+</div>
+<div id="results"><p class="small">Aquí aparecerán los resultados.</p></div>
+</section>
+
+<section class="panel">
+<h2>4. Estado de conexión</h2>
+<div class="row">
+<button id="testBtn">PROBAR CONEXIONES</button>
+<span class="small" id="healthText">Comprobación pendiente.</span>
+</div>
+<hr>
+<p class="small" id="usageText">Uso OTC: sin consultar.</p>
+</section>
+
+<p class="foot">FILTRO PRO 4.3 es un analizador experimental. No ejecuta operaciones. CALL y PUT no garantizan resultados. Comprueba siempre el activo, precio, horario y vela en Quotex. Una señal puede fallar incluso con alta puntuación.</p>
+</main>
+
+<script>
+"use strict";
+
+const API="https://filtro-pro-api.evermojicaorozc.workers.dev";
+const $=id=>document.getElementById(id);
+const REAL_ASSETS=["EUR/USD","GBP/USD","USD/JPY","AUD/USD","USD/CAD"];
+let history=[];
+
+function setStatus(message,bad=false){
+ $("status").textContent=message;
+ $("status").style.color=bad?"#ff8798":"#b8c9de";
 }
-async function getJson(path) {
-const response = await fetch(API + path, {cache:"no-store"});
-let data;
-try { data = await response.json(); } catch { throw new Error("Respuesta inválida del servidor."); }
-if (!response.ok || data.error) throw new Error(data.error || Error HTTP ${response.status});
-return data;
+
+async function getJson(path){
+ const response=await fetch(API+path,{cache:"no-store"});
+ let data;
+ try{data=await response.json()}catch{throw new Error("Respuesta inválida del servidor");}
+ if(!response.ok||data.error)throw new Error(data.error||"Error HTTP "+response.status);
+ return data;
 }
-async function getAnnualLevels(symbol) {
-const data = await getJson(/history_levels?symbol=${encodeURIComponent(symbol)});
-if (!data.success || !Array.isArray(data.candles) || data.candles.length < 20) {
-throw new Error(data.error || Historial anual insuficiente para ${symbol}.);
+
+async function getAnnualLevels(symbol){
+ const data=await getJson("/history_levels?symbol="+encodeURIComponent(symbol));
+ if(!data.success||!Array.isArray(data.candles)||data.candles.length<20){
+  throw new Error(data.error||"Historial anual insuficiente para "+symbol);
+ }
+ return data;
 }
-return data;
+
+async function checkHealth(){
+ try{
+  const d=await getJson("/health");
+  $("apiState").textContent=d.ok?"API CONECTADA":"API SIN RESPUESTA";
+  $("apiState").style.color=d.ok?"#24d18a":"#ff647c";
+  $("healthText").textContent="REAL: "+(d.realConfigured?"clave configurada":"falta clave")+" · OTC: "+(d.otcConfigured?"clave configurada":"falta clave");
+  if(!d.realConfigured||!d.otcConfigured)$("apiState").textContent="FALTA CONFIGURACIÓN";
+ }catch(e){
+  $("apiState").textContent="API DESCONECTADA";
+  $("healthText").textContent=e.message;
+ }
 }
-async function checkHealth() {
-try {
-const d = await getJson("/health");
-$("apiState").textContent = d.ok ? "API CONECTADA" : "API SIN RESPUESTA";
-$("apiState").style.color = d.ok ? "#24d18a" : "#ff647c";
-$("healthText").textContent = REAL: ${d.realConfigured ? "clave configurada" : "falta clave"} · OTC: ${d.otcConfigured ? "clave configurada" : "falta clave"};
-if (!d.realConfigured || !d.otcConfigured) $("apiState").textContent = "FALTA CONFIGURACIÓN";
-} catch(e) {
-$("apiState").textContent = "API DESCONECTADA";
-$("healthText").textContent = e.message;
+
+function ema(values,period){
+ if(values.length<period)return [];
+ const k=2/(period+1);
+ let prev=values.slice(0,period).reduce((a,b)=>a+b,0)/period;
+ const out=[];
+ out[period-1]=prev;
+ for(let i=period;i<values.length;i++){
+  prev=values[i]*k+prev*(1-k);
+  out[i]=prev;
+ }
+ return out;
 }
+
+function rsi(values,period=14){
+ if(values.length<=period)return 50;
+ let gain=0,loss=0;
+ for(let i=1;i<=period;i++){
+  const d=values[i]-values[i-1];
+  if(d>0)gain+=d;else loss-=d;
+ }
+ let avgG=gain/period,avgL=loss/period;
+ for(let i=period+1;i<values.length;i++){
+  const d=values[i]-values[i-1];
+  avgG=(avgG*(period-1)+Math.max(0,d))/period;
+  avgL=(avgL*(period-1)+Math.max(0,-d))/period;
+ }
+ if(avgL===0)return 100;
+ return 100-100/(1+avgG/avgL);
 }
-function ema(values, period) {
-if (values.length < period) return [];
-const k = 2/(period+1);
-let out = [];
-let prev = values.slice(0,period).reduce((a,b)=>a+b,0)/period;
-out[period-1] = prev;
-for(let i=period;i<values.length;i++){ prev=values[i]k+prev(1-k); out[i]=prev; }
-return out;
+
+function macd(values){
+ if(values.length<35)return null;
+ const a=ema(values,12),b=ema(values,26);
+ const line=values.map((_,i)=>a[i]!==undefined&&b[i]!==undefined?a[i]-b[i]:null);
+ const valid=line.filter(x=>x!==null);
+ const sig=ema(valid,9);
+ if(!sig.length)return null;
+ return {line:valid[valid.length-1],signal:sig[sig.length-1],hist:valid[valid.length-1]-sig[sig.length-1]};
 }
-function rsi(values, period=14) {
-if(values.length<=period) return 50;
-let gain=0,loss=0;
-for(let i=1;i<=period;i++){const d=values[i]-values[i-1];if(d>0)gain+=d;else loss-=d;}
-let avgG=gain/period,avgL=loss/period;
-for(let i=period+1;i<values.length;i++){const d=values[i]-values[i-1];avgG=(avgG*(period-1)+Math.max(0,d))/period;avgL=(avgL*(period-1)+Math.max(0,-d))/period;}
-if(avgL===0)return 100;
-return 100-(100/(1+avgG/avgL));
+
+function atr(bars,period=14){
+ if(bars.length<=period)return null;
+ const tr=[];
+ for(let i=1;i<bars.length;i++){
+  const x=bars[i],p=bars[i-1];
+  tr.push(Math.max(x.high-x.low,Math.abs(x.high-p.close),Math.abs(x.low-p.close)));
+ }
+ let value=tr.slice(0,period).reduce((a,b)=>a+b,0)/period;
+ for(let i=period;i<tr.length;i++)value=(value*(period-1)+tr[i])/period;
+ return value;
 }
-function macd(values) {
-if(values.length<35) return null;
-const a=ema(values,12), b=ema(values,26);
-const line=values.map((_,i)=>a[i]!==undefined&&b[i]!==undefined?a[i]-b[i]:null);
-const valid=line.filter(x=>x!==null);
-if(valid.length<9)return null;
-const sig=ema(valid,9);
-return {line:valid[valid.length-1],signal:sig[sig.length-1],hist:valid[valid.length-1]-sig[sig.length-1]};
+
+function adx(bars,period=14){
+ if(bars.length<period*2+2)return null;
+ const trs=[],pdm=[],mdm=[];
+ for(let i=1;i<bars.length;i++){
+  const x=bars[i],p=bars[i-1],up=x.high-p.high,down=p.low-x.low;
+  trs.push(Math.max(x.high-x.low,Math.abs(x.high-p.close),Math.abs(x.low-p.close)));
+  pdm.push(up>down&&up>0?up:0);
+  mdm.push(down>up&&down>0?down:0);
+ }
+ let tr=trs.slice(0,period).reduce((a,b)=>a+b,0);
+ let plus=pdm.slice(0,period).reduce((a,b)=>a+b,0);
+ let minus=mdm.slice(0,period).reduce((a,b)=>a+b,0);
+ const dx=[];
+ for(let i=period;i<trs.length;i++){
+  if(i>period){
+   tr=tr-tr/period+trs[i];
+   plus=plus-plus/period+pdm[i];
+   minus=minus-minus/period+mdm[i];
+  }
+  const pdi=tr?100*plus/tr:0,mdi=tr?100*minus/tr:0;
+  dx.push(pdi+mdi?100*Math.abs(pdi-mdi)/(pdi+mdi):0);
+ }
+ if(dx.length<period)return null;
+ let value=dx.slice(0,period).reduce((a,b)=>a+b,0)/period;
+ for(let i=period;i<dx.length;i++)value=(value*(period-1)+dx[i])/period;
+ return value;
 }
-function atr(bars, period=14) {
-if(bars.length<=period)return null;
-const tr=[];
-for(let i=1;i<bars.length;i++){
-const x=bars[i], prev=bars[i-1];
-tr.push(Math.max(x.high-x.low,Math.abs(x.high-prev.close),Math.abs(x.low-prev.close)));
+
+function forexMarketOpen(now=new Date()){
+ const parts=new Intl.DateTimeFormat("en-US",{
+  timeZone:"America/New_York",weekday:"short",hour:"2-digit",minute:"2-digit",hourCycle:"h23"
+ }).formatToParts(now);
+ const v={};
+ for(const p of parts)if(p.type!=="literal")v[p.type]=p.value;
+ const day={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[v.weekday];
+ const mins=Number(v.hour)*60+Number(v.minute);
+ if(day===0)return mins>=1020;
+ if(day===5)return mins<1020;
+ return day>=1&&day<=4;
 }
-let value=tr.slice(0,period).reduce((a,b)=>a+b,0)/period;
-for(let i=period;i<tr.length;i++)value=(value*(period-1)+tr[i])/period;
-return value;
+
+function normalizeCandles(candles){
+ return candles.map(c=>{
+  let t=Number(c.time);
+  if(Number.isFinite(t)&&t>1e12)t/=1000;
+  if(!Number.isFinite(t)||t<=0){
+   const parsed=Date.parse(c.datetime);
+   t=Number.isFinite(parsed)?parsed/1000:NaN;
+  }
+  return {
+   time:t,open:Number(c.open),high:Number(c.high),
+   low:Number(c.low),close:Number(c.close)
+  };
+ }).sort((a,b)=>a.time-b.time);
 }
-function adx(bars, period=14) {
-if(bars.length<period2+2)return null;
-const trs=[],pdm=[],mdm=[];
-for(let i=1;i<bars.length;i++){
-const x=bars[i],p=bars[i-1], up=x.high-p.high, down=p.low-x.low;
-trs.push(Math.max(x.high-x.low,Math.abs(x.high-p.close),Math.abs(x.low-p.close)));
-pdm.push(up>down&&up>0?up:0); mdm.push(down>up&&down>0?down:0);
+
+function analyze(candles,gaps={},annualLevels=null,interval="1min"){
+ const step=interval==="5min"?300:60;
+ if(!Array.isArray(candles)||candles.length<60)
+  return {direction:"NO ENTRAR",score:0,reason:"Historial insuficiente."};
+
+ if((gaps.runs||0)>0||(gaps.missingBars||0)>0)
+  return {direction:"NO ENTRAR",score:0,reason:"La serie contiene huecos de datos."};
+
+ const now=Date.now()/1000;
+ const bars=normalizeCandles(candles);
+
+ if(bars.some(x=>![x.time,x.open,x.high,x.low,x.close].every(Number.isFinite)||
+ x.high<x.low||x.high<Math.max(x.open,x.close)||x.low>Math.min(x.open,x.close)))
+  return {direction:"NO ENTRAR",score:0,reason:"Velas inválidas."};
+
+ if(bars.some(x=>x.time>now+5))
+  return {direction:"NO ENTRAR",score:0,reason:"El proveedor entregó una vela con fecha futura."};
+
+ const closed=bars.filter(x=>x.time+step<=now+2);
+ if(closed.length<55)
+  return {direction:"NO ENTRAR",score:0,reason:"No hay suficientes velas cerradas."};
+
+ const last=closed[closed.length-1],prev=closed[closed.length-2];
+ const age=now-(last.time+step);
+ if(age>step*2)
+  return {direction:"NO ENTRAR",score:0,reason:"La última vela cerrada está desactualizada."};
+
+ const closes=closed.map(c=>c.close);
+ const e9=ema(closes,9),e21=ema(closes,21);
+ const r=rsi(closes,14),m=macd(closes);
+ const a=atr(closed,14),dx=adx(closed,14);
+
+ if(!m||a===null||dx===null)
+  return {direction:"NO ENTRAR",score:0,reason:"Datos insuficientes para indicadores."};
+
+ const fast=e9[e9.length-1],slow=e21[e21.length-1];
+ const trendUp=fast>slow&&last.close>fast;
+ const trendDown=fast<slow&&last.close<fast;
+ const candleUp=last.close>last.open;
+ const candleDown=last.close<last.open;
+ const prevUp=prev.close>prev.open;
+ const prevDown=prev.close<prev.open;
+ const momentumUp=r>=50&&r<=68;
+ const momentumDown=r>=32&&r<=50;
+ const macdUp=m.hist>0&&m.line>m.signal;
+ const macdDown=m.hist<0&&m.line<m.signal;
+ const strongTrend=dx>=18;
+ const atrPct=a/last.close;
+ const volatilityOK=atrPct>=0.000005&&atrPct<=0.003;
+ const twoBull=prevUp&&candleUp;
+ const twoBear=prevDown&&candleDown;
+
+ let up=0,down=0;
+ if(trendUp)up+=20;
+ if(trendDown)down+=20;
+ if(momentumUp)up+=10;
+ if(momentumDown)down+=10;
+ if(macdUp)up+=20;
+ if(macdDown)down+=20;
+ if(strongTrend&&trendUp)up+=10;
+ if(strongTrend&&trendDown)down+=10;
+ if(twoBull)up+=15;
+ if(twoBear)down+=15;
+ if(volatilityOK&&candleUp)up+=5;
+ if(volatilityOK&&candleDown)down+=5;
+
+ let levelNote="Niveles anuales no aplicados";
+ let nearestSupport=null,nearestResistance=null;
+
+ if(annualLevels&&Array.isArray(annualLevels.supports)&&Array.isArray(annualLevels.resistances)){
+  nearestSupport=annualLevels.supports
+   .filter(x=>Number(x.price)<last.close)
+   .sort((a,b)=>Number(b.price)-Number(a.price))[0]||null;
+
+  nearestResistance=annualLevels.resistances
+   .filter(x=>Number(x.price)>last.close)
+   .sort((a,b)=>Number(a.price)-Number(b.price))[0]||null;
+
+  const tolerance=last.close*0.001;
+  const atSupport=nearestSupport&&(last.close-Number(nearestSupport.price))<=tolerance;
+  const atResistance=nearestResistance&&(Number(nearestResistance.price)-last.close)<=tolerance;
+
+  if(atSupport&&twoBull){
+   up+=20;
+   levelNote="Rebote confirmado en soporte anual "+nearestSupport.price;
+  }else if(atResistance&&twoBear){
+   down+=20;
+   levelNote="Rechazo confirmado en resistencia anual "+nearestResistance.price;
+  }else if(atSupport){
+   levelNote="Cerca del soporte anual, falta confirmación";
+  }else if(atResistance){
+   levelNote="Cerca de resistencia anual, falta confirmación";
+  }else{
+   levelNote="Sin nivel anual cercano";
+  }
+ }
+
+ let direction="NO ENTRAR";
+ if(trendUp&&macdUp&&momentumUp&&strongTrend&&volatilityOK&&twoBull&&up>=80&&up>down){
+  direction="CALL";
+ }else if(trendDown&&macdDown&&momentumDown&&strongTrend&&volatilityOK&&twoBear&&down>=80&&down>up){
+  direction="PUT";
+ }
+
+ const score=Math.max(up,down);
+ const nextEntryEpoch=(Math.floor(now/step)+1)*step;
+ const nextEntry=new Date(nextEntryEpoch*1000).toLocaleString();
+ const closedAt=new Date((last.time+step)*1000).toLocaleString();
+
+ const reason=
+  "EMA 9/21 "+(trendUp?"alcista":trendDown?"bajista":"sin alineación")+
+  " · RSI "+r.toFixed(1)+
+  " · MACD "+(macdUp?"alcista":macdDown?"bajista":"mixto")+
+  " · ADX "+dx.toFixed(1)+
+  " · ATR "+(atrPct*100).toFixed(4)+"%"+
+  " · "+(twoBull?"2 velas alcistas":twoBear?"2 velas bajistas":"sin confirmación de 2 velas")+
+  " · "+levelNote+".";
+
+ return {
+  direction,
+  score:Math.max(0,Math.min(100,score)),
+  reason,
+  price:last.close,
+  time:closedAt,
+  nextEntry,
+  nearestSupport:nearestSupport?.price??null,
+  nearestResistance:nearestResistance?.price??null
+ };
 }
-let tr=trs.slice(0,period).reduce((a,b)=>a+b,0);
-let plus=pdm.slice(0,period).reduce((a,b)=>a+b,0);
-let minus=mdm.slice(0,period).reduce((a,b)=>a+b,0);
-const dx=[];
-for(let i=period;i<trs.length;i++){
-if(i>period){tr=tr-tr/period+trs[i];plus=plus-plus/period+pdm[i];minus=minus-minus/period+mdm[i];}
-const pdi=tr?100plus/tr:0, mdi=tr?100minus/tr:0;
-dx.push(pdi+mdi?100Math.abs(pdi-mdi)/(pdi+mdi):0);
+
+function addSignal(item){
+ history.unshift(item);
+ if(history.length>40)history.length=40;
+ renderSignals();
 }
-if(dx.length<period)return null;
-let value=dx.slice(0,period).reduce((a,b)=>a+b,0)/period;
-for(let i=period;i<dx.length;i++)value=(value*(period-1)+dx[i])/period;
-return value;
+
+function renderSignals(){
+ $("results").innerHTML="";
+ if(!history.length){
+  $("results").innerHTML='<p class="small">No hay resultados todavía.</p>';
+  return;
+ }
+
+ for(const s of history){
+  const cls=s.direction==="CALL"?"call":s.direction==="PUT"?"put":"wait";
+  const div=document.createElement("div");
+  div.className="signal";
+
+  const head=document.createElement("div");
+  head.className="signalHead";
+
+  const left=document.createElement("div");
+  const direction=document.createElement("div");
+  direction.className="direction "+cls;
+  direction.textContent=s.direction;
+
+  const name=document.createElement("div");
+  name.style.fontWeight="700";
+  name.textContent=s.symbol+" · "+s.market;
+
+  left.append(name,direction);
+
+  const tag=document.createElement("span");
+  tag.className="tag";
+  tag.textContent=s.expiry+" · "+s.score+"% técnico";
+  head.append(left,tag);
+
+  const reason=document.createElement("div");
+  reason.className="small";
+  reason.style.marginTop="9px";
+  reason.textContent=s.reason;
+
+  const meta=document.createElement("div");
+  meta.className="small";
+  meta.style.marginTop="5px";
+  meta.textContent=
+   "Precio de la última vela cerrada: "+(s.price??"—")+
+   " · Cerró: "+(s.time||"—")+
+   " · Entrada sugerida: "+(s.direction==="NO ENTRAR"?"—":(s.nextEntry||"—"))+
+   " · Vencimiento: "+s.expiry;
+
+  const levels=document.createElement("div");
+  levels.className="small";
+  levels.style.marginTop="4px";
+  levels.textContent=s.market==="REAL"
+   ?"Soporte anual cercano: "+(s.nearestSupport??"—")+" · Resistencia anual cercana: "+(s.nearestResistance??"—")
+   :"Niveles anuales: no aplican al mercado OTC.";
+
+  div.append(head,reason,meta,levels);
+  $("results").append(div);
+ }
 }
-function forexMarketOpen(now=new Date()) {
-// Horario Forex aproximado: domingo 17:00 a viernes 17:00, hora Nueva York.
-// Intl aplica automáticamente el horario de verano de Nueva York.
-const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',weekday:'short',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(now);
-const v={}; for(const p of parts)if(p.type!=='literal')v[p.type]=p.value;
-const day={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[v.weekday];
-const mins=Number(v.hour)60+Number(v.minute);
-if(day===0)return mins>=1760;
-if(day===5)return mins<1760;
-return day>=1&&day<=4;
+
+function otcPairSymbols(payload){
+ const list=Array.isArray(payload.symbols)?payload.symbols:[];
+ return list.filter(x=>
+  x&&typeof x.symbol==="string"&&
+  /^[A-Z]{6}_otc$/.test(x.symbol)&&
+  x.open===true
+ ).slice(0,5);
 }
-function analyze(candles, gaps={runs:0,missingBars:0}, annualLevels=null, interval='1min') {
-const step=interval==='5min'?300:60;
-if(!Array.isArray(candles) || candles.length<60) return {direction:'NO ENTRAR',score:0,reason:'Historial insuficiente (se requieren al menos 60 velas).'};
-if((gaps.runs||0)>0 || (gaps.missingBars||0)>0) return {direction:'NO ENTRAR',score:0,reason:'La serie contiene huecos de datos; se bloquea la señal.'};
-const nowSec=Date.now()/1000;
-const sorted=[...candles].map(c=>{
-let t=Number(c.time);
-if(Number.isFinite(t)&&t>1e12)t/=1000;
-if(!Number.isFinite(t)||t<=0){const parsed=Date.parse(c.datetime);t=Number.isFinite(parsed)?parsed/1000:NaN;}
-return {...c,time:t};
-}).sort((a,b)=>a.time-b.time);
-const bars=sorted.map(c=>({open:Number(c.open),high:Number(c.high),low:Number(c.low),close:Number(c.close),time:c.time,datetime:c.datetime}));
-if(bars.some(x=>![x.open,x.high,x.low,x.close,x.time].every(Number.isFinite)||x.high<x.low||x.high<Math.max(x.open,x.close)||x.low>Math.min(x.open,x.close)))
-return {direction:'NO ENTRAR',score:0,reason:'Velas con valores OHLC o marcas de tiempo inválidas.'};
-// Rechaza la serie completa si contiene velas fechadas más allá del reloj actual.
-const future=bars.find(x=>x.time>nowSec+5);
-if(future) return {direction:'NO ENTRAR',score:0,reason:'El proveedor entregó una vela con fecha futura. Se bloquea el análisis para evitar señales falsas.'};
-// En vez de quitar a ciegas la última fila, determina qué velas ya cerraron
-// usando el inicio de cada vela y la duración real del intervalo.
-const closed=bars.filter(x=>x.time+step<=nowSec+2);
-if(closed.length<55)return {direction:'NO ENTRAR',score:0,reason:'No hay suficientes velas cerradas para confirmar la señal.'};
-const last=closed[closed.length-1], prev=closed[closed.length-2], closes=closed.map(c=>c.close);
-const age=nowSec-(last.time+step);
-if(age>step2)return {direction:'NO ENTRAR',score:0,reason:La última vela cerrada está desactualizada (${Math.max(0,Math.round(age/60))} min).};
-const e9=ema(closes,9),e21=ema(closes,21), r=rsi(closes,14), m=macd(closes), a=atr(closed,14), dx=adx(closed,14);
-if(!m||a===null||dx===null)return {direction:'NO ENTRAR',score:0,reason:'No hay datos suficientes para MACD, ATR y ADX.'};
-const fast=e9[e9.length-1],slow=e21[e21.length-1];
-const trendUp=fast>slow&&last.close>fast,trendDown=fast<slow&&last.close<fast;
-const candleUp=last.close>last.open,candleDown=last.close<last.open;
-const prevUp=prev.close>prev.open,prevDown=prev.close<prev.open;
-const momentumUp=r>=50&&r<=68,momentumDown=r>=32&&r<=50;
-const macdUp=m.hist>0&&m.line>m.signal,macdDown=m.hist<0&&m.line<m.signal;
-const strongTrend=dx>=18, atrPct=a/last.close;
-const volatilityOK=atrPct>=0.000005&&atrPct<=0.003;
-const twoBull=prevUp&&candleUp,twoBear=prevDown&&candleDown;
-let up=0,down=0;
-if(trendUp)up+=20;if(trendDown)down+=20;
-if(momentumUp)up+=10;if(momentumDown)down+=10;
-if(macdUp)up+=20;if(macdDown)down+=20;
-if(strongTrend){if(trendUp)up+=10;if(trendDown)down+=10;}
-if(twoBull)up+=15;if(twoBear)down+=15;
-if(volatilityOK){if(candleUp)up+=5;if(candleDown)down+=5;}
-let levelNote='Niveles anuales no aplicados',nearestSupport=null,nearestResistance=null;
-if(annualLevels&&Array.isArray(annualLevels.supports)&&Array.isArray(annualLevels.resistances)){
-nearestSupport=annualLevels.supports.filter(x=>Number(x.price)<last.close).sort((a,b)=>(last.close-a.price)-(last.close-b.price))[0]||null;
-nearestResistance=annualLevels.resistances.filter(x=>Number(x.price)>last.close).sort((a,b)=>(a.price-last.close)-(b.price-last.close))[0]||null;
-const tolerance=last.close*0.001,atSupport=nearestSupport&&(last.close-nearestSupport.price)<=tolerance,atResistance=nearestResistance&&(nearestResistance.price-last.close)<=tolerance;
-if(atSupport&&twoBull){up+=20;levelNote=Rebote confirmado en soporte anual ${nearestSupport.price};}
-else if(atResistance&&twoBear){down+=20;levelNote=Rechazo confirmado en resistencia anual ${nearestResistance.price};}
-else if(atSupport)levelNote=Cerca del soporte anual ${nearestSupport.price}, falta confirmación de dos velas;
-else if(atResistance)levelNote=Cerca de resistencia anual ${nearestResistance.price}, falta confirmación de dos velas;
-else levelNote='Sin nivel anual cercano';
+
+async function updateOtcUsage(){
+ try{
+  const data=await getJson("/otc_usage");
+  $("usageText").textContent="Uso OTC: "+JSON.stringify(data);
+ }catch(e){
+  $("usageText").textContent="Uso OTC: "+e.message;
+ }
 }
-let direction='NO ENTRAR';
-if(trendUp&&macdUp&&momentumUp&&strongTrend&&volatilityOK&&twoBull&&up>=80&&up>down)direction='CALL';
-else if(trendDown&&macdDown&&momentumDown&&strongTrend&&volatilityOK&&twoBear&&down>=80&&down>up)direction='PUT';
-const score=Math.max(up,down);
-// La entrada se programa para el siguiente límite de vela después del análisis.
-const nextEntryEpoch=(Math.floor(nowSec/step)+1)step;
-const nextEntry=new Date(nextEntryEpoch1000).toLocaleString();
-const closedAt=new Date((last.time+step)*1000).toLocaleString();
-const reason=EMA 9/21 ${trendUp?'alcista':trendDown?'bajista':'sin alineación'} · RSI ${r.toFixed(1)} · MACD ${macdUp?'alcista':macdDown?'bajista':'mixto'} · ADX ${dx.toFixed(1)} (${strongTrend?'tendencia firme':'tendencia débil'}) · ATR ${(atrPct*100).toFixed(4)}% (${volatilityOK?'volatilidad válida':'volatilidad fuera de rango'}) · ${twoBull?'2 velas alcistas':twoBear?'2 velas bajistas':'sin confirmación de 2 velas'} · ${levelNote}.;
-return {direction,score:Math.max(0,Math.min(100,score)),reason,price:last.close,time:closedAt,nextEntry,nearestSupport:nearestSupport?.price??null,nearestResistance:nearestResistance?.price??null};
+
+async function scan(market){
+ const expiry=$("expiry").value;
+
+ if(market==="REAL"&&!forexMarketOpen()){
+  $("checked").textContent="0";
+  $("found").textContent="0";
+  $("best").textContent="—";
+  $("marketTag").textContent="REAL · MERCADO CERRADO";
+  setStatus("MERCADO REAL CERRADO. Forex abre aproximadamente el domingo a las 17:00 y cierra el viernes a las 17:00, hora de Nueva York. No se generan señales REAL.",true);
+  return;
+ }
+
+ $("realBtn").disabled=true;
+ $("otcBtn").disabled=true;
+ $("testBtn").disabled=true;
+ $("checked").textContent="…";
+ $("found").textContent="…";
+ $("best").textContent="…";
+ $("marketTag").textContent=market+" · "+expiry;
+ setStatus("Preparando análisis "+market+"…");
+
+ const results=[];
+ let assets=[];
+
+ try{
+  if(market==="REAL"){
+   assets=REAL_ASSETS.map(symbol=>({symbol,name:symbol}));
+  }else{
+   const catalogue=await getJson("/otc_symbols");
+   assets=otcPairSymbols(catalogue);
+   if(!assets.length){
+    throw new Error("OTCharts no devolvió pares OTC abiertos y permitidos. Revisa el plan o el catálogo.");
+   }
+  }
+
+  for(const asset of assets){
+   try{
+    let annualLevels=null;
+
+    if(market==="REAL"){
+     setStatus("Consultando historial anual y velas "+expiry+": "+asset.symbol+"…");
+     annualLevels=await getAnnualLevels(asset.symbol);
+    }
+
+    const path=market==="REAL"
+     ?"/time_series?symbol="+encodeURIComponent(asset.symbol)+"&interval="+expiry
+     :"/otc_time_series?symbol="+encodeURIComponent(asset.symbol)+"&interval="+expiry;
+
+    const data=await getJson(path);
+
+    if(market==="OTC"&&data.open===false){
+     results.push({
+      symbol:asset.symbol,market,expiry,
+      direction:"NO ENTRAR",score:0,
+      reason:"El proveedor reporta este activo cerrado.",
+      price:"—",time:""
+     });
+     continue;
+    }
+
+    const result=analyze(
+     data.candles,
+     data.gaps||{runs:0,missingBars:0},
+     annualLevels,
+     expiry
+    );
+
+    results.push({
+     symbol:asset.symbol,
+     market,
+     expiry,
+     ...result
+    });
+
+   }catch(e){
+    results.push({
+     symbol:asset.symbol,
+     market,
+     expiry,
+     direction:"NO ENTRAR",
+     score:0,
+     reason:e.message,
+     price:"—",
+     time:""
+    });
+   }
+
+   $("checked").textContent=results.length;
+  }
+
+  results.sort((a,b)=>{
+   if(a.direction!=="NO ENTRAR"&&b.direction==="NO ENTRAR")return -1;
+   if(a.direction==="NO ENTRAR"&&b.direction!=="NO ENTRAR")return 1;
+   return b.score-a.score;
+  });
+
+  history=[];
+  results.forEach(addSignal);
+
+  const signals=results.filter(x=>x.direction!=="NO ENTRAR");
+  const bestScore=results.length?Math.max(...results.map(x=>x.score)):0;
+
+  $("checked").textContent=results.length;
+  $("found").textContent=signals.length;
+  $("best").textContent=bestScore+"%";
+  $("marketTag").textContent=market+" · ANÁLISIS COMPLETADO";
+
+  setStatus(
+   signals.length
+    ?"Análisis terminado. Se encontraron "+signals.length+" señales experimentales. Confirma todo en Quotex."
+    :"Análisis terminado. No hay confirmaciones suficientes. NO ENTRAR.",
+   signals.length===0
+  );
+
+  if(market==="OTC")await updateOtcUsage();
+
+ }catch(e){
+  $("marketTag").textContent=market+" · ERROR";
+  setStatus(e.message,true);
+  $("checked").textContent=results.length;
+  $("found").textContent=results.filter(x=>x.direction!=="NO ENTRAR").length;
+  $("best").textContent="—";
+  if(results.length){
+   history=[];
+   results.forEach(addSignal);
+  }
+ }finally{
+  $("realBtn").disabled=false;
+  $("otcBtn").disabled=false;
+  $("testBtn").disabled=false;
+ }
 }
-function addSignal(item) {
-history.unshift(item);
-if(history.length>40)history.length=40;
-renderSignals();
-}
-function renderSignals() {
-$("results").innerHTML="";
-if(!history.length){$("results").innerHTML='<p class="small">No hay resultados todavía.</p>';return;}
-for(const s of history){
-const cls=s.direction==="CALL"?"call":s.direction==="PUT"?"put":"wait";
-const div=document.createElement("div");div.className="signal";
-const head=document.createElement("div");head.className="signalHead";
-const left=document.createElement("div");
-const direction=document.createElement("div");direction.className="direction "+cls;direction.textContent=s.direction;
-const name=document.createElement("div");name.style.fontWeight="700";name.textContent=s.symbol+" · "+s.market;
-left.append(name,direction);
-const tag=document.createElement("span");tag.className="tag";tag.textContent=s.expiry+" · "+s.score+"% técnico";
-head.append(left,tag);
-const reason=document.createElement("div");reason.className="small";reason.style.marginTop="9px";reason.textContent=s.reason;
-const meta=document.createElement("div");meta.className="small";meta.style.marginTop="5px";meta.textContent=Precio de la última vela cerrada: ${s.price ?? "—"} · Cerró: ${s.time || "—"} · Entrada sugerida: ${s.direction === "NO ENTRAR" ? "—" : (s.nextEntry || "—")} · Vencimiento: ${s.expiry};
-const levels=document.createElement("div");levels.className="small";levels.style.marginTop="4px";
-levels.textContent=s.market==="REAL" ? Soporte anual cercano: ${s.nearestSupport ?? "—"} · Resistencia anual cercana: ${s.nearestResistance ?? "—"} : "Niveles anuales: no aplican al mercado OTC.";
-div.append(head,reason,meta,levels);$("results").append(div);
-}
-}
-function otcPairSymbols(payload) {
-const list=Array.isArray(payload.symbols)?payload.symbols:[];
-// Solo pares FX de seis letras, excluye cripto, acciones, índices y materias primas.
-return list.filter(x=>/^[A-Z]{6}_otc$/.test(x.symbol) && x.open===true).slice(0,5);
-}
-async function scan(market) {
-const expiry=$("expiry").value;
-if(market==="REAL"&&!forexMarketOpen()) {
-$("checked").textContent="0";$("found").textContent="0";$("best").textContent="—";
-$("marketTag").textContent="REAL · MERCADO CERRADO";
-setStatus("MERCADO REAL CERRADO: Forex abre aproximadamente el domingo a las 17:00 y cierra el viernes a las 17:00, hora de Nueva York. No se generan señales REAL.",true);
-return;
-}
-currentMarket=market;
-$("realBtn").disabled=$("otcBtn").disabled=$("testBtn").disabled=true;
-$("checked").textContent="…";$("found").textContent="…";$("best").textContent="…";
-$("marketTag").textContent=market+" · "+expiry;
-setStatus(Consultando activos ${market}…);
-const results=[];
-try {
-let assets=[];
-if(market==="REAL") assets=REAL_ASSETS.map(symbol=>({symbol,name:symbol}));
-else {
-const catalogue=await getJson("/otc_symbols");
-assets=otcPairSymbols(catalogue);
-if(!assets.length) throw new Error("OTCharts no devolvió pares OTC abiertos y permitidos. Revisa el plan, el catálogo o el horario.");
-}
-for(const asset of assets) {
-try {
-let annualLevels = null;
-if (market === "REAL") {
-setStatus(Consultando historial anual y velas ${expiry}: ${asset.symbol}…);
-annualLevels = await getAnnualLevels(asset.symbol);
-}
-const path=market==="REAL"
-? /time_series?symbol=${encodeURIComponent(asset.symbol)}&interval=${expiry}
-: /otc_time_series?symbol=${encodeURIComponent(asset.symbol)}&interval=${expiry};
-const data=await getJson(path);
-if(market==="OTC" && data.open===false) {
-results.push({symbol:asset.symbol,market,expiry,direction:"NO ENTRAR",score:0,reason:"Quotex reporta este activo cerrado.",price:"—",time:""});
-continue;
-}
-const a=analyze(data.candles,data.gaps||{runs:0,missingBars:0},annualLevels,expiry);
-if (market
+
+$("realBtn").addEventListener("click",()=>scan("REAL"));
+$("otcBtn").addEventListener("click",()=>scan("OTC"));
+
+$("clearBtn").addEventListener("click",()=>{
+ history=[];
+ $("results").innerHTML='<p clas
