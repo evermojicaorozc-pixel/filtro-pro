@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FILTRO PRO 5.5</title>
+<title>FILTRO PRO 5.6</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;padding:15px;background:#07111e;color:#e8f0fa;font-family:Arial,sans-serif}
@@ -46,8 +46,8 @@ footer{text-align:center;color:#647f9b;font-size:10px;padding:15px}
 <div class="app">
 
 <header>
-<h1>FILTRO PRO 5.5</h1>
-<div class="sub">ANÁLISIS TÉCNICO · REAL · OTC</div>
+<h1>FILTRO PRO 5.6</h1>
+<div class="sub">ANÁLISIS TÉCNICO · REAL · OTC · 24 HORAS</div>
 </header>
 
 <div class="card">
@@ -76,7 +76,6 @@ footer{text-align:center;color:#647f9b;font-size:10px;padding:15px}
 <label>SENSIBILIDAD DE SEÑAL</label>
 <input id="sensitivity" type="range" min="50" max="95" value="75">
 <div class="small">Sensibilidad: <b id="sensitivityValue">75</b></div>
-<label><input type="checkbox" id="scheduleFilter" checked style="width:auto"> Activar filtro horario</label>
 <label><input type="checkbox" id="autoEnabled" style="width:auto"> Escaneo automático cada minuto (:55)</label>
 </div>
 
@@ -152,7 +151,7 @@ footer{text-align:center;color:#647f9b;font-size:10px;padding:15px}
 <button class="secondary" id="clearLog" style="width:100%;margin-top:10px">LIMPIAR REGISTRO</button>
 </div>
 
-<footer>FILTRO PRO 5.5 · Las señales no garantizan resultados.</footer>
+<footer>FILTRO PRO 5.6 · Las señales no garantizan resultados.</footer>
 </div>
 
 <script>
@@ -332,14 +331,6 @@ reasons:reasons.join(" · ")
 };
 }
 
-function checkMarketSchedule(){
-if(!$("scheduleFilter").checked)return true;
-const hour=Number(new Intl.DateTimeFormat("en-US",{
-timeZone:"America/Managua",hour:"2-digit",hour12:false
-}).format(new Date()));
-return !(hour>=21||hour<6);
-}
-
 async function getOTCAssets(){
 try{
 const data=await api("/otc_symbols");
@@ -442,13 +433,6 @@ results.sort((a,b)=>b.analysis.score-a.analysis.score);
 const best=results[0];
 const minimum=Number($("sensitivity").value);
 
-if(!checkMarketSchedule()){
-show("result","FUERA DE HORARIO");
-show("reason","El filtro horario está bloqueando las señales.");
-show("progress","Análisis terminado. Filtro horario activo.");
-return;
-}
-
 if(best.analysis.score<minimum||best.analysis.direction==="WAIT"){
 show("result","SIN SEÑAL");
 show("asset",best.symbol);
@@ -518,7 +502,7 @@ async function sendTelegram(symbol,analysis){
 const token=$("telegramToken").value.trim();
 const chat=$("telegramChat").value.trim();
 if(!token||!chat)return;
-const message="FILTRO PRO 5.5\nMercado: "+currentMarket+
+const message="FILTRO PRO 5.6\nMercado: "+currentMarket+
 "\nActivo: "+symbol+
 "\nSeñal: "+analysis.direction+
 "\nPuntaje: "+analysis.score+"/100"+
@@ -543,7 +527,7 @@ if(!token||!chat){alert("Introduce el Token y el Chat ID.");return}
 try{
 const response=await fetch("https://api.telegram.org/bot"+token+"/sendMessage",{
 method:"POST",headers:{"Content-Type":"application/json"},
-body:JSON.stringify({chat_id:chat,text:"FILTRO PRO 5.5: conexión correcta."})
+body:JSON.stringify({chat_id:chat,text:"FILTRO PRO 5.6: conexión correcta."})
 });
 const data=await response.json();
 alert(data.ok?"Telegram conectado correctamente.":"Error Telegram: "+data.description);
@@ -574,7 +558,7 @@ $("expiry").addEventListener("change",()=>show("expiryDisplay",$("expiry").value
 show("expiryDisplay",$("expiry").value+" min");
 updateStats();
 checkConnection();
-log("FILTRO PRO 5.5 iniciado correctamente.");
+log("FILTRO PRO 5.6 iniciado correctamente.");
 </script>
 </body>
 </html>
