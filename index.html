@@ -22,7 +22,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .auto-off{background:#263b50;border:1px solid #3c5875}
 .auto-on{background:#d97706;border:0;color:#fff}
 .secondary{background:#263b50}
-.status{font-size:12px;color:#9bb0c5;margin-top:10px}
+.status{font-size:12px;color:#9bb0c5;margin-top:10px;overflow-wrap:anywhere}
 .warn-box{background:#332211;border:1px solid #b45309;color:#fcd34d;padding:10px;border-radius:8px;font-size:12px;margin-top:10px;display:none}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .metric{background:#172b40;border-radius:9px;padding:12px;text-align:center;min-width:0}
@@ -48,6 +48,7 @@ footer{text-align:center;color:#647d96;font-size:11px;padding:20px}
 </head>
 <body>
 <div class="app">
+
 <header>
 <h1>FILTRO PRO 5.4</h1>
 <div class="sub">SUITE DE SEÑALES ANTICIPADAS · OPCIONES DIGITALES</div>
@@ -84,6 +85,7 @@ footer{text-align:center;color:#647d96;font-size:11px;padding:20px}
 </label>
 <div class="warn-box" id="scheduleWarning"></div>
 <button class="secondary" id="refresh">ACTUALIZAR LISTA DE ACTIVOS</button>
+<div class="status" id="assetStatus">Activos REAL: EUR/USD, GBP/USD, USD/JPY, AUD/USD y USD/CAD.</div>
 </div>
 
 <div class="panel">
@@ -98,8 +100,8 @@ footer{text-align:center;color:#647d96;font-size:11px;padding:20px}
 <input type="checkbox" id="tgEnabled">
 <span>Enviar señales automáticamente a mi Telegram</span>
 </label>
-<button class="secondary" id="testTg" style="margin-top:10px;padding:10px;font-size:13px">PROBAR CONEXIÓN TELEGRAM</button>
-<div class="status" id="tgStatus">Los datos se guardan en tu navegador.</div>
+<button class="secondary" id="testTg">PROBAR CONEXIÓN TELEGRAM</button>
+<div class="status" id="tgStatus">Los datos se mantienen en esta página mientras esté abierta.</div>
 </div>
 </details>
 </div>
@@ -124,7 +126,7 @@ footer{text-align:center;color:#647d96;font-size:11px;padding:20px}
 </div>
 
 <div class="panel">
-<h3><span>3. INDICADORES DEL ACTIVO LÍDER</span> <span class="badge" id="leaderName">---</span></h3>
+<h3><span>3. INDICADORES DEL ACTIVO LÍDER</span><span class="badge" id="leaderName">---</span></h3>
 <div class="grid">
 <div class="metric"><small>EMA 9</small><strong id="ema9">---</strong></div>
 <div class="metric"><small>EMA 21</small><strong id="ema21">---</strong></div>
@@ -137,8 +139,8 @@ footer{text-align:center;color:#647d96;font-size:11px;padding:20px}
 
 <div class="panel">
 <h3>4. CONFLUENCIA ANTICIPADA</h3>
-<div class="metric"><small>PUNTAJE DE PROBABILIDAD TÉCNICA</small><strong id="score">---</strong></div>
-<p class="muted" id="setupDetail">Evalúa agotamiento RSI, mechas de rechazo, giro temprano de MACD y zonas clave.</p>
+<div class="metric"><small>PUNTAJE TÉCNICO</small><strong id="score">---</strong></div>
+<p class="muted" id="setupDetail">Evalúa RSI, mechas, MACD, tendencia y zonas clave.</p>
 </div>
 
 <div class="panel">
@@ -149,7 +151,7 @@ footer{text-align:center;color:#647d96;font-size:11px;padding:20px}
 <div class="metric"><small>PRECIO ACTUAL</small><strong id="price">---</strong></div>
 <div class="metric"><small>ÚLTIMA VELA</small><strong id="lastCandle">---</strong></div>
 </div>
-<div class="status" id="historyStatus">Niveles calculados sobre acción del precio reciente.</div>
+<div class="status" id="historyStatus">Niveles calculados sobre la acción del precio reciente.</div>
 </div>
 
 <div class="panel">
@@ -160,6 +162,546 @@ footer{text-align:center;color:#647d96;font-size:11px;padding:20px}
 <footer>FILTRO PRO 5.4 · SUITE ANTICIPADA</footer>
 </div>
 
-<script src="app.js?v=1"></script>
-</body>
-</html>
+<script>
+"use strict";
+
+// CONFIGURACIÓN
+const API = "https://filtro-pro-api.evermojicaorozc.workers.dev";
+
+const REAL_ASSETS = [
+  "EUR/USD",
+  "GBP/USD",
+  "USD/JPY",
+  "AUD/USD",
+  "USD/CAD"
+];
+
+let OTC_ASSETS = [];
+let busy = false;
+let autoMode = false;
+let autoTimer = null;
+let lastScanMinute = "";
+let lastSignalKey = "";
+let currentMarket = "REAL";
+
+const $ = id => document.getElementById(id);
+
+function show(id, value) {
+  $(id).textContent = value;
+}
+
+function format(value) {
+  if (!Number.isFinite(value)) return "---";
+  return value.toFixed(5);
+}
+
+function api(path) {
+  return fetch(API + path, {
+    method: "GET",
+    cache: "no-store"
+  }).then(async response => {
+    const data = await response.json();
+    if (!response.ok || data.error || data.ok === false) {
+      throw new Error(data.error || "Error HTTP " + response.status);
+    }
+    return data;
+  });
+}
+
+function normalizeCandles(data) {
+  const raw = data.candles || data.values || data.data || [];
+
+  return raw.map(c => ({
+    time: c.datetime || c.time || c.timestamp || "",
+    open: Number(c.open),
+    high: Number(c.high),
+    low: Number(c.low),
+    close: Number(c.close)
+  })).filter(c =>
+    Number.isFinite(c.open) &&
+    Number.isFinite(c.high) &&
+    Number.isFinite(c.low) &&
+    Number.isFinite(c.close) &&
+    c.high >= c.low
+  );
+}
+
+// INDICADORES
+function ema(values, period) {
+  if (values.length < period) return NaN;
+  const multiplier = 2 / (period + 1);
+  let result = values[0];
+
+  for (let i = 1; i < values.length; i++) {
+    result = values[i] * multiplier + result * (1 - multiplier);
+  }
+  return result;
+}
+
+function rsi(values, period = 14) {
+  if (values.length <= period) return NaN;
+
+  let gains = 0;
+  let losses = 0;
+
+  for (let i = 1; i <= period; i++) {
+    const change = values[i] - values[i - 1];
+    if (change > 0) gains += change;
+    else losses -= change;
+  }
+
+  let avgGain = gains / period;
+  let avgLoss = losses / period;
+
+  for (let i = period + 1; i < values.length; i++) {
+    const change = values[i] - values[i - 1];
+    avgGain = (avgGain * (period - 1) + Math.max(change, 0)) / period;
+    avgLoss = (avgLoss * (period - 1) + Math.max(-change, 0)) / period;
+  }
+
+  if (avgLoss === 0) return 100;
+  return 100 - 100 / (1 + avgGain / avgLoss);
+}
+
+function macd(values) {
+  if (values.length < 35) return NaN;
+
+  const fast = ema(values.slice(-60), 12);
+  const slow = ema(values.slice(-60), 26);
+
+  const series = [];
+  for (let i = 26; i <= values.length; i++) {
+    const part = values.slice(0, i);
+    series.push(ema(part, 12) - ema(part, 26));
+  }
+
+  return (fast - slow) - ema(series, 9);
+}
+
+function atr(candles, period = 14) {
+  if (candles.length <= period) return NaN;
+
+  const ranges = [];
+
+  for (let i = 1; i < candles.length; i++) {
+    const c = candles[i];
+    const previous = candles[i - 1].close;
+
+    ranges.push(Math.max(
+      c.high - c.low,
+      Math.abs(c.high - previous),
+      Math.abs(c.low - previous)
+    ));
+  }
+
+  return ranges.slice(-period).reduce((a, b) => a + b, 0) / period;
+}
+
+function adx(candles, period = 14) {
+  if (candles.length < period * 2 + 1) return NaN;
+
+  const trs = [];
+  const plus = [];
+  const minus = [];
+
+  for (let i = 1; i < candles.length; i++) {
+    const a = candles[i - 1];
+    const b = candles[i];
+
+    const up = b.high - a.high;
+    const down = a.low - b.low;
+
+    plus.push(up > down && up > 0 ? up : 0);
+    minus.push(down > up && down > 0 ? down : 0);
+
+    trs.push(Math.max(
+      b.high - b.low,
+      Math.abs(b.high - a.close),
+      Math.abs(b.low - a.close)
+    ));
+  }
+
+  const dx = [];
+
+  for (let i = period; i < trs.length; i++) {
+    const start = i - period + 1;
+
+    const tr = trs.slice(start, i + 1).reduce((a, b) => a + b, 0);
+    const p = plus.slice(start, i + 1).reduce((a, b) => a + b, 0);
+    const m = minus.slice(start, i + 1).reduce((a, b) => a + b, 0);
+
+    if (!tr) continue;
+
+    const pdi = 100 * p / tr;
+    const mdi = 100 * m / tr;
+
+    dx.push(100 * Math.abs(pdi - mdi) / (pdi + mdi || 1));
+  }
+
+  if (dx.length < period) return NaN;
+
+  return dx.slice(-period).reduce((a, b) => a + b, 0) / period;
+}
+
+// ANÁLISIS
+function analyze(candles) {
+  if (candles.length < 35) {
+    throw new Error("Se necesitan al menos 35 velas para analizar.");
+  }
+
+  const closes = candles.map(c => c.close);
+  const last = candles[candles.length - 1];
+  const previous = candles[candles.length - 2];
+
+  const e9 = ema(closes, 9);
+  const e21 = ema(closes, 21);
+  const rv = rsi(closes);
+  const mv = macd(closes);
+  const av = adx(candles);
+  const at = atr(candles);
+
+  const range = Math.max(last.high - last.low, 0.00000001);
+  const upperWick = last.high - Math.max(last.open, last.close);
+  const lowerWick = Math.min(last.open, last.close) - last.low;
+
+  const bullishRejection = lowerWick / range > 0.45;
+  const bearishRejection = upperWick / range > 0.45;
+
+  const recent = candles.slice(-30);
+  const support = Math.min(...recent.map(c => c.low));
+  const resistance = Math.max(...recent.map(c => c.high));
+
+  let call = 0;
+  let put = 0;
+  const reasons = [];
+
+  if (e9 > e21) {
+    call += 20;
+    reasons.push("EMA alcista");
+  } else if (e9 < e21) {
+    put += 20;
+    reasons.push("EMA bajista");
+  }
+
+  if (rv < 35) {
+    call += 20;
+    reasons.push("RSI bajo");
+  } else if (rv > 65) {
+    put += 20;
+    reasons.push("RSI alto");
+  } else if (rv > 50) {
+    call += 8;
+  } else {
+    put += 8;
+  }
+
+  if (mv > 0) {
+    call += 15;
+    reasons.push("MACD positivo");
+  } else if (mv < 0) {
+    put += 15;
+    reasons.push("MACD negativo");
+  }
+
+  if (bullishRejection) {
+    call += 20;
+    reasons.push("Rechazo inferior");
+  }
+
+  if (bearishRejection) {
+    put += 20;
+    reasons.push("Rechazo superior");
+  }
+
+  const distanceSupport = Math.abs(last.close - support);
+  const distanceResistance = Math.abs(resistance - last.close);
+
+  if (distanceSupport < range * 1.5) call += 15;
+  if (distanceResistance < range * 1.5) put += 15;
+
+  if (last.close > previous.close) call += 10;
+  if (last.close < previous.close) put += 10;
+
+  const threshold = Number($("sensitivity").value);
+  const filter = $("timeFilter").checked;
+
+  const currentHour = new Date().getUTCHours();
+  const lowActivity = currentHour >= 21 || currentHour < 6;
+  const extremeVolatility = Number.isFinite(at) &&
+    at > last.close * 0.003;
+
+  let warning = "";
+
+  if (filter && lowActivity) {
+    warning = "Horario de baja actividad UTC. Señales bloqueadas.";
+  }
+
+  if (filter && extremeVolatility) {
+    warning = "Volatilidad extrema detectada. Señales bloqueadas.";
+  }
+
+  let direction = "WAIT";
+  let score = Math.max(call, put);
+
+  if (!warning) {
+    if (call >= threshold && call > put) direction = "CALL";
+    else if (put >= threshold && put > call) direction = "PUT";
+  }
+
+  return {
+    direction,
+    score,
+    call,
+    put,
+    e9,
+    e21,
+    rv,
+    mv,
+    av,
+    at,
+    support,
+    resistance,
+    price: last.close,
+    candle: last,
+    reasons,
+    warning
+  };
+}
+
+// PANTALLA
+function displayAnalysis(symbol, candles, a, source) {
+  show("source", source);
+  show("candleCount", candles.length);
+  show("leaderName", symbol);
+
+  show("ema9", format(a.e9));
+  show("ema21", format(a.e21));
+  show("rsi", Number.isFinite(a.rv) ? a.rv.toFixed(2) : "---");
+  show("macd", Number.isFinite(a.mv) ? a.mv.toFixed(6) : "---");
+  show("adx", Number.isFinite(a.av) ? a.av.toFixed(2) : "---");
+  show("atr", format(a.at));
+
+  show("support", format(a.support));
+  show("resistance", format(a.resistance));
+  show("price", format(a.price));
+  show("lastCandle", a.candle.close >= a.candle.open ? "ALCISTA" : "BAJISTA");
+
+  show("score", a.score + " / 100");
+  show("setupDetail", a.reasons.join(" · ") || "Sin confluencias suficientes.");
+
+  const result = $("result");
+  result.className = "";
+
+  if (a.direction === "CALL") {
+    result.textContent = "CALL ↑";
+    result.classList.add("call");
+  } else if (a.direction === "PUT") {
+    result.textContent = "PUT ↓";
+    result.classList.add("put");
+  } else {
+    result.textContent = "NO ENTRAR";
+    result.classList.add("wait");
+  }
+
+  show("reason",
+    a.warning ||
+    (a.direction === "WAIT"
+      ? "No hay suficientes condiciones técnicas."
+      : "Confluencia técnica detectada. Espera confirmación antes de operar.")
+  );
+
+  if (a.warning) {
+    $("scheduleWarning").style.display = "block";
+    show("scheduleWarning", a.warning);
+  } else {
+    $("scheduleWarning").style.display = "none";
+  }
+
+  show("historyStatus", "Niveles calculados con las últimas 30 velas.");
+}
+
+// REGISTRO
+function addLog(symbol, direction, score) {
+  if (direction === "WAIT") return;
+
+  const now = new Date();
+  const key = symbol + direction + Math.floor(now.getTime() / 60000);
+
+  if (key === lastSignalKey) return;
+  lastSignalKey = key;
+
+  const row = document.createElement("div");
+  row.className = "log-row";
+
+  const asset = document.createElement("span");
+  asset.className = "log-asset";
+  asset.textContent = symbol;
+
+  const signal = document.createElement("span");
+  signal.className = direction === "CALL" ? "log-call" : "log-put";
+  signal.textContent = direction + " · " + score;
+
+  const time = document.createElement("span");
+  time.className = "log-time";
+  time.textContent = now.toLocaleTimeString();
+
+  row.append(asset, signal, time);
+
+  if ($("log").firstElementChild &&
+      $("log").firstElementChild.classList.contains("muted")) {
+    $("log").innerHTML = "";
+  }
+
+  $("log").prepend(row);
+
+  while ($("log").children.length > 30) {
+    $("log").lastElementChild.remove();
+  }
+}
+
+// TELEGRAM
+async function sendTelegram(message) {
+  const token = $("tgToken").value.trim();
+  const chat = $("tgChatId").value.trim();
+
+  if (!token || !chat) {
+    throw new Error("Completa el token y el Chat ID.");
+  }
+
+  const response = await fetch(
+    "https://api.telegram.org/bot" + token + "/sendMessage",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chat,
+        text: message
+      })
+    }
+  );
+
+  const data = await response.json();
+
+  if (!data.ok) {
+    throw new Error(data.description || "Error de Telegram");
+  }
+
+  return true;
+}
+
+async function telegramSignal(symbol, a) {
+  if (!$("tgEnabled").checked || a.direction === "WAIT") return;
+
+  const message =
+    "FILTRO PRO 5.4\n" +
+    "Activo: " + symbol + "\n" +
+    "Señal: " + a.direction + "\n" +
+    "Puntaje técnico: " + a.score + "/100\n" +
+    "Precio: " + a.price + "\n" +
+    "Vencimiento seleccionado: " + $("expiry").value + " min\n" +
+    "Confirmar condiciones antes de operar.";
+
+  try {
+    await sendTelegram(message);
+  } catch (e) {
+    show("tgStatus", "Error Telegram: " + e.message);
+  }
+}
+
+// ESCANEO REAL
+async function scanReal() {
+  const results = [];
+
+  for (const symbol of REAL_ASSETS) {
+    show("progress", "Analizando REAL: " + symbol);
+
+    const query = "/time_series?symbol=" +
+      encodeURIComponent(symbol) +
+      "&interval=1min";
+
+    const data = await api(query);
+    const candles = normalizeCandles(data);
+    const analysis = analyze(candles);
+
+    results.push({ symbol, candles, analysis });
+  }
+
+  results.sort((a, b) => b.analysis.score - a.analysis.score);
+
+  const best = results[0];
+
+  displayAnalysis(
+    best.symbol,
+    best.candles,
+    best.analysis,
+    "TWELVE DATA REAL"
+  );
+
+  addLog(best.symbol, best.analysis.direction, best.analysis.score);
+  await telegramSignal(best.symbol, best.analysis);
+
+  show("progress",
+    "Escaneo REAL completado. Activo líder: " + best.symbol
+  );
+}
+
+// ESCANEO OTC
+async function scanOTC() {
+  if (!OTC_ASSETS.length) {
+    throw new Error("No hay lista OTC disponible del proveedor.");
+  }
+
+  const results = [];
+
+  for (const symbol of OTC_ASSETS) {
+    show("progress", "Analizando OTC: " + symbol);
+
+    const query = "/otc_time_series?symbol=" +
+      encodeURIComponent(symbol) +
+      "&interval=1min";
+
+    const data = await api(query);
+    const candles = normalizeCandles(data);
+    const analysis = analyze(candles);
+
+    results.push({ symbol, candles, analysis });
+  }
+
+  results.sort((a, b) => b.analysis.score - a.analysis.score);
+
+  const best = results[0];
+
+  displayAnalysis(
+    best.symbol,
+    best.candles,
+    best.analysis,
+    "PROVEEDOR OTC"
+  );
+
+  addLog(best.symbol, best.analysis.direction, best.analysis.score);
+  await telegramSignal(best.symbol, best.analysis);
+
+  show("progress", "Escaneo OTC completado: " + best.symbol);
+}
+
+// CONTROL DEL ESCANEO
+async function scan(market) {
+  if (busy) return;
+
+  busy = true;
+  $("realButton").disabled = true;
+  $("otcButton").disabled = true;
+
+  try {
+    currentMarket = market;
+
+    if (market === "REAL") {
+      await scanReal();
+    } else {
+      await scanOTC();
+    }
+  } catch (e) {
+    show("progress", "ERROR: " + e.message);
+    show("reason", e.message);
+    show("result", "SIN DATOS");
+  
