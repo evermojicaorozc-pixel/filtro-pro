@@ -72,20 +72,17 @@ footer{text-align:center;color:#647d96;font-size:11px;padding:20px}
 </select>
 </div>
 </div>
-
 <label>Sensibilidad del Motor Anticipado</label>
 <select id="sensitivity">
 <option value="85">CONSERVADOR (85+ pts)</option>
 <option value="75" selected>EQUILIBRADO (75+ pts)</option>
 <option value="65">AGRESIVO (65+ pts)</option>
 </select>
-
 <label class="checkbox-row">
 <input type="checkbox" id="timeFilter" checked>
 <span>Activar Filtro de Horario y Volatilidad Extrema</span>
 </label>
 <div class="warn-box" id="scheduleWarning"></div>
-
 <button class="secondary" id="refresh">ACTUALIZAR LISTA DE ACTIVOS</button>
 </div>
 
@@ -164,112 +161,48 @@ footer{text-align:center;color:#647d96;font-size:11px;padding:20px}
 </div>
 
 <script>
-window.onerror = function(msg, url, line) {
- var el = document.getElementById("connection");
- if (el) el.textContent = "❌ ERROR JS (Línea " + line + "): " + msg;
-};
+window.onerror=function(m,u,l){var e=document.getElementById("connection");if(e)e.textContent="❌ ERROR (L"+l+"): "+m;};
+const API="https://workers.dev";
+const REAL_ASSETS=["EUR/USD","GBP/USD","USD/JPY","AUD/USD","USD/CAD"];
+let busy=false,autoMode=false,autoTimer=null,lastScannedMinute=-1;
+const $=id=>document.getElementById(id);
+$("connection").textContent="Conectando con API...";
 
-const API = "https://workers.dev";
-const REAL_ASSETS = ["EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD", "USD/CAD"];
-let busy = false;
-let autoMode = false;
-let autoTimer = null;
-let lastScannedMinute = -1;
-const $ = id => document.getElementById(id);
+function loadSettings(){try{$("tgToken").value=localStorage.getItem("fp_tg_token")||"";$("tgChatId").value=localStorage.getItem("fp_tg_chat")||"";$("tgEnabled").checked=localStorage.getItem("fp_tg_enabled")==="true";if(localStorage.getItem("fp_sens"))$("sensitivity").value=localStorage.getItem("fp_sens");}catch(e){}}
+["tgToken","tgChatId","tgEnabled","sensitivity"].forEach(id=>{$(id).addEventListener("change",()=>{try{localStorage.setItem("fp_tg_token",$("tgToken").value.trim());localStorage.setItem("fp_tg_chat",$("tgChatId").value.trim());localStorage.setItem("fp_tg_enabled",$("tgEnabled").checked);localStorage.setItem("fp_sens",$("sensitivity").value);}catch(e){}});});
 
-$("connection").textContent = "Conectando con servidor...";
+async function sendTelegramMessage(text){if(!$("tgEnabled").checked)return;const t=$("tgToken").value.trim(),c=$("tgChatId").value.trim();if(!t||!c)return;try{await fetch("https://telegram.org"+encodeURIComponent(t)+"/sendMessage",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:c,text:text,parse_mode:"HTML"})});}catch(e){}}
 
-function loadSettings() {
- try {
-  $("tgToken").value = localStorage.getItem("fp_tg_token") || "";
-  $("tgChatId").value = localStorage.getItem("fp_tg_chat") || "";
-  $("tgEnabled").checked = localStorage.getItem("fp_tg_enabled") === "true";
-  if (localStorage.getItem("fp_sens")) $("sensitivity").value = localStorage.getItem("fp_sens");
- } catch (e) {}
+$("testTg").addEventListener("click",async()=>{const t=$("tgToken").value.trim(),c=$("tgChatId").value.trim();if(!t||!c){$("tgStatus").textContent="⚠️ Ingresa Token y Chat ID.";return;}$("tgStatus").textContent="Enviando prueba...";try{const r=await fetch("https://telegram.org"+encodeURIComponent(t)+"/sendMessage",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:c,text:"✅ <b>FILTRO PRO 5.4</b> conectado.",parse_mode:"HTML"})});const d=await r.json();$("tgStatus").textContent=d.ok?"✅ ¡Enviado!":"❌ "+d.description;}catch(e){$("tgStatus").textContent="❌ "+e.message;}});
+
+function checkMarketSchedule(market){const w=$("scheduleWarning");if(!$("timeFilter").checked){w.style.display="none";return{allowed:true,reason:""};}const n=new Date(),d=n.getUTCDay(),h=n.getUTCHours();if(market==="REAL"){if((d===6)||(d===5&&h>=21)||(d===0&&h<21)){const m="⚠️ Mercado REAL cerrado por fin de semana.";w.textContent=m;w.style.display="block";return{allowed:false,reason:m};}if(h>=21&&h<=23){const m="⚠️ Baja liquidez (21:00-00:00 UTC).";w.textContent=m;w.style.display="block";return{allowed:false,reason:m};}}w.style.display="none";return{allowed:true,reason:""};}
+n").disabled=true;
+$("result").textContent="ESCANEANDO...";$("result").className="wait";
+try{
+const assets=await getAssets(market);
+const settled=await Promise.allSettled(assets.map(s=>scanAsset(market,s)));
+const valid=settled.filter(x=>x.status==="fulfilled").map(x=>x.value);
+$("source").textContent=valid[0]&&valid[0].data?valid[0].data.source:"API";
+$("candleCount").textContent=valid.reduce((s,x)=>s+x.candles.length,0);
+const signals=valid.filter(x=>x.result.direction==="CALL"||x.result.direction==="PUT");
+const exp=Number($("expiry").value);
+if(signals.length){
+playAlertSound();
+signals.forEach(x=>{logSignal(x.symbol,x.result.direction,exp,x.result.tag);sendTelegramMessage((x.result.direction==="CALL"?"🟢":"🔴")+" "+x.symbol+" "+x.result.direction+" ("+exp+"m) · "+x.result.reasons.join(" + "));});
+$("result").textContent=signals.map(x=>x.symbol+" "+x.result.direction).join(" · ");
+$("result").className=signals[0].result.direction==="CALL"?"call":"put";
+$("reason").textContent="¡Señal lista! Entrar en apertura de vela.";
+}else{$("result").textContent="NO ENTRAR";$("result").className="wait";$("reason").textContent="Sin señales claras en los 5 activos.";}
+if(valid.length){const st=valid.slice().sort((a,b)=>b.result.score-a.result.score);displayAnalysis(st[0].symbol,st[0].result);}
+$("progress").textContent="Escaneo OK ("+new Date().toLocaleTimeString()+") · "+valid.length+"/"+assets.length+" activos.";
+}catch(e){$("result").textContent="ERROR";$("reason").textContent=e.message;}
+finally{busy=false;$("realButton").disabled=false;$("otcButton").disabled=false;}
 }
-
-["tgToken", "tgChatId", "tgEnabled", "sensitivity"].forEach(id => {
- $(id).addEventListener("change", () => {
-  try {
-   localStorage.setItem("fp_tg_token", $("tgToken").value.trim());
-   localStorage.setItem("fp_tg_chat", $("tgChatId").value.trim());
-   localStorage.setItem("fp_tg_enabled", $("tgEnabled").checked);
-   localStorage.setItem("fp_sens", $("sensitivity").value);
-  } catch (e) {}
- });
-});
-
-async function sendTelegramMessage(text) {
- if (!$("tgEnabled").checked) return;
- const token = $("tgToken").value.trim();
- const chatId = $("tgChatId").value.trim();
- if (!token || !chatId) return;
- try {
-  await fetch("https://telegram.org" + encodeURIComponent(token) + "/sendMessage", {
-   method: "POST",
-   headers: { "Content-Type": "application/json" },
-   body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: "HTML" })
-  });
- } catch (e) {}
-}
-
-$("testTg").addEventListener("click", async () => {
- const token = $("tgToken").value.trim();
- const chatId = $("tgChatId").value.trim();
- if (!token || !chatId) {
-  $("tgStatus").textContent = "⚠️ Ingresa primero el Bot Token y el Chat ID.";
-  return;
- }
- $("tgStatus").textContent = "Enviando mensaje de prueba...";
- try {
-  const res = await fetch("https://telegram.org" + encodeURIComponent(token) + "/sendMessage", {
-   method: "POST",
-   headers: { "Content-Type": "application/json" },
-   body: JSON.stringify({
-    chat_id: chatId,
-    text: "✅ <b>FILTRO PRO 5.4</b> conectado correctamente.",
-    parse_mode: "HTML"
-   })
-  });
-  const data = await res.json();
-  $("tgStatus").textContent = data.ok ? "✅ ¡Mensaje enviado! Revisa tu Telegram." : "❌ Error: " + data.description;
- } catch (e) {
-  $("tgStatus").textContent = "❌ Error de red: " + e.message;
- }
-});
-
-function checkMarketSchedule(market) {
- const warnEl = $("scheduleWarning");
- if (!$("timeFilter").checked) {
-  warnEl.style.display = "none";
-  return { allowed: true, reason: "" };
- }
- const now = new Date();
- const utcDay = now.getUTCDay();
- const utcHour = now.getUTCHours();
-
- if (market === "REAL") {
-  analyze("REAL");
-});
-$("otcButton").addEventListener("click", () => {
-$("market").value = "OTC";
-analyze("OTC");
-});
-(async () => {
-loadSettings();
-checkMarketSchedule($("market").value);
-await health();
-$("progress").textContent = "Suite lista. Configura tu sensibilidad y activa el escáner.";
-})();
- analyze("REAL");
-});
-$("otcButton").addEventListener("click", () => {
-$("market").value = "OTC";
-analyze("OTC");
-});
-(async () => {
-loadSettings();
-checkMarketSchedule($("market").value);
-await health();
-$("progress").textContent = "Suite lista. Configura tu sensibilidad y activa el escáner.";
-})();
+$("autoButton").addEventListener("click",()=>{autoMode=!autoMode;const b=$("autoButton");if(autoMode){b.textContent="⏱️ AUTO-ESCANEO (SEGUNDO :55): ACTIVADO";b.className="auto-on";analyze($("market").value);autoTimer=setInterval(()=>{const n=new Date();if(n.getSeconds()>=55&&lastScannedMinute!==n.getMinutes()&&!busy){lastScannedMinute=n.getMinutes();analyze($("market").value);}},1000);}else{b.textContent="⏱️ AUTO-ESCANEO (SEGUNDO :55): APAGADO";b.className="auto-off";clearInterval(autoTimer);}});
+$("market").addEventListener("change",()=>checkMarketSchedule($("market").value));
+$("timeFilter").addEventListener("change",()=>checkMarketSchedule($("market").value));
+$("realButton").addEventListener("click",()=>{$("market").value="REAL";analyze("REAL");});
+$("otcButton").addEventListener("click",()=>{$("market").value="OTC";analyze("OTC");});
+loadSettings();checkMarketSchedule($("market").value);health();
+ 
+ 
