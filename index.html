@@ -4,704 +4,1070 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FILTRO PRO 5.4</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#07111e;color:#e8f0fa;font-family:Arial,sans-serif;padding:16px}
+body{
+ margin:0;padding:15px;background:#07111e;color:#e8f0fa;
+ font-family:Arial,sans-serif
+}
 .app{max-width:680px;margin:auto}
-header{text-align:center;padding:20px 5px}
-h1{color:#36d6a2;margin:0;font-size:30px}
-.sub{color:#8da3bb;font-size:12px;margin-top:7px}
-.panel{background:#101f30;border:1px solid #263b50;border-radius:14px;padding:16px;margin:13px 0}
-h3{font-size:14px;color:#8faac3;margin:0 0 13px;display:flex;justify-content:space-between;align-items:center}
-label{display:block;color:#a8bdd1;font-size:12px;margin:12px 0 6px}
-select,button,input[type="text"],input[type="password"]{width:100%;padding:13px;border-radius:9px;border:1px solid #344a60;background:#172b40;color:white;font-size:14px}
-button{font-weight:bold;cursor:pointer;margin-top:10px;font-size:15px}
+header{text-align:center;padding:15px 5px}
+h1{margin:0;color:#35d5ff;font-size:27px}
+.sub{color:#8fa8c4;font-size:12px;margin-top:7px}
+.card{
+ background:#101f31;border:1px solid #203750;
+ border-radius:13px;padding:15px;margin-bottom:13px
+}
+h3{font-size:14px;color:#35d5ff;margin:0 0 12px}
+.row{display:flex;gap:9px;flex-wrap:wrap}
+.row>*{flex:1;min-width:100px}
+button{
+ border:0;border-radius:9px;padding:13px 10px;
+ font-weight:bold;font-size:13px;cursor:pointer
+}
 button:disabled{opacity:.45;cursor:not-allowed}
-.real{background:#087b60;border:0}
-.otc{background:#7652bc;border:0}
-.auto-off{background:#263b50;border:1px solid #3c5875}
-.auto-on{background:#d97706;border:0;color:#fff}
-.secondary{background:#263b50}
-.status{font-size:12px;color:#9bb0c5;margin-top:10px;overflow-wrap:anywhere}
-.warn-box{background:#332211;border:1px solid #b45309;color:#fcd34d;padding:10px;border-radius:8px;font-size:12px;margin-top:10px;display:none}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.metric{background:#172b40;border-radius:9px;padding:12px;text-align:center;min-width:0}
-.metric small{display:block;color:#9aafc5;font-size:11px}
-.metric strong{display:block;font-size:17px;margin-top:7px;overflow-wrap:anywhere}
-.signal{text-align:center;padding:22px 10px}
-.signal h2{font-size:30px;margin:8px}
-.call{color:#37e5a5}.put{color:#ff657b}.wait{color:#ffc65a}
-.muted{color:#91a8bf;font-size:12px}
-#log{font-size:13px;line-height:1.7}
-.log-row{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid #263b50}
-.log-row:last-child{border-bottom:0}
-.log-asset{font-weight:bold;overflow-wrap:anywhere}
-.log-call{color:#37e5a5;font-weight:bold}
-.log-put{color:#ff7180;font-weight:bold}
-.log-time{color:#9bb0c5;font-size:11px;white-space:nowrap}
-.badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;background:#1e364d;color:#36d6a2}
-.checkbox-row{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;color:#cbd5e1;cursor:pointer}
-.checkbox-row input{width:auto;margin:0}
-details summary{cursor:pointer;color:#36d6a2;font-size:13px;font-weight:bold;user-select:none}
-footer{text-align:center;color:#647d96;font-size:11px;padding:20px}
+.real{background:#1687e8;color:white}
+.otc{background:#8c4be8;color:white}
+.auto{background:#16a77a;color:white}
+.stop{background:#bd4050;color:white}
+.secondary{background:#263e58;color:white}
+input,select{
+ width:100%;padding:11px;border-radius:8px;
+ border:1px solid #35506b;background:#091726;
+ color:white;margin-top:6px;margin-bottom:10px
+}
+label{font-size:12px;color:#a9bfd6}
+.status{
+ padding:11px;background:#091726;border-radius:8px;
+ font-size:12px;color:#a9bfd6;line-height:1.5;
+ overflow-wrap:anywhere
+}
+.signal{text-align:center;padding:20px 10px}
+.signal strong{display:block;font-size:34px;margin:8px}
+.call{color:#20df9b}
+.put{color:#ff6579}
+.wait{color:#f6c85c}
+.metric{
+ background:#091726;border-radius:9px;padding:12px;
+ text-align:center
+}
+.metric b{display:block;font-size:20px;color:#35d5ff}
+.metric span{font-size:11px;color:#91a9c2}
+.small{font-size:11px;color:#91a9c2}
+#log{
+ max-height:180px;overflow:auto;font-size:11px;
+ line-height:1.6;color:#a9bfd6;white-space:pre-wrap
+}
+hr{border:0;border-top:1px solid #263b52;margin:13px 0}
+.good{color:#20df9b}
+.bad{color:#ff6579}
+.warning{color:#f6c85c}
+footer{text-align:center;color:#647f9b;font-size:10px;padding:15px}
 </style>
 </head>
+
 <body>
 <div class="app">
 
 <header>
-<h1>FILTRO PRO 5.4</h1>
-<div class="sub">SUITE DE SEÑALES ANTICIPADAS · OPCIONES DIGITALES</div>
-<div class="status" id="connection">Iniciando sistema...</div>
+ <h1>FILTRO PRO 5.4</h1>
+ <div class="sub">ANÁLISIS TÉCNICO · REAL · OTC</div>
 </header>
 
-<div class="panel">
-<h3>1. CONFIGURACIÓN Y SENSIBILIDAD</h3>
-<div class="grid">
-<div>
-<label style="margin-top:0">Mercado</label>
-<select id="market">
-<option value="REAL">MERCADO REAL</option>
-<option value="OTC">MERCADO OTC</option>
-</select>
-</div>
-<div>
-<label style="margin-top:0">Vencimiento</label>
-<select id="expiry">
-<option value="1">1 MINUTO</option>
-<option value="5">5 MINUTOS</option>
-</select>
-</div>
-</div>
-<label>Sensibilidad del Motor Anticipado</label>
-<select id="sensitivity">
-<option value="85">CONSERVADOR (85+ pts)</option>
-<option value="75" selected>EQUILIBRADO (75+ pts)</option>
-<option value="65">AGRESIVO (65+ pts)</option>
-</select>
-<label class="checkbox-row">
-<input type="checkbox" id="timeFilter" checked>
-<span>Activar Filtro de Horario y Volatilidad Extrema</span>
-</label>
-<div class="warn-box" id="scheduleWarning"></div>
-<button class="secondary" id="refresh">ACTUALIZAR LISTA DE ACTIVOS</button>
-<div class="status" id="assetStatus">Activos REAL: EUR/USD, GBP/USD, USD/JPY, AUD/USD y USD/CAD.</div>
+<div class="card">
+ <h3>CONEXIÓN API</h3>
+ <div id="connection" class="status">Comprobando conexión...</div>
+ <button class="secondary" style="width:100%;margin-top:10px" id="refresh">
+  COMPROBAR CONEXIÓN
+ </button>
 </div>
 
-<div class="panel">
-<details>
-<summary>📲 CONFIGURAR ALERTAS A TELEGRAM (OPCIONAL)</summary>
-<div style="margin-top:12px">
-<label>Bot Token</label>
-<input type="password" id="tgToken" placeholder="Token de @BotFather">
-<label>Chat ID</label>
-<input type="text" id="tgChatId" placeholder="ID numérico de @userinfobot">
-<label class="checkbox-row">
-<input type="checkbox" id="tgEnabled">
-<span>Enviar señales automáticamente a mi Telegram</span>
-</label>
-<button class="secondary" id="testTg">PROBAR CONEXIÓN TELEGRAM</button>
-<div class="status" id="tgStatus">Los datos se mantienen en esta página mientras esté abierta.</div>
-</div>
-</details>
+<div class="card">
+ <h3>SELECCIONAR MERCADO</h3>
+ <div class="row">
+  <button class="real" id="realButton">MERCADO REAL</button>
+  <button class="otc" id="otcButton">MERCADO OTC</button>
+ </div>
+ <div class="small" style="margin-top:10px">
+  Selecciona el mercado que deseas analizar.
+ </div>
 </div>
 
-<div class="grid">
-<div class="metric"><small>FUENTE DE DATOS</small><strong id="source">---</strong></div>
-<div class="metric"><small>VELAS ANALIZADAS</small><strong id="candleCount">---</strong></div>
+<div class="card">
+ <h3>CONFIGURACIÓN</h3>
+
+ <label>EXPIRACIÓN</label>
+ <select id="expiry">
+  <option value="1">1 minuto</option>
+  <option value="2">2 minutos</option>
+  <option value="3">3 minutos</option>
+  <option value="5">5 minutos</option>
+ </select>
+
+ <label>SENSIBILIDAD DE SEÑAL</label>
+ <input id="sensitivity" type="range" min="50" max="95" value="75">
+ <div class="small">Sensibilidad: <b id="sensitivityValue">75</b></div>
+
+ <label>
+  <input type="checkbox" id="scheduleFilter" checked
+   style="width:auto;margin:8px 5px 8px 0">
+  Activar filtro horario
+ </label>
+
+ <label>
+  <input type="checkbox" id="autoEnabled"
+   style="width:auto;margin:8px 5px 8px 0">
+  Escaneo automático cada minuto (:55)
+ </label>
 </div>
 
-<div class="panel">
-<h3>2. ESCÁNER EN TIEMPO REAL</h3>
-<button class="real" id="realButton">ESCANEAR REAL AHORA</button>
-<button class="otc" id="otcButton">ESCANEAR OTC AHORA</button>
-<button class="auto-off" id="autoButton">⏱️ AUTO-ESCANEO (SEGUNDO :55): APAGADO</button>
-<div class="status" id="progress">Esperando análisis...</div>
+<div class="card">
+ <h3>CONTROL DEL ESCANEO</h3>
+ <div class="row">
+  <button class="auto" id="autoButton">INICIAR AUTOMÁTICO</button>
+  <button class="stop" id="stopButton">DETENER</button>
+ </div>
+ <div id="progress" class="status" style="margin-top:12px">
+  Esperando selección de mercado...
+ </div>
 </div>
 
-<div class="panel signal">
-<div class="muted">RESULTADO ANTICIPADO</div>
-<h2 id="result" class="wait">NO ENTRAR</h2>
-<div id="reason" class="muted">Presiona escanear o activa el modo automático.</div>
+<div class="card signal">
+ <div class="small">SEÑAL DETECTADA</div>
+ <strong id="result" class="wait">ESPERANDO</strong>
+ <div id="asset">Sin activo seleccionado</div>
+ <div id="reason" class="small" style="margin-top:10px">
+  Selecciona REAL u OTC para comenzar.
+ </div>
+ <hr>
+ <div class="row">
+  <div class="metric">
+   <b id="score">--</b>
+   <span>CONFIANZA TÉCNICA</span>
+  </div>
+  <div class="metric">
+   <b id="expiryDisplay">1 min</b>
+   <span>EXPIRACIÓN</span>
+  </div>
+ </div>
 </div>
 
-<div class="panel">
-<h3><span>3. INDICADORES DEL ACTIVO LÍDER</span><span class="badge" id="leaderName">---</span></h3>
-<div class="grid">
-<div class="metric"><small>EMA 9</small><strong id="ema9">---</strong></div>
-<div class="metric"><small>EMA 21</small><strong id="ema21">---</strong></div>
-<div class="metric"><small>RSI 14</small><strong id="rsi">---</strong></div>
-<div class="metric"><small>MACD HIST.</small><strong id="macd">---</strong></div>
-<div class="metric"><small>ADX 14</small><strong id="adx">---</strong></div>
-<div class="metric"><small>ATR 14</small><strong id="atr">---</strong></div>
-</div>
-</div>
-
-<div class="panel">
-<h3>4. CONFLUENCIA ANTICIPADA</h3>
-<div class="metric"><small>PUNTAJE TÉCNICO</small><strong id="score">---</strong></div>
-<p class="muted" id="setupDetail">Evalúa RSI, mechas, MACD, tendencia y zonas clave.</p>
+<div class="card">
+ <h3>INDICADORES TÉCNICOS</h3>
+ <div class="row">
+  <div class="metric"><b id="rsi">--</b><span>RSI</span></div>
+  <div class="metric"><b id="adx">--</b><span>ADX</span></div>
+  <div class="metric"><b id="atr">--</b><span>ATR</span></div>
+ </div>
+ <div class="row" style="margin-top:9px">
+  <div class="metric"><b id="ema">--</b><span>EMA</span></div>
+  <div class="metric"><b id="macd">--</b><span>MACD</span></div>
+ </div>
 </div>
 
-<div class="panel">
-<h3>5. NIVELES DINÁMICOS Y PRECIO</h3>
-<div class="grid">
-<div class="metric"><small>SOPORTE CERCANO</small><strong id="support">---</strong></div>
-<div class="metric"><small>RESISTENCIA CERCANA</small><strong id="resistance">---</strong></div>
-<div class="metric"><small>PRECIO ACTUAL</small><strong id="price">---</strong></div>
-<div class="metric"><small>ÚLTIMA VELA</small><strong id="lastCandle">---</strong></div>
-</div>
-<div class="status" id="historyStatus">Niveles calculados sobre la acción del precio reciente.</div>
+<div class="card">
+ <h3>ESTADÍSTICAS DEL ESCANEO</h3>
+ <div class="row">
+  <div class="metric"><b id="scanned">0</b><span>ANALIZADOS</span></div>
+  <div class="metric"><b id="errors">0</b><span>ERRORES</span></div>
+  <div class="metric"><b id="signals">0</b><span>SEÑALES</span></div>
+ </div>
 </div>
 
-<div class="panel">
-<h3>6. REGISTRO DE SEÑALES ANTICIPADAS</h3>
-<div id="log"><div class="muted">Aquí aparecerán las señales CALL y PUT detectadas.</div></div>
+<div class="card">
+ <h3>TELEGRAM (OPCIONAL)</h3>
+ <label>Bot Token</label>
+ <input id="telegramToken" type="password" placeholder="Token del bot">
+ <label>Chat ID</label>
+ <input id="telegramChat" placeholder="ID del chat">
+ <button class="secondary" id="telegramTest" style="width:100%">
+  PROBAR TELEGRAM
+ </button>
+ <div class="small">
+  El envío es opcional. No compartas tu token con otras personas.
+ </div>
 </div>
 
-<footer>FILTRO PRO 5.4 · SUITE ANTICIPADA</footer>
+<div class="card">
+ <h3>REGISTRO DE ACTIVIDAD</h3>
+ <div id="log">Sistema iniciado.</div>
+ <button class="secondary" id="clearLog" style="width:100%;margin-top:10px">
+  LIMPIAR REGISTRO
+ </button>
+</div>
+
+<footer>
+ FILTRO PRO 5.4 · Herramienta de análisis técnico.
+ Las señales no garantizan resultados ni beneficios.
+</footer>
+
 </div>
 
 <script>
 "use strict";
 
-// CONFIGURACIÓN
+/* =========================================
+   CONFIGURACIÓN PRINCIPAL
+========================================= */
+
 const API = "https://filtro-pro-api.evermojicaorozc.workers.dev";
 
 const REAL_ASSETS = [
-  "EUR/USD",
-  "GBP/USD",
-  "USD/JPY",
-  "AUD/USD",
-  "USD/CAD"
+ "EUR/USD",
+ "GBP/USD",
+ "USD/JPY",
+ "AUD/USD",
+ "USD/CAD"
 ];
 
-let OTC_ASSETS = [];
+const FALLBACK_OTC = [
+ "EUR/USD",
+ "GBP/USD",
+ "USD/JPY",
+ "AUD/USD",
+ "USD/CAD"
+];
+
 let busy = false;
-let autoMode = false;
+let autoRunning = false;
 let autoTimer = null;
-let lastScanMinute = "";
-let lastSignalKey = "";
 let currentMarket = "REAL";
+
+let statistics = {
+ scanned:0,
+ errors:0,
+ signals:0
+};
+
+let lastAutoMinute = "";
+
+/* =========================================
+   ELEMENTOS Y UTILIDADES
+========================================= */
 
 const $ = id => document.getElementById(id);
 
-function show(id, value) {
-  $(id).textContent = value;
+function show(id,value){
+ $(id).textContent = value;
 }
 
-function format(value) {
-  if (!Number.isFinite(value)) return "---";
-  return value.toFixed(5);
+function log(message){
+ const box = $("log");
+ const time = new Date().toLocaleTimeString();
+
+ box.textContent =
+  "[" + time + "] " + message + "\n" + box.textContent;
 }
 
-function api(path) {
-  return fetch(API + path, {
-    method: "GET",
-    cache: "no-store"
-  }).then(async response => {
-    const data = await response.json();
-    if (!response.ok || data.error || data.ok === false) {
-      throw new Error(data.error || "Error HTTP " + response.status);
-    }
-    return data;
+function number(value){
+ const n = Number(value);
+ return Number.isFinite(n) ? n : 0;
+}
+
+function sleep(ms){
+ return new Promise(resolve => setTimeout(resolve,ms));
+}
+
+function updateStats(){
+ show("scanned",statistics.scanned);
+ show("errors",statistics.errors);
+ show("signals",statistics.signals);
+}
+
+/* =========================================
+   CONEXIÓN CON WORKER
+========================================= */
+
+async function api(path){
+ const controller = new AbortController();
+ const timeout = setTimeout(() => controller.abort(),15000);
+
+ try{
+  const response = await fetch(API + path,{
+   method:"GET",
+   cache:"no-store",
+   signal:controller.signal
   });
+
+  const text = await response.text();
+
+  let data;
+
+  try{
+   data = JSON.parse(text);
+  }catch(e){
+   throw new Error("El Worker no devolvió JSON válido.");
+  }
+
+  if(!response.ok){
+   throw new Error(data.error || "Error HTTP " + response.status);
+  }
+
+  if(data.error || data.ok === false){
+   throw new Error(data.error || "Error del servidor");
+  }
+
+  return data;
+
+ }finally{
+  clearTimeout(timeout);
+ }
 }
 
-function normalizeCandles(data) {
-  const raw = data.candles || data.values || data.data || [];
+async function checkConnection(){
+ show("connection","Comprobando Worker...");
 
-  return raw.map(c => ({
-    time: c.datetime || c.time || c.timestamp || "",
-    open: Number(c.open),
-    high: Number(c.high),
-    low: Number(c.low),
-    close: Number(c.close)
-  })).filter(c =>
-    Number.isFinite(c.open) &&
-    Number.isFinite(c.high) &&
-    Number.isFinite(c.low) &&
-    Number.isFinite(c.close) &&
-    c.high >= c.low
-  );
-}
+ try{
+  const data = await api("/health");
 
-// INDICADORES
-function ema(values, period) {
-  if (values.length < period) return NaN;
-  const multiplier = 2 / (period + 1);
-  let result = values[0];
-
-  for (let i = 1; i < values.length; i++) {
-    result = values[i] * multiplier + result * (1 - multiplier);
-  }
-  return result;
-}
-
-function rsi(values, period = 14) {
-  if (values.length <= period) return NaN;
-
-  let gains = 0;
-  let losses = 0;
-
-  for (let i = 1; i <= period; i++) {
-    const change = values[i] - values[i - 1];
-    if (change > 0) gains += change;
-    else losses -= change;
-  }
-
-  let avgGain = gains / period;
-  let avgLoss = losses / period;
-
-  for (let i = period + 1; i < values.length; i++) {
-    const change = values[i] - values[i - 1];
-    avgGain = (avgGain * (period - 1) + Math.max(change, 0)) / period;
-    avgLoss = (avgLoss * (period - 1) + Math.max(-change, 0)) / period;
-  }
-
-  if (avgLoss === 0) return 100;
-  return 100 - 100 / (1 + avgGain / avgLoss);
-}
-
-function macd(values) {
-  if (values.length < 35) return NaN;
-
-  const fast = ema(values.slice(-60), 12);
-  const slow = ema(values.slice(-60), 26);
-
-  const series = [];
-  for (let i = 26; i <= values.length; i++) {
-    const part = values.slice(0, i);
-    series.push(ema(part, 12) - ema(part, 26));
-  }
-
-  return (fast - slow) - ema(series, 9);
-}
-
-function atr(candles, period = 14) {
-  if (candles.length <= period) return NaN;
-
-  const ranges = [];
-
-  for (let i = 1; i < candles.length; i++) {
-    const c = candles[i];
-    const previous = candles[i - 1].close;
-
-    ranges.push(Math.max(
-      c.high - c.low,
-      Math.abs(c.high - previous),
-      Math.abs(c.low - previous)
-    ));
-  }
-
-  return ranges.slice(-period).reduce((a, b) => a + b, 0) / period;
-}
-
-function adx(candles, period = 14) {
-  if (candles.length < period * 2 + 1) return NaN;
-
-  const trs = [];
-  const plus = [];
-  const minus = [];
-
-  for (let i = 1; i < candles.length; i++) {
-    const a = candles[i - 1];
-    const b = candles[i];
-
-    const up = b.high - a.high;
-    const down = a.low - b.low;
-
-    plus.push(up > down && up > 0 ? up : 0);
-    minus.push(down > up && down > 0 ? down : 0);
-
-    trs.push(Math.max(
-      b.high - b.low,
-      Math.abs(b.high - a.close),
-      Math.abs(b.low - a.close)
-    ));
-  }
-
-  const dx = [];
-
-  for (let i = period; i < trs.length; i++) {
-    const start = i - period + 1;
-
-    const tr = trs.slice(start, i + 1).reduce((a, b) => a + b, 0);
-    const p = plus.slice(start, i + 1).reduce((a, b) => a + b, 0);
-    const m = minus.slice(start, i + 1).reduce((a, b) => a + b, 0);
-
-    if (!tr) continue;
-
-    const pdi = 100 * p / tr;
-    const mdi = 100 * m / tr;
-
-    dx.push(100 * Math.abs(pdi - mdi) / (pdi + mdi || 1));
-  }
-
-  if (dx.length < period) return NaN;
-
-  return dx.slice(-period).reduce((a, b) => a + b, 0) / period;
-}
-
-// ANÁLISIS
-function analyze(candles) {
-  if (candles.length < 35) {
-    throw new Error("Se necesitan al menos 35 velas para analizar.");
-  }
-
-  const closes = candles.map(c => c.close);
-  const last = candles[candles.length - 1];
-  const previous = candles[candles.length - 2];
-
-  const e9 = ema(closes, 9);
-  const e21 = ema(closes, 21);
-  const rv = rsi(closes);
-  const mv = macd(closes);
-  const av = adx(candles);
-  const at = atr(candles);
-
-  const range = Math.max(last.high - last.low, 0.00000001);
-  const upperWick = last.high - Math.max(last.open, last.close);
-  const lowerWick = Math.min(last.open, last.close) - last.low;
-
-  const bullishRejection = lowerWick / range > 0.45;
-  const bearishRejection = upperWick / range > 0.45;
-
-  const recent = candles.slice(-30);
-  const support = Math.min(...recent.map(c => c.low));
-  const resistance = Math.max(...recent.map(c => c.high));
-
-  let call = 0;
-  let put = 0;
-  const reasons = [];
-
-  if (e9 > e21) {
-    call += 20;
-    reasons.push("EMA alcista");
-  } else if (e9 < e21) {
-    put += 20;
-    reasons.push("EMA bajista");
-  }
-
-  if (rv < 35) {
-    call += 20;
-    reasons.push("RSI bajo");
-  } else if (rv > 65) {
-    put += 20;
-    reasons.push("RSI alto");
-  } else if (rv > 50) {
-    call += 8;
-  } else {
-    put += 8;
-  }
-
-  if (mv > 0) {
-    call += 15;
-    reasons.push("MACD positivo");
-  } else if (mv < 0) {
-    put += 15;
-    reasons.push("MACD negativo");
-  }
-
-  if (bullishRejection) {
-    call += 20;
-    reasons.push("Rechazo inferior");
-  }
-
-  if (bearishRejection) {
-    put += 20;
-    reasons.push("Rechazo superior");
-  }
-
-  const distanceSupport = Math.abs(last.close - support);
-  const distanceResistance = Math.abs(resistance - last.close);
-
-  if (distanceSupport < range * 1.5) call += 15;
-  if (distanceResistance < range * 1.5) put += 15;
-
-  if (last.close > previous.close) call += 10;
-  if (last.close < previous.close) put += 10;
-
-  const threshold = Number($("sensitivity").value);
-  const filter = $("timeFilter").checked;
-
-  const currentHour = new Date().getUTCHours();
-  const lowActivity = currentHour >= 21 || currentHour < 6;
-  const extremeVolatility = Number.isFinite(at) &&
-    at > last.close * 0.003;
-
-  let warning = "";
-
-  if (filter && lowActivity) {
-    warning = "Horario de baja actividad UTC. Señales bloqueadas.";
-  }
-
-  if (filter && extremeVolatility) {
-    warning = "Volatilidad extrema detectada. Señales bloqueadas.";
-  }
-
-  let direction = "WAIT";
-  let score = Math.max(call, put);
-
-  if (!warning) {
-    if (call >= threshold && call > put) direction = "CALL";
-    else if (put >= threshold && put > call) direction = "PUT";
-  }
-
-  return {
-    direction,
-    score,
-    call,
-    put,
-    e9,
-    e21,
-    rv,
-    mv,
-    av,
-    at,
-    support,
-    resistance,
-    price: last.close,
-    candle: last,
-    reasons,
-    warning
-  };
-}
-
-// PANTALLA
-function displayAnalysis(symbol, candles, a, source) {
-  show("source", source);
-  show("candleCount", candles.length);
-  show("leaderName", symbol);
-
-  show("ema9", format(a.e9));
-  show("ema21", format(a.e21));
-  show("rsi", Number.isFinite(a.rv) ? a.rv.toFixed(2) : "---");
-  show("macd", Number.isFinite(a.mv) ? a.mv.toFixed(6) : "---");
-  show("adx", Number.isFinite(a.av) ? a.av.toFixed(2) : "---");
-  show("atr", format(a.at));
-
-  show("support", format(a.support));
-  show("resistance", format(a.resistance));
-  show("price", format(a.price));
-  show("lastCandle", a.candle.close >= a.candle.open ? "ALCISTA" : "BAJISTA");
-
-  show("score", a.score + " / 100");
-  show("setupDetail", a.reasons.join(" · ") || "Sin confluencias suficientes.");
-
-  const result = $("result");
-  result.className = "";
-
-  if (a.direction === "CALL") {
-    result.textContent = "CALL ↑";
-    result.classList.add("call");
-  } else if (a.direction === "PUT") {
-    result.textContent = "PUT ↓";
-    result.classList.add("put");
-  } else {
-    result.textContent = "NO ENTRAR";
-    result.classList.add("wait");
-  }
-
-  show("reason",
-    a.warning ||
-    (a.direction === "WAIT"
-      ? "No hay suficientes condiciones técnicas."
-      : "Confluencia técnica detectada. Espera confirmación antes de operar.")
+  show(
+   "connection",
+   "CONECTADO ✓ | " +
+   (data.service || "FILTRO PRO") +
+   " | REAL: " + (data.realConfigured ? "OK" : "NO CONFIGURADO") +
+   " | OTC: " + (data.otcConfigured ? "OK" : "NO CONFIGURADO")
   );
 
-  if (a.warning) {
-    $("scheduleWarning").style.display = "block";
-    show("scheduleWarning", a.warning);
-  } else {
-    $("scheduleWarning").style.display = "none";
-  }
+  log("Conexión con Worker correcta.");
 
-  show("historyStatus", "Niveles calculados con las últimas 30 velas.");
+ }catch(error){
+  show("connection","ERROR DE CONEXIÓN: " + error.message);
+  log("Error de conexión: " + error.message);
+ }
 }
 
-// REGISTRO
-function addLog(symbol, direction, score) {
-  if (direction === "WAIT") return;
+/* =========================================
+   NORMALIZAR VELAS
+========================================= */
+
+function normalizeCandles(data){
+ let source =
+  data.candles ||
+  data.values ||
+  data.data ||
+  [];
+
+ if(!Array.isArray(source)){
+  throw new Error("La API no devolvió una lista de velas.");
+ }
+
+ const candles = source.map(c => ({
+  open:number(c.open),
+  high:number(c.high),
+  low:number(c.low),
+  close:number(c.close),
+  time:c.datetime || c.time || c.timestamp || ""
+ })).filter(c =>
+  c.open > 0 &&
+  c.high > 0 &&
+  c.low > 0 &&
+  c.close > 0
+ );
+
+ candles.sort((a,b) =>
+  String(a.time).localeCompare(String(b.time))
+ );
+
+ if(candles.length < 35){
+  throw new Error("Solo llegaron " + candles.length + " velas.");
+ }
+
+ return candles;
+}
+
+/* =========================================
+   INDICADORES
+========================================= */
+
+function ema(values,period){
+ if(values.length < period) return null;
+
+ const k = 2 / (period + 1);
+ let result = values[0];
+
+ for(let i=1;i<values.length;i++){
+  result = values[i] * k + result * (1-k);
+ }
+
+ return result;
+}
+
+function calculateRSI(values,period=14){
+ if(values.length <= period) return 50;
+
+ let gains = 0;
+ let losses = 0;
+
+ for(let i=values.length-period;i<values.length;i++){
+  const change = values[i] - values[i-1];
+
+  if(change > 0) gains += change;
+  else losses += Math.abs(change);
+ }
+
+ if(losses === 0) return 100;
+
+ const rs = (gains/period)/(losses/period);
+
+ return 100 - (100/(1+rs));
+}
+
+function calculateMACD(values){
+ const fast = ema(values.slice(-60),12);
+ const slow = ema(values.slice(-60),26);
+
+ if(fast === null || slow === null) return 0;
+
+ return fast-slow;
+}
+
+function calculateATR(candles,period=14){
+ if(candles.length < period+1) return 0;
+
+ const ranges = [];
+
+ for(let i=candles.length-period;i<candles.length;i++){
+  const c = candles[i];
+  const previous = candles[i-1].close;
+
+  ranges.push(Math.max(
+   c.high-c.low,
+   Math.abs(c.high-previous),
+   Math.abs(c.low-previous)
+  ));
+ }
+
+ return ranges.reduce((a,b)=>a+b,0)/ranges.length;
+}
+
+function calculateADX(candles,period=14){
+ if(candles.length < period+2) return 0;
+
+ let plus = 0;
+ let minus = 0;
+ let tr = 0;
+
+ for(let i=candles.length-period;i<candles.length;i++){
+  const current = candles[i];
+  const previous = candles[i-1];
+
+  const up = current.high-previous.high;
+  const down = previous.low-current.low;
+
+  if(up > down && up > 0) plus += up;
+  if(down > up && down > 0) minus += down;
+
+  tr += Math.max(
+   current.high-current.low,
+   Math.abs(current.high-previous.close),
+   Math.abs(current.low-previous.close)
+  );
+ }
+
+ if(tr === 0) return 0;
+
+ const plusDI = plus/tr*100;
+ const minusDI = minus/tr*100;
+
+ if(plusDI+minusDI === 0) return 0;
+
+ return Math.abs(plusDI-minusDI)/
+  (plusDI+minusDI)*100;
+}
+
+/* =========================================
+   ANÁLISIS DEL ACTIVO
+========================================= */
+
+function analyze(candles){
+ const closes = candles.map(c=>c.close);
+
+ const last = closes[closes.length-1];
+ const previous = closes[closes.length-2];
+
+ const ema9 = ema(closes.slice(-60),9);
+ const ema21 = ema(closes.slice(-60),21);
+
+ const rsi = calculateRSI(closes);
+ const macd = calculateMACD(closes);
+ const adx = calculateADX(candles);
+ const atr = calculateATR(candles);
+
+ let buy = 0;
+ let sell = 0;
+ const reasons = [];
+
+ if(ema9 > ema21){
+  buy += 25;
+  reasons.push("EMA alcista");
+ }else if(ema9 < ema21){
+  sell += 25;
+  reasons.push("EMA bajista");
+ }
+
+ if(rsi > 50 && rsi < 70){
+  buy += 20;
+  reasons.push("RSI comprador");
+ }else if(rsi < 50 && rsi > 30){
+  sell += 20;
+  reasons.push("RSI vendedor");
+ }
+
+ if(macd > 0){
+  buy += 20;
+  reasons.push("MACD positivo");
+ }else if(macd < 0){
+  sell += 20;
+  reasons.push("MACD negativo");
+ }
+
+ if(last > previous){
+  buy += 10;
+ }else if(last < previous){
+  sell += 10;
+ }
+
+ const candle = candles[candles.length-1];
+ const body = candle.close-candle.open;
+
+ if(body > 0){
+  buy += 10;
+ }else if(body < 0){
+  sell += 10;
+ }
+
+ if(adx >= 20){
+  buy += 10;
+  sell += 10;
+  reasons.push("Tendencia con fuerza");
+ }
+
+ const score = Math.max(buy,sell);
+
+ let direction = "WAIT";
+
+ if(buy > sell){
+  direction = "CALL";
+ }else if(sell > buy){
+  direction = "PUT";
+ }
+
+ return {
+  direction,
+  score:Math.min(100,Math.round(score)),
+  buy,
+  sell,
+  rsi,
+  adx,
+  atr,
+  ema:ema9,
+  macd,
+  price:last,
+  reasons:reasons.join(" · ")
+ };
+}
+
+/* =========================================
+   FILTRO HORARIO
+========================================= */
+
+function checkMarketSchedule(){
+ if(!$("scheduleFilter").checked) return true;
+
+ const hour = new Date().getUTCHours();
+
+ // Evita el horario de baja actividad configurado.
+ if(hour >= 21 || hour < 6){
+  return false;
+ }
+
+ return true;
+}
+
+/* =========================================
+   OBTENER ACTIVOS OTC
+========================================= */
+
+async function getOTCAssets(){
+ try{
+  const data = await api("/otc_symbols");
+
+  let symbols =
+   data.symbols ||
+   data.data ||
+   data.assets ||
+   [];
+
+  if(Array.isArray(symbols) && symbols.length){
+   symbols = symbols.map(item =>
+    typeof item === "string"
+     ? item
+     : item.symbol || item.name
+   ).filter(Boolean);
+
+   if(symbols.length) return symbols;
+  }
+
+ }catch(error){
+  log("No se pudo cargar la lista OTC: " + error.message);
+ }
+
+ return FALLBACK_OTC;
+}
+
+/* =========================================
+   OBTENER VELAS
+========================================= */
+
+async function getCandles(market,symbol){
+ let path;
+
+ if(market === "REAL"){
+  path = "/time_series?symbol=" +
+   encodeURIComponent(symbol) +
+   "&interval=1min";
+ }else{
+  path = "/otc_time_series?symbol=" +
+   encodeURIComponent(symbol) +
+   "&interval=1min";
+ }
+
+ const data = await api(path);
+
+ return normalizeCandles(data);
+}
+
+/* =========================================
+   MOSTRAR RESULTADO
+========================================= */
+
+function displayAnalysis(symbol,result){
+ show("asset",symbol);
+
+ show("score",result.score + " / 100");
+ show("expiryDisplay",$("expiry").value + " min");
+
+ show("rsi",result.rsi.toFixed(1));
+ show("adx",result.adx.toFixed(1));
+ show("atr",result.atr.toFixed(6));
+ show("ema",result.ema.toFixed(6));
+ show("macd",result.macd.toFixed(6));
+
+ const output = $("result");
+
+ output.className = "";
+
+ if(result.direction === "CALL"){
+  output.textContent = "CALL ▲";
+  output.classList.add("call");
+ }else if(result.direction === "PUT"){
+  output.textContent = "PUT ▼";
+  output.classList.add("put");
+ }else{
+  output.textContent = "ESPERAR";
+  output.classList.add("wait");
+ }
+
+ show("reason",result.reasons || "Sin confirmaciones suficientes.");
+}
+
+/* =========================================
+   ESCANEO REAL
+========================================= */
+
+async function scanReal(){
+ show("progress","Analizando mercado REAL...");
+
+ const results = [];
+
+ for(const symbol of REAL_ASSETS){
+  if(!busy) break;
+
+  try{
+   show("progress","Analizando " + symbol + "...");
+
+   const candles = await getCandles("REAL",symbol);
+   const analysis = analyze(candles);
+
+   results.push({
+    symbol,
+    analysis
+   });
+
+   statistics.scanned++;
+   updateStats();
+
+   log(symbol + ": " + analysis.direction +
+    " | Puntaje: " + analysis.score);
+
+  }catch(error){
+   statistics.errors++;
+   updateStats();
+
+   log("Error en " + symbol + ": " + error.message);
+  }
+
+  await sleep(250);
+ }
+
+ if(!results.length){
+  show("result","SIN DATOS");
+  show("reason","No se pudo analizar ningún activo. Revisa los errores del registro.");
+  show("progress","Escaneo terminado sin resultados.");
+  return;
+ }
+
+ results.sort((a,b)=>
+  b.analysis.score-a.analysis.score
+ );
+
+ const best = results[0];
+ const minimum = Number($("sensitivity").value);
+
+ if(!checkMarketSchedule()){
+  show("result","FUERA DE HORARIO");
+  show("reason","El filtro horario está bloqueando las señales.");
+  show("progress","Análisis terminado. Filtro horario activo.");
+  return;
+ }
+
+ if(best.analysis.score < minimum ||
+    best.analysis.direction === "WAIT"){
+  show("result","SIN SEÑAL");
+  show("asset",best.symbol);
+  show("score",best.analysis.score + " / 100");
+  show("reason","La mejor oportunidad no alcanza la sensibilidad configurada.");
+  show("progress","Escaneo REAL terminado.");
+  return;
+ }
+
+ displayAnalysis(best.symbol,best.analysis);
+
+ statistics.signals++;
+ updateStats();
+
+ show("progress","Escaneo REAL completado correctamente.");
+
+ log("MEJOR RESULTADO REAL: " + best.symbol +
+  " | " + best.analysis.direction +
+  " | " + best.analysis.score);
+
+ await sendTelegram(best.symbol,best.analysis);
+}
+
+/* =========================================
+   ESCANEO OTC
+========================================= */
+
+async function scanOTC(){
+ show("progress","Cargando activos OTC...");
+
+ const assets = await getOTCAssets();
+ const results = [];
+
+ if(!assets.length){
+  throw new Error("No hay activos OTC disponibles.");
+ }
+
+ for(const symbol of assets){
+  if(!busy) break;
+
+  try{
+   show("progress","Analizando OTC: " + symbol + "...");
+
+   const candles = await getCandles("OTC",symbol);
+   const analysis = analyze(candles);
+
+   results.push({
+    symbol,
+    analysis
+   });
+
+   statistics.scanned++;
+   updateStats();
+
+   log("OTC " + symbol + ": " +
+    analysis.direction + " | " + analysis.score);
+
+  }catch(error){
+   statistics.errors++;
+   updateStats();
+
+   log("Error OTC " + symbol + ": " + error.message);
+  }
+
+  await sleep(250);
+ }
+
+ if(!results.length){
+  show("result","SIN DATOS OTC");
+  show("reason","No se pudieron obtener velas OTC. Revisa la configuración del Worker.");
+  show("progress","Escaneo OTC terminado sin resultados.");
+  return;
+ }
+
+ results.sort((a,b)=>
+  b.analysis.score-a.analysis.score
+ );
+
+ const best = results[0];
+ const minimum = Number($("sensitivity").value);
+
+ if(!checkMarketSchedule()){
+  show("result","FUERA DE HORARIO");
+  show("reason","El filtro horario está bloqueando las señales.");
+  show("progress","Análisis terminado. Filtro horario activo.");
+  return;
+ }
+
+ if(best.analysis.score < minimum ||
+    best.analysis.direction === "WAIT"){
+  show("result","SIN SEÑAL");
+  show("asset",best.symbol);
+  show("score",best.analysis.score + " / 100");
+  show("reason","Ningún activo OTC alcanzó la sensibilidad configurada.");
+  show("progress","Escaneo OTC terminado.");
+  return;
+ }
+
+ displayAnalysis(best.symbol,best.analysis);
+
+ statistics.signals++;
+ updateStats();
+
+ show("progress","Escaneo OTC completado correctamente.");
+
+ log("MEJOR RESULTADO OTC: " + best.symbol +
+  " | " + best.analysis.direction +
+  " | " + best.analysis.score);
+
+ await sendTelegram(best.symbol,best.analysis);
+}
+
+/* =========================================
+   CONTROL DEL ESCANEO
+========================================= */
+
+async function scan(market){
+ if(busy) return;
+
+ busy = true;
+ currentMarket = market;
+
+ $("realButton").disabled = true;
+ $("otcButton").disabled = true;
+ $("autoButton").disabled = true;
+
+ try{
+  if(market === "REAL"){
+   await scanReal();
+  }else{
+   await scanOTC();
+  }
+
+ }catch(error){
+  show("progress","ERROR: " + error.message);
+  show("reason",error.message);
+  show("result","ERROR");
+
+  log("Error general: " + error.message);
+
+ }finally{
+  busy = false;
+
+  $("realButton").disabled = false;
+  $("otcButton").disabled = false;
+  $("autoButton").disabled = false;
+ }
+}
+
+/* =========================================
+   ESCANEO AUTOMÁTICO
+========================================= */
+
+function stopAuto(){
+ autoRunning = false;
+
+ if(autoTimer){
+  clearInterval(autoTimer);
+  autoTimer = null;
+ }
+
+ show("progress","Escaneo automático detenido.");
+ log("Automático detenido.");
+}
+
+function startAuto(){
+ if(autoRunning) return;
+
+ autoRunning = true;
+
+ show("progress","Automático activado. Esperando el segundo :55.");
+ log("Escaneo automático activado.");
+
+ autoTimer = setInterval(()=>{
+  if(!autoRunning || busy) return;
 
   const now = new Date();
-  const key = symbol + direction + Math.floor(now.getTime() / 60000);
 
-  if (key === lastSignalKey) return;
-  lastSignalKey = key;
+  if(now.getSeconds() >= 55){
+   const minuteKey =
+    now.getFullYear() + "-" +
+    now.getMonth() + "-" +
+    now.getDate() + "-" +
+    now.getHours() + "-" +
+    now.getMinutes();
 
-  const row = document.createElement("div");
-  row.className = "log-row";
-
-  const asset = document.createElement("span");
-  asset.className = "log-asset";
-  asset.textContent = symbol;
-
-  const signal = document.createElement("span");
-  signal.className = direction === "CALL" ? "log-call" : "log-put";
-  signal.textContent = direction + " · " + score;
-
-  const time = document.createElement("span");
-  time.className = "log-time";
-  time.textContent = now.toLocaleTimeString();
-
-  row.append(asset, signal, time);
-
-  if ($("log").firstElementChild &&
-      $("log").firstElementChild.classList.contains("muted")) {
-    $("log").innerHTML = "";
+   if(minuteKey !== lastAutoMinute){
+    lastAutoMinute = minuteKey;
+    scan(currentMarket);
+   }
   }
-
-  $("log").prepend(row);
-
-  while ($("log").children.length > 30) {
-    $("log").lastElementChild.remove();
-  }
+ },500);
 }
 
-// TELEGRAM
-async function sendTelegram(message) {
-  const token = $("tgToken").value.trim();
-  const chat = $("tgChatId").value.trim();
+/* =========================================
+   TELEGRAM OPCIONAL
+========================================= */
 
-  if (!token || !chat) {
-    throw new Error("Completa el token y el Chat ID.");
-  }
+async function sendTelegram(symbol,analysis){
+ const token = $("telegramToken").value.trim();
+ const chat = $("telegramChat").value.trim();
 
+ if(!token || !chat) return;
+
+ const message =
+  "FILTRO PRO 5.4\n" +
+  "Mercado: " + currentMarket + "\n" +
+  "Activo: " + symbol + "\n" +
+  "Señal: " + analysis.direction + "\n" +
+  "Puntaje: " + analysis.score + "/100\n" +
+  "Expiración: " + $("expiry").value + " minuto(s)\n" +
+  "RSI: " + analysis.rsi.toFixed(1);
+
+ try{
   const response = await fetch(
-    "https://api.telegram.org/bot" + token + "/sendMessage",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: chat,
-        text: message
-      })
-    }
+   "https://api.telegram.org/bot" +
+   token + "/sendMessage",
+   {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+     chat_id:chat,
+     text:message
+    })
+   }
   );
 
   const data = await response.json();
 
-  if (!data.ok) {
-    throw new Error(data.description || "Error de Telegram");
+  if(!data.ok){
+   log("Telegram: " + (data.description || "Error de envío"));
+  }else{
+   log("Señal enviada a Telegram.");
   }
 
-  return true;
+ }catch(error){
+  log("Error Telegram: " + error.message);
+ }
 }
 
-async function telegramSignal(symbol, a) {
-  if (!$("tgEnabled").checked || a.direction === "WAIT") return;
+async function testTelegram(){
+ const token = $("telegramToken").value.trim();
+ const chat = $("telegramChat").value.trim();
 
-  const message =
-    "FILTRO PRO 5.4\n" +
-    "Activo: " + symbol + "\n" +
-    "Señal: " + a.direction + "\n" +
-    "Puntaje técnico: " + a.score + "/100\n" +
-    "Precio: " + a.price + "\n" +
-    "Vencimiento seleccionado: " + $("expiry").value + " min\n" +
-    "Confirmar condiciones antes de operar.";
+ if(!token || !chat){
+  alert("Introduce el Token y el Chat ID.");
+  return;
+ }
 
-  try {
-    await sendTelegram(message);
-  } catch (e) {
-    show("tgStatus", "Error Telegram: " + e.message);
-  }
-}
-
-// ESCANEO REAL
-async function scanReal() {
-  const results = [];
-
-  for (const symbol of REAL_ASSETS) {
-    show("progress", "Analizando REAL: " + symbol);
-
-    const query = "/time_series?symbol=" +
-      encodeURIComponent(symbol) +
-      "&interval=1min";
-
-    const data = await api(query);
-    const candles = normalizeCandles(data);
-    const analysis = analyze(candles);
-
-    results.push({ symbol, candles, analysis });
-  }
-
-  results.sort((a, b) => b.analysis.score - a.analysis.score);
-
-  const best = results[0];
-
-  displayAnalysis(
-    best.symbol,
-    best.candles,
-    best.analysis,
-    "TWELVE DATA REAL"
+ try{
+  const response = await fetch(
+   "https://api.telegram.org/bot" +
+   token + "/sendMessage",
+   {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+     chat_id:chat,
+     text:"FILTRO PRO 5.4: conexión de Telegram correcta."
+    })
+   }
   );
 
-  addLog(best.symbol, best.analysis.direction, best.analysis.score);
-  await telegramSignal(best.symbol, best.analysis);
+  const data = await response.json();
 
-  show("progress",
-    "Escaneo REAL completado. Activo líder: " + best.symbol
-  );
-}
-
-// ESCANEO OTC
-async function scanOTC() {
-  if (!OTC_ASSETS.length) {
-    throw new Error("No hay lista OTC disponible del proveedor.");
+  if(data.ok){
+   alert("Telegram conectado correctamente.");
+  }else{
+   alert("Error Telegram: " + data.description);
   }
 
-  const results = [];
-
-  for (const symbol of OTC_ASSETS) {
-    show("progress", "Analizando OTC: " + symbol);
-
-    const query = "/otc_time_series?symbol=" +
-      encodeURIComponent(symbol) +
-      "&interval=1min";
-
-    const data = await api(query);
-    const candles = normalizeCandles(data);
-    const analysis = analyze(candles);
-
-    results.push({ symbol, candles, analysis });
-  }
-
-  results.sort((a, b) => b.analysis.score - a.analysis.score);
-
-  const best = results[0];
-
-  displayAnalysis(
-    best.symbol,
-    best.candles,
-    best.analysis,
-    "PROVEEDOR OTC"
-  );
-
-  addLog(best.symbol, best.analysis.direction, best.analysis.score);
-  await telegramSignal(best.symbol, best.analysis);
-
-  show("progress", "Escaneo OTC completado: " + best.symbol);
+ }catch(error){
+  alert("No se pudo conectar: " + error.message);
+ }
 }
 
-// CONTROL DEL ESCANEO
-async function scan(market) {
-  if (busy) return;
+/* =========================================
+   EVENTOS
+========================================= */
 
-  busy = true;
-  $("realButton").disabled = true;
-  $("otcButton").disabled = true;
+$("realButton").addEventListener("click",()=>{
+ stopAuto();
+ scan("REAL");
+});
 
-  try {
-    currentMarket = market;
+$("otcButton").addEventListener("click",()=>{
+ stopAuto();
+ scan("OTC");
+});
 
-    if (market === "REAL") {
-      await scanReal();
-    } else {
-      await scanOTC();
-    }
-  } catch (e) {
-    show("progress", "ERROR: " + e.message);
-    show("reason", e.message);
-    show("result", "SIN DATOS");
-  
+$("autoButton").addEventListener("click",()=>{
+ currentMarket = "REAL";
+ $("autoEnabled").checked = true;
+ startAuto();
+});
+
+$("stopButton").addEventListener("click",()=>{
+ $("autoEnabled").checked = false;
+ stopAuto();
+});
+
+$("refresh").addEventListener("click",checkConnection);
+
+$("telegramTest").addEventListener("click",testTelegram);
+
+$("clearLog").addEventListener("click",()=>{
+ show("log","Registro limpiado.");
+});
+
+$("sensitivity").addEventListener("input",()=>{
+ show("sensitivityValue",$("sensitivity").value);
+});
+
+$("autoEnabled").addEventListener("change",()=>{
+ if($("autoEnabled").checked){
+  startAuto();
+ }else{
+  stopAuto();
+ }
+});
+
+$("expiry").addEventListener("change",()=>{
+ show("expiryDisplay",$("expiry").value + " min");
+});
+
+/* =========================================
+   INICIO
+========================================= */
+
+show("expiryDisplay",$("expiry").value + " min");
+updateStats();
+checkConnection();
+
+log("FILTRO PRO 5.4 iniciado correctamente.");
+</script>
+
+</body>
+</html>
