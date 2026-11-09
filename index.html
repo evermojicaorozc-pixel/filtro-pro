@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FILTRO PRO 5.4 · SUITE ANTICIPADA</title>
+<title>FILTRO PRO 5.4</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#07111e;color:#e8f0fa;font-family:Arial,sans-serif;padding:16px}
@@ -51,7 +51,7 @@ footer{text-align:center;color:#647d96;font-size:11px;padding:20px}
 <header>
 <h1>FILTRO PRO 5.4</h1>
 <div class="sub">SUITE DE SEÑALES ANTICIPADAS · OPCIONES DIGITALES</div>
-<div class="status" id="connection">Conectando con API...</div>
+<div class="status" id="connection">Iniciando sistema...</div>
 </header>
 
 <div class="panel">
@@ -75,14 +75,14 @@ footer{text-align:center;color:#647d96;font-size:11px;padding:20px}
 
 <label>Sensibilidad del Motor Anticipado</label>
 <select id="sensitivity">
-<option value="85">CONSERVADOR (85+ pts · Menos señales, alta precisión)</option>
-<option value="75" selected>EQUILIBRADO (75+ pts · Recomendado)</option>
-<option value="65">AGRESIVO (65+ pts · Más frecuencia)</option>
+<option value="85">CONSERVADOR (85+ pts)</option>
+<option value="75" selected>EQUILIBRADO (75+ pts)</option>
+<option value="65">AGRESIVO (65+ pts)</option>
 </select>
 
 <label class="checkbox-row">
 <input type="checkbox" id="timeFilter" checked>
-<span>Activar Filtro de Horario y Volatilidad Extrema (Anti-Noticias)</span>
+<span>Activar Filtro de Horario y Volatilidad Extrema</span>
 </label>
 <div class="warn-box" id="scheduleWarning"></div>
 
@@ -93,16 +93,16 @@ footer{text-align:center;color:#647d96;font-size:11px;padding:20px}
 <details>
 <summary>📲 CONFIGURAR ALERTAS A TELEGRAM (OPCIONAL)</summary>
 <div style="margin-top:12px">
-<label>Bot Token (de @BotFather)</label>
-<input type="password" id="tgToken" placeholder="Ej: 7123456789:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw">
-<label>Chat ID (de @userinfobot)</label>
-<input type="text" id="tgChatId" placeholder="Ej: 123456789">
+<label>Bot Token</label>
+<input type="password" id="tgToken" placeholder="Token de @BotFather">
+<label>Chat ID</label>
+<input type="text" id="tgChatId" placeholder="ID numérico de @userinfobot">
 <label class="checkbox-row">
 <input type="checkbox" id="tgEnabled">
 <span>Enviar señales automáticamente a mi Telegram</span>
 </label>
 <button class="secondary" id="testTg" style="margin-top:10px;padding:10px;font-size:13px">PROBAR CONEXIÓN TELEGRAM</button>
-<div class="status" id="tgStatus">Los datos se guardan localmente en tu navegador.</div>
+<div class="status" id="tgStatus">Los datos se guardan en tu navegador.</div>
 </div>
 </details>
 </div>
@@ -152,7 +152,7 @@ footer{text-align:center;color:#647d96;font-size:11px;padding:20px}
 <div class="metric"><small>PRECIO ACTUAL</small><strong id="price">---</strong></div>
 <div class="metric"><small>ÚLTIMA VELA</small><strong id="lastCandle">---</strong></div>
 </div>
-<div class="status" id="historyStatus">Niveles calculados sobre acción del precio reciente y/o histórico.</div>
+<div class="status" id="historyStatus">Niveles calculados sobre acción del precio reciente.</div>
 </div>
 
 <div class="panel">
@@ -160,224 +160,116 @@ footer{text-align:center;color:#647d96;font-size:11px;padding:20px}
 <div id="log"><div class="muted">Aquí aparecerán las señales CALL y PUT detectadas.</div></div>
 </div>
 
-<footer>FILTRO PRO 5.4 · SUITE ANTICIPADA<br>Herramienta de apoyo técnico. Opera siempre con gestión de riesgo.</footer>
+<footer>FILTRO PRO 5.4 · SUITE ANTICIPADA</footer>
 </div>
 
 <script>
-"use strict";
-const API="https://workers.dev";
-const REAL_ASSETS=["EUR/USD","GBP/USD","USD/JPY","AUD/USD","USD/CAD"];
-let busy=false;
-let autoMode=false;
-let autoTimer=null;
-let lastScannedMinute=-1;
-const $=id=>document.getElementById(id);
+window.onerror = function(msg, url, line) {
+ var el = document.getElementById("connection");
+ if (el) el.textContent = "❌ ERROR JS (Línea " + line + "): " + msg;
+};
 
-function loadSettings(){
- try{
-  $("tgToken").value=localStorage.getItem("fp_tg_token")||"";
-  $("tgChatId").value=localStorage.getItem("fp_tg_chat")||"";
-  $("tgEnabled").checked=localStorage.getItem("fp_tg_enabled")==="true";
-  if(localStorage.getItem("fp_sens"))$("sensitivity").value=localStorage.getItem("fp_sens");
- }catch(e){}
+const API = "https://workers.dev";
+const REAL_ASSETS = ["EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD", "USD/CAD"];
+let busy = false;
+let autoMode = false;
+let autoTimer = null;
+let lastScannedMinute = -1;
+const $ = id => document.getElementById(id);
+
+$("connection").textContent = "Conectando con servidor...";
+
+function loadSettings() {
+ try {
+  $("tgToken").value = localStorage.getItem("fp_tg_token") || "";
+  $("tgChatId").value = localStorage.getItem("fp_tg_chat") || "";
+  $("tgEnabled").checked = localStorage.getItem("fp_tg_enabled") === "true";
+  if (localStorage.getItem("fp_sens")) $("sensitivity").value = localStorage.getItem("fp_sens");
+ } catch (e) {}
 }
 
-["tgToken","tgChatId","tgEnabled","sensitivity"].forEach(id=>{
- $(id).addEventListener("change",()=>{
-  try{
-   localStorage.setItem("fp_tg_token",$("tgToken").value.trim());
-   localStorage.setItem("fp_tg_chat",$("tgChatId").value.trim());
-   localStorage.setItem("fp_tg_enabled",$("tgEnabled").checked);
-   localStorage.setItem("fp_sens",$("sensitivity").value);
-  }catch(e){}
+["tgToken", "tgChatId", "tgEnabled", "sensitivity"].forEach(id => {
+ $(id).addEventListener("change", () => {
+  try {
+   localStorage.setItem("fp_tg_token", $("tgToken").value.trim());
+   localStorage.setItem("fp_tg_chat", $("tgChatId").value.trim());
+   localStorage.setItem("fp_tg_enabled", $("tgEnabled").checked);
+   localStorage.setItem("fp_sens", $("sensitivity").value);
+  } catch (e) {}
  });
 });
 
-async function sendTelegramMessage(text){
- if(!$("tgEnabled").checked)return;
- const token=$("tgToken").value.trim();
- const chatId=$("tgChatId").value.trim();
- if(!token||!chatId)return;
- try{
-  const res=await fetch("https://telegram.org"+encodeURIComponent(token)+"/sendMessage",{
-   method:"POST",
-   headers:{"Content-Type":"application/json"},
-   body:JSON.stringify({chat_id:chatId,text:text,parse_mode:"HTML"})
+async function sendTelegramMessage(text) {
+ if (!$("tgEnabled").checked) return;
+ const token = $("tgToken").value.trim();
+ const chatId = $("tgChatId").value.trim();
+ if (!token || !chatId) return;
+ try {
+  await fetch("https://telegram.org" + encodeURIComponent(token) + "/sendMessage", {
+   method: "POST",
+   headers: { "Content-Type": "application/json" },
+   body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: "HTML" })
   });
-  const data=await res.json();
-  if(!data.ok)console.warn("Telegram error:",data.description);
- }catch(e){console.warn("Error enviando a Telegram:",e);}
+ } catch (e) {}
 }
 
-$("testTg").addEventListener("click",async()=>{
- const token=$("tgToken").value.trim();
- const chatId=$("tgChatId").value.trim();
- if(!token||!chatId){
-  $("tgStatus").textContent="⚠️ Ingresa primero el Bot Token y el Chat ID.";
+$("testTg").addEventListener("click", async () => {
+ const token = $("tgToken").value.trim();
+ const chatId = $("tgChatId").value.trim();
+ if (!token || !chatId) {
+  $("tgStatus").textContent = "⚠️ Ingresa primero el Bot Token y el Chat ID.";
   return;
  }
- $("tgStatus").textContent="Enviando mensaje de prueba...";
- try{
-  const res=await fetch("https://telegram.org"+encodeURIComponent(token)+"/sendMessage",{
-   method:"POST",
-   headers:{"Content-Type":"application/json"},
-   body:JSON.stringify({
-    chat_id:chatId,
-    text:"✅ <b>FILTRO PRO 5.4</b> conectado correctamente. Recibirás aquí tus señales anticipadas.",
-    parse_mode:"HTML"
+ $("tgStatus").textContent = "Enviando mensaje de prueba...";
+ try {
+  const res = await fetch("https://telegram.org" + encodeURIComponent(token) + "/sendMessage", {
+   method: "POST",
+   headers: { "Content-Type": "application/json" },
+   body: JSON.stringify({
+    chat_id: chatId,
+    text: "✅ <b>FILTRO PRO 5.4</b> conectado correctamente.",
+    parse_mode: "HTML"
    })
   });
-  const data=await res.json();
-  if(data.ok)$("tgStatus").textContent="✅ ¡Mensaje enviado! Revisa tu Telegram.";
-  else $("tgStatus").textContent="❌ Error de Telegram: "+data.description;
- }catch(e){$("tgStatus").textContent="❌ Error de red: "+e.message;}
+  const data = await res.json();
+  $("tgStatus").textContent = data.ok ? "✅ ¡Mensaje enviado! Revisa tu Telegram." : "❌ Error: " + data.description;
+ } catch (e) {
+  $("tgStatus").textContent = "❌ Error de red: " + e.message;
+ }
 });
 
-function checkMarketSchedule(market){
- const warnEl=$("scheduleWarning");
- if(!$("timeFilter").checked){
-  warnEl.style.display="none";
-  return {allowed:true,reason:""};
+function checkMarketSchedule(market) {
+ const warnEl = $("scheduleWarning");
+ if (!$("timeFilter").checked) {
+  warnEl.style.display = "none";
+  return { allowed: true, reason: "" };
  }
- const now=new Date();
-$("adx").textContent=a.ax===null?"N/D":a.ax.toFixed(2);
-$("atr").textContent=fmt(a.at);
-$("price").textContent=fmt(a.price);
-$("support").textContent=fmt(a.levels.support);
-$("resistance").textContent=fmt(a.levels.resistance);
-$("lastCandle").textContent=new Date(a.last.ts).toLocaleTimeString();
-$("score").textContent=a.score+"/100 (Meta: "+minScore+")";
-$("setupDetail").textContent=a.reasons.length
-?"Confluencias detectadas: "+a.reasons.join(" + ")
-:"Ningún activo alcanzó el umbral configurado ("+minScore+" pts).";
-}
-async function scanAsset(market,symbol){
-const path=market==="REAL"
-?"/time_series?symbol="+encodeURIComponent(symbol)+"&interval=1min"
-:"/otc_time_series?symbol="+encodeURIComponent(symbol)+"&interval=1min";
-const data=await api(path);
-let candles=normalizeCandles(data);
-if(candles.length<40)throw new Error("Menos de 40 velas válidas");
-const now=Date.now(),duration=60000;
-const closedCandles=candles.filter(c=>c.ts+duration<=now);
-const targetCandles=closedCandles.length>=40?closedCandles:candles;
-return {symbol,data,candles:targetCandles,result:analyzeAnticipated(targetCandles)};
-}
-async function loadHistory(symbol){
-$("historyStatus").textContent="Consultando niveles históricos en API...";
-try{
-const data=await api("/history_levels?symbol="+encodeURIComponent(symbol));
-const value=x=>typeof x==="number"?x:(x&&typeof x==="object"?Number(x.price||x.level||x.value):Number(x));
-const s=(data.supports||[]).map(value).filter(Number.isFinite);
-const r=(data.resistances||[]).map(value).filter(Number.isFinite);
-if(s.length)$("support").textContent=Math.max(...s).toFixed(5);
-if(r.length)$("resistance").textContent=Math.min(...r).toFixed(5);
-$("historyStatus").textContent="Histórico API: "+(data.daysCovered||0)+" días · "+(data.candlesCount||0)+" velas.";
-}catch(e){
-$("historyStatus").textContent="Usando niveles dinámicos locales (40 velas).";
-}
-}
-async function analyze(market){
-if(busy)return;
-const schedule=checkMarketSchedule(market);
-if(!schedule.allowed){
-$("result").textContent="BLOQUEADO";
-$("result").className="wait";
-$("reason").textContent=schedule.reason;
-$("progress").textContent="Escaneo pausado por filtro de horario.";
-return;
-}
-busy=true;
-$("realButton").disabled=true;
-$("otcButton").disabled=true;
-$("refresh").disabled=true;
-resetUI();
-try{
-const assets=await getAssets(market);
-$("progress").textContent="Analizando "+assets.length+" activos en paralelo...";
-const settled=await Promise.allSettled(assets.map(symbol=>scanAsset(market,symbol)));
-const valid=settled.filter(x=>x.status==="fulfilled").map(x=>x.value);
-$("source").textContent=valid[0]?.data?.source||"API";
-$("candleCount").textContent=valid.reduce((sum,x)=>sum+x.candles.length,0);
-const signals=valid.filter(x=>x.result.direction==="CALL"||x.result.direction==="PUT");
-const expiryVal=Number($("expiry").value);
-if(signals.length){
-playAlertSound();
-signals.forEach(x=>{
-logSignal(x.symbol,x.result.direction,expiryVal,x.result.tag);
-const emoji=x.result.direction==="CALL"?"🟢":"🔴";
-const tgMsg=${emoji} <b>SEÑAL ANTICIPADA (${market})</b>\n+
-• Activo: <b>${x.symbol}</b>\n+
-• Acción: <b>${x.result.direction}</b> (${expiryVal} min)\n+
-• Puntaje: ${x.result.score}/100\n+
-• Motivo: ${x.result.reasons.join(" + ")};
-sendTelegramMessage(tgMsg);
+ const now = new Date();
+ const utcDay = now.getUTCDay();
+ const utcHour = now.getUTCHours();
+
+ if (market === "REAL") {
+  analyze("REAL");
 });
-$("result").textContent=signals.map(x=>x.symbol+" "+x.result.direction).join(" · ");
-$("result").className=signals[0].result.direction==="CALL"?"call":"put";
-$("reason").textContent="¡Señal anticipada lista! Preparar entrada en apertura de vela.";
-}else{
-$("result").textContent="NO ENTRAR";
-$("result").className="wait";
-$("reason").textContent="Mercado sin agotamiento ni pre-ruptura clara en los 5 activos.";
-}
-if(valid.length){
-const strongest=valid.slice().sort((a,b)=>b.result.score-a.result.score)[0];
-displayAnalysis(strongest.symbol,strongest.result);
-if(market==="REAL")await loadHistory(strongest.symbol);
-else $("historyStatus").textContent="Niveles dinámicos OTC calculados sobre últimas 40 velas.";
-}
-$("progress").textContent="Último escaneo: "+new Date().toLocaleTimeString()+" · "+valid.length+"/"+assets.length+" activos OK.";
-}catch(e){
-$("result").textContent="ERROR";
-$("result").className="wait";
-$("reason").textContent=e.message;
-$("progress").textContent="Escaneo interrumpido.";
-}finally{
-busy=false;
-$("realButton").disabled=false;
-$("otcButton").disabled=false;
-$("refresh").disabled=false;
-}
-}
-$("autoButton").addEventListener("click",()=>{
-autoMode=!autoMode;
-const btn=$("autoButton");
-if(autoMode){
-btn.textContent="⏱️ AUTO-ESCANEO (SEGUNDO :55): ACTIVADO";
-btn.className="auto-on";
-$("progress").textContent="Modo automático activo. Escaneando cada minuto en el segundo :55...";
-analyze($("market").value);
-autoTimer=setInterval(()=>{
-const now=new Date();
-const sec=now.getSeconds();
-const min=now.getMinutes();
-if(sec>=55 && lastScannedMinute!==min && !busy){
-lastScannedMinute=min;
-analyze($("market").value);
-}
-},1000);
-}else{
-btn.textContent="⏱️ AUTO-ESCANEO (SEGUNDO :55): APAGADO";
-btn.className="auto-off";
-clearInterval(autoTimer);
-$("progress").textContent="Auto-escaneo detenido.";
-}
-});
-$("market").addEventListener("change",()=>checkMarketSchedule($("market").value));
-$("timeFilter").addEventListener("change",()=>checkMarketSchedule($("market").value));
-$("realButton").addEventListener("click",()=>{
-$("market").value="REAL";
-analyze("REAL");
-});
-$("otcButton").addEventListener("click",()=>{
-$("market").value="OTC";
+$("otcButton").addEventListener("click", () => {
+$("market").value = "OTC";
 analyze("OTC");
 });
-(async()=>{
+(async () => {
 loadSettings();
 checkMarketSchedule($("market").value);
 await health();
-$("progress").textContent="Suite lista. Configura tu sensibilidad y activa el escáner.";
+$("progress").textContent = "Suite lista. Configura tu sensibilidad y activa el escáner.";
 })();
-</html>
+ analyze("REAL");
+});
+$("otcButton").addEventListener("click", () => {
+$("market").value = "OTC";
+analyze("OTC");
+});
+(async () => {
+loadSettings();
+checkMarketSchedule($("market").value);
+await health();
+$("progress").textContent = "Suite lista. Configura tu sensibilidad y activa el escáner.";
+})();
