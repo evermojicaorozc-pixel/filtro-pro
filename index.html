@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#07111e">
 <title>FILTRO PRO 5.9</title>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;padding:14px;background:#07111e;color:#e8f0fa;font-family:Arial,sans-serif}
@@ -18,7 +19,7 @@ h2{font-size:15px;margin:0 0 12px;color:#80dfff}
 button,select{background:#18314d;color:#fff;border:1px solid #365675;border-radius:9px;padding:11px 13px;font-weight:bold}
 button{cursor:pointer}
 button.primary{background:#087eaa;border-color:#16b9ed}
-button:disabled{opacity:.45}
+button:disabled{opacity:.45;cursor:wait}
 .status{font-size:12px;color:#9bb2cb}
 .good{color:#5be0a0}
 .bad{color:#ff8c8c}
@@ -35,18 +36,22 @@ button:disabled{opacity:.45}
 .tag{font-size:10px;padding:4px 7px;border-radius:6px;background:#263c55;color:#c5d9ed}
 .score{font-size:22px;font-weight:bold;color:#65d8ff}
 .small{font-size:12px;color:#9bb2c8;line-height:1.5;margin-top:7px}
-pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#081321;padding:9px;border-radius:8px;color:#a9c2db;font-size:11px;max-height:160px;overflow:auto}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#081321;padding:9px;border-radius:8px;color:#a9c2db;font-size:11px;max-height:200px;overflow:auto}
 label{font-size:12px;color:#a9c0d8}
 input[type=checkbox]{accent-color:#10bce9}
-@media(max-width:440px){.grid{grid-template-columns:1fr 1fr}h1{font-size:24px}}
+@media(max-width:440px){
+ .grid{grid-template-columns:1fr 1fr}
+ h1{font-size:24px}
+}
 </style>
 </head>
+
 <body>
 <div class="app">
 
 <header>
 <h1>FILTRO PRO 5.9</h1>
-<div class="sub">ANÁLISIS MULTIHORIZONTE · PRESEÑALES · CONTROL DE CRÉDITOS</div>
+<div class="sub">ANÁLISIS MULTIHORIZONTE · CONFIRMACIÓN REAL · CONTROL DE SEÑALES</div>
 </header>
 
 <section class="panel">
@@ -56,13 +61,14 @@ input[type=checkbox]{accent-color:#10bce9}
 <button id="checkBtn">COMPROBAR</button>
 </div>
 <div class="small">
-Consultas REAL limitadas globalmente a 7 por cada 60 segundos.
-Las velas recientes se reutilizan mediante caché.
+Conexión directa al Worker. Sin RATE_GATE ni Durable Objects.
+Se utilizan velas cerradas y se evitan consultas repetidas durante un mismo escaneo.
 </div>
 </section>
 
 <section class="panel">
 <h2>CONFIGURACIÓN</h2>
+
 <div class="row">
 <label for="market">Mercado</label>
 <select id="market">
@@ -89,8 +95,8 @@ Escaneo automático cada 60 segundos
 </div>
 
 <div class="small">
-REAL analiza cinco pares. OTC utiliza únicamente los símbolos
-que entrega tu proveedor. Nunca sustituye OTC por datos REAL.
+REAL analiza cinco pares. OTC utiliza exclusivamente los símbolos de tu proveedor.
+Los tres horizontes deben confirmar la misma dirección para generar una preseñal.
 </div>
 </section>
 
@@ -99,7 +105,7 @@ que entrega tu proveedor. Nunca sustituye OTC por datos REAL.
 <div class="grid">
 <div class="metric"><b>Mercado</b><span id="marketValue">REAL</span></div>
 <div class="metric"><b>Activos revisados</b><span id="assetsValue">0</span></div>
-<div class="metric"><b>Preseñales</b><span id="signalsValue">0</span></div>
+<div class="metric"><b>Preseñales confirmadas</b><span id="signalsValue">0</span></div>
 <div class="metric"><b>Último análisis</b><span id="lastValue" style="font-size:14px">--:--:--</span></div>
 </div>
 </section>
@@ -107,9 +113,9 @@ que entrega tu proveedor. Nunca sustituye OTC por datos REAL.
 <section class="panel">
 <h2>OPORTUNIDADES CORTO PLAZO</h2>
 <div class="small">
-Preseñales calculadas con velas cerradas. La entrada estimada
-corresponde a la siguiente vela disponible. Confirma nuevamente
-antes de operar.
+Confirmación de 1, 5 y 15 minutos. Las señales utilizan velas cerradas.
+La entrada estimada corresponde a la siguiente vela de un minuto.
+Una señal puede aparecer solamente si los tres horizontes coinciden.
 </div>
 <div id="shortSignals">
 <div class="muted">Pulsa ANALIZAR MERCADO para comenzar.</div>
@@ -119,8 +125,8 @@ antes de operar.
 <section class="panel">
 <h2>TENDENCIA PARA LAS PRÓXIMAS HORAS</h2>
 <div class="small">
-Análisis de velas de una hora para los dos activos mejor puntuados.
-Los horizontes son escenarios técnicos, no garantías de precio.
+Análisis horario de los dos activos mejor puntuados.
+Los escenarios requieren confirmación de tendencia y no son garantías de precio.
 </div>
 <div id="longSignals">
 <div class="muted">Pendiente del análisis.</div>
@@ -129,27 +135,42 @@ Los horizontes son escenarios técnicos, no garantías de precio.
 
 <section class="panel">
 <h2>REGISTRO</h2>
-<pre id="log">FILTRO PRO 5.9 listo.</pre>
+<pre id="log">FILTRO PRO 5.9 listo. Sin RATE_GATE.</pre>
 </section>
 
 <div class="small" style="text-align:center;padding:10px">
 Las señales son información técnica, no asesoría financiera.
 Ningún indicador garantiza operaciones ganadoras.
 </div>
+
 </div>
 
 <script>
 "use strict";
 
+// ======================================
+// CONFIGURACIÓN
+// ======================================
+
 const API="https://filtro-pro-api.evermojicaorozc.workers.dev";
+
 const REAL_ASSETS=[
- "EUR/USD","GBP/USD","USD/JPY","AUD/USD","USD/CAD"
+ "EUR/USD",
+ "GBP/USD",
+ "USD/JPY",
+ "AUD/USD",
+ "USD/CAD"
 ];
 
 let busy=false;
 let autoTimer=null;
+let lastSignals=new Map();
 
 const $=id=>document.getElementById(id);
+
+// ======================================
+// HORA DE NICARAGUA
+// ======================================
 
 function clock(ms=Date.now()){
  return new Intl.DateTimeFormat("es-NI",{
@@ -166,6 +187,7 @@ function time(ms){
   timeZone:"America/Managua",
   hour:"2-digit",
   minute:"2-digit",
+  second:"2-digit",
   hour12:false
  }).format(new Date(ms));
 }
@@ -173,20 +195,27 @@ function time(ms){
 function log(message){
  const el=$("log");
  el.textContent=`[${clock()}] ${message}\n`+el.textContent;
- el.textContent=el.textContent.slice(0,4500);
+ el.textContent=el.textContent.slice(0,6000);
 }
 
-async function api(path,timeout=18000){
+// ======================================
+// CONEXIÓN WORKER
+// ======================================
+
+async function api(path,timeout=20000){
+
  const controller=new AbortController();
  const timer=setTimeout(()=>controller.abort(),timeout);
 
  try{
+
   const response=await fetch(API+path,{
    signal:controller.signal,
    cache:"no-store"
   });
 
   let data;
+
   try{
    data=await response.json();
   }catch{
@@ -194,20 +223,26 @@ async function api(path,timeout=18000){
   }
 
   if(!response.ok||data.ok===false){
-   const error=new Error(data.error||"Error HTTP "+response.status);
+
+   const error=new Error(
+    data.error||"Error HTTP "+response.status
+   );
+
    error.status=response.status;
-   error.retryAfter=data.retryAfter;
    throw error;
   }
 
   return data;
+
  }finally{
   clearTimeout(timer);
  }
 }
 
 async function checkConnection(){
+
  try{
+
   const data=await api("/health");
 
   $("connection").textContent=
@@ -218,21 +253,34 @@ async function checkConnection(){
    }`;
 
   $("connection").className="status good";
+
   log("Conexión Worker correcta.");
+
   return data;
 
  }catch(error){
-  $("connection").textContent="Error Worker: "+error.message;
+
+  $("connection").textContent=
+   "Error Worker: "+error.message;
+
   $("connection").className="status bad";
+
   log("Error de conexión: "+error.message);
+
   return null;
  }
 }
 
+// ======================================
+// INDICADORES TÉCNICOS
+// ======================================
+
 function ema(values,period){
+
  if(values.length<period)return null;
 
- let value=values.slice(0,period)
+ let value=values
+  .slice(0,period)
   .reduce((a,b)=>a+b,0)/period;
 
  const k=2/(period+1);
@@ -245,13 +293,16 @@ function ema(values,period){
 }
 
 function rsi(values,period=14){
+
  if(values.length<=period)return 50;
 
  let gains=0;
  let losses=0;
 
  for(let i=1;i<=period;i++){
+
   const difference=values[i]-values[i-1];
+
   if(difference>0)gains+=difference;
   else losses-=difference;
  }
@@ -260,6 +311,7 @@ function rsi(values,period=14){
  let averageLoss=losses/period;
 
  for(let i=period+1;i<values.length;i++){
+
   const difference=values[i]-values[i-1];
 
   averageGain=(
@@ -277,6 +329,7 @@ function rsi(values,period=14){
 }
 
 function macd(values){
+
  const fast=ema(values,12);
  const slow=ema(values,26);
 
@@ -285,38 +338,86 @@ function macd(values){
  return fast-slow;
 }
 
+// ======================================
+// NORMALIZAR VELAS
+// ======================================
+
+function parseCandleTime(value){
+
+ if(typeof value==="number"){
+
+  return value<1000000000000
+   ?value*1000
+   :value;
+ }
+
+ let str=String(value);
+
+ // Twelve Data entrega normalmente fecha UTC sin sufijo.
+ if(
+  !str.endsWith("Z")&&
+  !/[+-]\d{2}:\d{2}$/.test(str)
+ ){
+  str=str.replace(" ","T")+"Z";
+ }
+
+ return Date.parse(str);
+}
+
 function normalizeCandles(data,intervalMs){
- const raw=data.candles||data.values||data.data||[];
+
+ const raw=
+  data.values||
+  data.candles||
+  data.data||
+  [];
+
+ if(!Array.isArray(raw))return [];
 
  const candles=raw.map(c=>({
-  t:Date.parse(c.datetime||c.time||c.timestamp),
+
+  t:parseCandleTime(
+   c.datetime??c.time??c.timestamp
+  ),
+
   o:Number(c.open??c.o),
   h:Number(c.high??c.h),
   l:Number(c.low??c.l),
   c:Number(c.close??c.c)
+
  })).filter(c=>
   Number.isFinite(c.t)&&
   [c.o,c.h,c.l,c.c].every(Number.isFinite)&&
-  c.h>=c.l
+  c.h>=c.l&&
+  c.o>0&&
+  c.c>0
  ).sort((a,b)=>a.t-b.t);
 
  const now=Date.now();
 
- // Se descarta la vela que todavía no ha terminado.
+ // Solo velas completamente cerradas.
  return candles.filter(c=>
   c.t+intervalMs<=now-3000
  );
 }
 
+// ======================================
+// AGREGACIÓN DE VELAS
+// ======================================
+
 function aggregate(candles,minutes){
+
  const bucket=minutes*60000;
  const map=new Map();
 
  for(const candle of candles){
+
   const key=Math.floor(candle.t/bucket)*bucket;
+
   let item=map.get(key);
 
   if(!item){
+
    map.set(key,{
     t:key,
     o:candle.o,
@@ -324,119 +425,274 @@ function aggregate(candles,minutes){
     l:candle.l,
     c:candle.c
    });
+
   }else{
+
    item.h=Math.max(item.h,candle.h);
    item.l=Math.min(item.l,candle.l);
    item.c=candle.c;
   }
  }
 
- return [...map.values()].sort((a,b)=>a.t-b.t);
+ // Elimina cualquier bloque incompleto.
+ return [...map.values()]
+  .filter(c=>c.t+bucket<=Date.now()-3000)
+  .sort((a,b)=>a.t-b.t);
 }
 
+// ======================================
+// MOTOR DE ANÁLISIS
+// ======================================
+
 function analyze(candles){
- if(candles.length<30){
+
+ if(candles.length<35){
+
   return {
    direction:"WAIT",
    score:0,
-   why:"Datos insuficientes"
+   why:"Historial insuficiente",
+   last:0
   };
  }
 
  const closes=candles.map(c=>c.c);
+
  const last=candles[candles.length-1];
  const previous=candles[candles.length-2];
 
  const ema9=ema(closes,9);
  const ema21=ema(closes,21);
- const rsiValue=rsi(closes);
+ const rsiValue=rsi(closes,14);
  const macdValue=macd(closes);
+
+ if(
+  ema9===null||
+  ema21===null||
+  !Number.isFinite(rsiValue)
+ ){
+  return {
+   direction:"WAIT",
+   score:0,
+   why:"Indicadores incompletos",
+   last:last.t
+  };
+ }
 
  let up=0;
  let down=0;
+
  const reasons=[];
 
- if(ema9>ema21){
+ // TENDENCIA EMA
+ if(ema9>ema21&&last.c>ema9){
+
   up+=25;
-  reasons.push("EMA alcista");
- }else if(ema9<ema21){
+  reasons.push("Tendencia EMA alcista");
+
+ }else if(ema9<ema21&&last.c<ema9){
+
   down+=25;
-  reasons.push("EMA bajista");
+  reasons.push("Tendencia EMA bajista");
  }
 
+ // RSI
  if(rsiValue>=52&&rsiValue<=68){
-  up+=15;
-  reasons.push("RSI favorece CALL");
+
+  up+=20;
+  reasons.push("RSI favorable CALL");
+
  }else if(rsiValue<=48&&rsiValue>=32){
-  down+=15;
-  reasons.push("RSI favorece PUT");
+
+  down+=20;
+  reasons.push("RSI favorable PUT");
  }
 
+ // MACD
  if(macdValue>0){
-  up+=15;
+
+  up+=20;
   reasons.push("MACD positivo");
+
  }else if(macdValue<0){
-  down+=15;
+
+  down+=20;
   reasons.push("MACD negativo");
  }
 
- if(last.c>previous.c)up+=10;
- else if(last.c<previous.c)down+=10;
+ // MOMENTUM
+ if(last.c>previous.c){
 
- const range=Math.max(last.h-last.l,1e-10);
- const lower=Math.min(last.o,last.c)-last.l;
- const upper=last.h-Math.max(last.o,last.c);
+  up+=15;
 
- if(last.c>last.o&&lower/range>.25){
-  up+=10;
-  reasons.push("Mecha inferior");
- }else if(last.c<last.o&&upper/range>.25){
-  down+=10;
-  reasons.push("Mecha superior");
+ }else if(last.c<previous.c){
+
+  down+=15;
  }
 
+ // VELA
+ const range=Math.max(last.h-last.l,1e-10);
+
+ const lower=
+  Math.min(last.o,last.c)-last.l;
+
+ const upper=
+  last.h-Math.max(last.o,last.c);
+
+ if(last.c>last.o&&lower/range>.25){
+
+  up+=15;
+  reasons.push("Rechazo inferior");
+
+ }else if(last.c<last.o&&upper/range>.25){
+
+  down+=15;
+  reasons.push("Rechazo superior");
+ }
+
+ // ESTRUCTURA DE PRECIOS
+ const recent=closes.slice(-6);
+
+ const rising=recent.every(
+  (v,i)=>i===0||v>=recent[i-1]
+ );
+
+ const falling=recent.every(
+  (v,i)=>i===0||v<=recent[i-1]
+ );
+
+ if(rising){
+
+  up+=5;
+
+ }else if(falling){
+
+  down+=5;
+ }
+
+ // DIRECCIÓN
  const direction=
   up>down?"CALL":
   down>up?"PUT":"WAIT";
 
- const score=Math.max(
-  0,
-  Math.min(
-   100,
-   Math.round(Math.max(up,down)-Math.min(up,down)*.25)
-  )
+ const score=Math.round(
+  Math.max(up,down)
  );
 
  return {
+
   direction,
+
   score,
+
+  up,
+  down,
+
   rsi:rsiValue,
-  why:reasons.join(" · ")||"Sin confluencia",
-  last:last.t
+
+  ema9,
+  ema21,
+
+  macd:macdValue,
+
+  last:last.t,
+
+  why:reasons.join(" · ")||"Sin confluencia"
  };
 }
 
-function nextMinute(){
- return Math.ceil(Date.now()/60000)*60000;
+// ======================================
+// EVALUAR CONFIRMACIÓN MULTIHORIZONTE
+// ======================================
+
+function confirmSignal(one,five,fifteen,threshold){
+
+ const analyses=[one,five,fifteen];
+
+ // No aceptar dirección neutral.
+ if(analyses.some(a=>a.direction==="WAIT")){
+  return null;
+ }
+
+ // Los tres horizontes deben coincidir.
+ const direction=one.direction;
+
+ if(
+  five.direction!==direction||
+  fifteen.direction!==direction
+ ){
+  return null;
+ }
+
+ // Cada horizonte debe tener una puntuación mínima.
+ const minimum=threshold-10;
+
+ if(analyses.some(a=>a.score<minimum)){
+  return null;
+ }
+
+ const average=Math.round(
+  analyses.reduce((sum,a)=>sum+a.score,0)/3
+ );
+
+ // La media debe alcanzar el umbral configurado.
+ if(average<threshold){
+  return null;
+ }
+
+ return {
+  direction,
+  score:average,
+  one,
+  five,
+  fifteen
+ };
 }
 
+// ======================================
+// ENTRADA ESTIMADA
+// ======================================
+
+function nextEntry(candles){
+
+ if(!candles.length)return null;
+
+ const last=candles[candles.length-1];
+
+ // Próxima vela de un minuto según el último cierre real.
+ return last.t+60000;
+}
+
+// ======================================
+// SEGURIDAD DE TEXTO HTML
+// ======================================
+
 function escapeHtml(value){
+
  return String(value).replace(/[&<>"']/g,char=>({
+
   "&":"&amp;",
   "<":"&lt;",
   ">":"&gt;",
   '"':"&quot;",
   "'":"&#39;"
+
  }[char]));
 }
 
+// ======================================
+// TARJETAS DE SEÑALES
+// ======================================
+
 function card(item,long=false){
+
  const cls=
   item.direction==="CALL"?"call":
   item.direction==="PUT"?"put":"wait";
 
  return `
  <div class="signal ${cls}">
+
   <div class="signalHead">
    <span>${escapeHtml(item.symbol)} · ${item.direction}</span>
    <span class="tag">${escapeHtml(item.label)}</span>
@@ -444,52 +700,119 @@ function card(item,long=false){
 
   <div class="row" style="justify-content:space-between;margin-top:7px">
    <span class="score">${item.score}/100</span>
-   <span class="tag">${
-    item.score>=80?"CONFLUENCIA ALTA":
-    item.score>=70?"PRESEÑAL":"DÉBIL"
-   }</span>
+   <span class="tag">CONFIRMADA</span>
   </div>
-
-  <div class="small">${escapeHtml(item.why||"")}</div>
 
   <div class="small">
-   ${item.entry?`Entrada estimada: ${time(item.entry)} (Nicaragua)`:""}
-   ${long?escapeHtml(item.window||""):""}
-   ${item.rsi!=null?" · RSI "+item.rsi.toFixed(1):""}
+   ${escapeHtml(item.why||"")}
   </div>
+
+  <div class="small">
+   ${item.entry
+    ?`Entrada estimada: ${time(item.entry)} (Nicaragua)`
+    :""
+   }
+
+   ${item.expiry
+    ?` · Vencimiento: ${time(item.expiry)}`
+    :""
+   }
+
+   ${item.rsi!=null
+    ?` · RSI: ${item.rsi.toFixed(1)}`
+    :""
+   }
+  </div>
+
+  ${long?`
+   <div class="small">
+    ${escapeHtml(item.window||"")}
+   </div>
+  `:""}
+
+  <div class="small">
+   Confirmación: ${escapeHtml(item.confirmation||"")}
+  </div>
+
  </div>`;
 }
 
+// ======================================
+// CONSULTAS REAL Y OTC
+// ======================================
+
 async function getReal(symbol,interval="1min"){
+
  return api(
   `/time_series?symbol=${encodeURIComponent(symbol)}&interval=${interval}`
  );
 }
 
 function parseOtcSymbols(data){
- const raw=data.symbols||data.data||data.assets||[];
+
+ const raw=
+  data.symbols||
+  data.data||
+  data.assets||
+  [];
 
  if(!Array.isArray(raw))return [];
 
  return raw.map(item=>
-  typeof item==="string"?item:(item.symbol||item.name)
+  typeof item==="string"
+   ?item
+   :(item.symbol||item.name)
  ).filter(Boolean).slice(0,5);
 }
 
 async function getOtc(symbol){
+
  return api(
   `/otc_time_series?symbol=${encodeURIComponent(symbol)}&interval=1min`
  );
 }
 
+// ======================================
+// CONTROL DE SEÑALES DUPLICADAS
+// ======================================
+
+function isDuplicate(item){
+
+ const key=
+  `${$("market").value}:`+
+  `${item.symbol}:`+
+  `${item.direction}:`+
+  `${item.entry}`;
+
+ if(lastSignals.has(key))return true;
+
+ lastSignals.set(key,Date.now());
+
+ // Limpiar registros antiguos.
+ for(const [oldKey,created] of lastSignals){
+
+  if(Date.now()-created>6*60*60*1000){
+   lastSignals.delete(oldKey);
+  }
+ }
+
+ return false;
+}
+
+// ======================================
+// ESCANEO PRINCIPAL
+// ======================================
+
 async function scan(){
+
  if(busy)return;
 
  busy=true;
+
  $("analyzeBtn").disabled=true;
 
  $("shortSignals").innerHTML=
-  '<div class="muted">Analizando velas cerradas...</div>';
+  '<div class="muted">Analizando y confirmando horizontes...</div>';
 
  $("longSignals").innerHTML=
   '<div class="muted">Calculando tendencias...</div>';
@@ -500,15 +823,20 @@ async function scan(){
  $("marketValue").textContent=market;
 
  try{
+
   let symbols=REAL_ASSETS;
 
+  // MERCADO OTC
   if(market==="OTC"){
+
    const symbolData=await api("/otc_symbols");
+
    symbols=parseOtcSymbols(symbolData);
 
    if(!symbols.length){
+
     throw new Error(
-     "El proveedor OTC no devolvió símbolos. No se usarán pares REAL."
+     "El proveedor OTC no devolvió símbolos. No se usarán datos REAL."
     );
    }
   }
@@ -517,209 +845,174 @@ async function scan(){
 
   const results=[];
 
+  // ANALIZAR CADA ACTIVO
   for(const symbol of symbols){
+
    try{
+
     const data=market==="REAL"
      ?await getReal(symbol,"1min")
      :await getOtc(symbol);
 
     const candles=normalizeCandles(data,60000);
 
-    if(candles.length<30){
-     throw new Error("Menos de 30 velas cerradas");
+    if(candles.length<100){
+
+     throw new Error(
+      "Historial insuficiente de velas cerradas"
+     );
+    }
+
+    const fiveCandles=aggregate(candles,5);
+    const fifteenCandles=aggregate(candles,15);
+
+    if(
+     fiveCandles.length<35||
+     fifteenCandles.length<35
+    ){
+
+     throw new Error(
+      "No hay suficientes velas para confirmar los tres horizontes"
+     );
     }
 
     const one=analyze(candles);
-    const five=analyze(aggregate(candles,5));
-    const fifteen=analyze(aggregate(candles,15));
+    const five=analyze(fiveCandles);
+    const fifteen=analyze(fifteenCandles);
 
     results.push({
+
      symbol,
+
      candles,
+
      one,
      five,
      fifteen
+
     });
 
     log(
-     `${symbol}: ${one.direction} ${one.score}/100`
+     `${symbol}: 1M ${one.direction} ${one.score} | `+
+     `5M ${five.direction} ${five.score} | `+
+     `15M ${fifteen.direction} ${fifteen.score}`
     );
 
    }catch(error){
+
     log(`${symbol}: ${error.message}`);
 
-    if(error.status===429)throw error;
+    if(error.status===429){
+
+     throw error;
+    }
    }
   }
 
-  $("assetsValue").textContent=String(results.length);
+  $("assetsValue").textContent=
+   String(results.length);
+
+  // ==================================
+  // SEÑALES CORTO PLAZO
+  // ==================================
 
   const shortItems=[];
 
   for(const result of results){
-   const windows=[
-    {
-     label:"1 MINUTO",
-     analysis:result.one
-    },
-    {
-     label:"3–5 MINUTOS",
-     analysis:result.five
-    },
-    {
-     label:"10–15 MINUTOS",
-     analysis:result.fifteen
-    }
-   ];
 
-   for(const window of windows){
-    const a=window.analysis;
+   const confirmation=confirmSignal(
+    result.one,
+    result.five,
+    result.fifteen,
+    threshold
+   );
 
-    if(
-     a.direction!=="WAIT"&&
-     a.score>=threshold
-    ){
-     shortItems.push({
-      symbol:result.symbol,
-      direction:a.direction,
-      score:a.score,
-      label:window.label,
-      entry:nextMinute(),
-      why:a.why,
-      rsi:a.rsi
-     });
-    }
+   if(!confirmation){
+
+    continue;
+   }
+
+   const entry=nextEntry(result.candles);
+
+   if(!entry||entry<=Date.now()){
+
+    log(`${result.symbol}: entrada vencida, se descarta.`);
+    continue;
+   }
+
+   const item={
+
+    symbol:result.symbol,
+
+    direction:confirmation.direction,
+
+    score:confirmation.score,
+
+    label:"1 MINUTO",
+
+    entry,
+
+    expiry:entry+60000,
+
+    rsi:result.one.rsi,
+
+    why:
+     "Confirmación coincidente en EMA, RSI, MACD y velas",
+
+    confirmation:
+     `1M ${result.one.score} · `+
+     `5M ${result.five.score} · `+
+     `15M ${result.fifteen.score}`
+
+   };
+
+   if(!isDuplicate(item)){
+
+    shortItems.push(item);
    }
   }
 
-  shortItems.sort((a,b)=>b.score-a.score);
+  // Orden cronológico, después por puntuación.
+  shortItems.sort((a,b)=>
+   a.entry-b.entry||b.score-a.score
+  );
 
   $("shortSignals").innerHTML=
    shortItems.length
-    ?shortItems.slice(0,12).map(item=>card(item)).join("")
-    :'<div class="muted">SIN PRESEÑALES: no hay suficiente confluencia. No se fuerza una entrada.</div>';
+    ?shortItems.map(item=>card(item)).join("")
+    :'<div class="muted">SIN PRESEÑALES: los tres horizontes no tienen suficiente confirmación coincidente. No se fuerza ninguna entrada.</div>';
+
+  // ==================================
+  // TENDENCIA HORARIA REAL
+  // ==================================
 
   const longItems=[];
 
   if(market==="REAL"){
+
    const top=results.slice()
-    .sort((a,b)=>Math.max(b.one.score,b.five.score)-Math.max(a.one.score,a.five.score))
+    .sort((a,b)=>
+     Math.max(b.one.score,b.five.score,b.fifteen.score)-
+     Math.max(a.one.score,a.five.score,a.fifteen.score)
+    )
     .slice(0,2);
 
    for(const result of top){
+
     try{
+
      const data=await getReal(result.symbol,"1h");
+
      const hourly=normalizeCandles(data,3600000);
 
-     if(hourly.length<30){
+     if(hourly.length<35){
+
       throw new Error("Historial horario insuficiente");
      }
 
+     const fourHourly=aggregate(hourly,240);
+
      const oneHour=analyze(hourly);
-     const fourHour=analyze(aggregate(hourly,4*60));
+     const fourHour=analyze(fourHourly);
 
-     const windows=[
-      {
-       label:"30–60 MINUTOS",
-       analysis:oneHour,
-       window:" · Tendencia basada en velas de 1 hora"
-      },
-      {
-       label:"2–4 HORAS",
-       analysis:fourHour,
-       window:" · Tendencia agregada de 4 horas"
-      }
-     ];
-
-     for(const window of windows){
-      const a=window.analysis;
-
-      if(
-       a.direction!=="WAIT"&&
-       a.score>=threshold
-      ){
-       longItems.push({
-        symbol:result.symbol,
-        direction:a.direction,
-        score:a.score,
-        label:window.label,
-        why:a.why,
-        window:window.window,
-        rsi:a.rsi
-       });
-      }
-     }
-
-    }catch(error){
-     log(`${result.symbol} 1H: ${error.message}`);
-     if(error.status===429){
-      log("Límite de créditos activado. Se detiene el análisis extendido.");
-      break;
-     }
-    }
-   }
-
-   $("longSignals").innerHTML=
-    longItems.length
-     ?longItems.map(item=>card(item,true)).join("")
-     :'<div class="muted">Sin tendencia horaria con suficiente confluencia.</div>';
-
-  }else{
-   $("longSignals").innerHTML=
-    '<div class="muted">No se dispone de velas OTC horarias verificadas. No se inventa una proyección de varias horas.</div>';
-  }
-
-  $("signalsValue").textContent=
-   String(shortItems.length+longItems.length);
-
-  $("lastValue").textContent=clock();
-
-  log(
-   `Escaneo terminado: ${results.length} activos válidos, `+
-   `${shortItems.length+longItems.length} escenarios.`
-  );
-
- }catch(error){
-  $("shortSignals").innerHTML=
-   `<div class="bad">${escapeHtml(error.message)}</div>`;
-
-  log("Escaneo detenido: "+error.message);
-
-  if(error.status===429){
-   log("Espera antes del siguiente intento. No se reintentará automáticamente.");
-  }
-
- }finally{
-  busy=false;
-  $("analyzeBtn").disabled=false;
- }
-}
-
-$("analyzeBtn").addEventListener("click",scan);
-$("checkBtn").addEventListener("click",checkConnection);
-
-$("auto").addEventListener("change",event=>{
- if(autoTimer){
-  clearInterval(autoTimer);
-  autoTimer=null;
- }
-
- if(event.target.checked){
-  autoTimer=setInterval(()=>{
-   if(!busy)scan();
-  },60000);
-
-  log("Escaneo automático activado cada 60 segundos.");
- }else{
-  log("Escaneo automático detenido.");
- }
-});
-
-$("market").addEventListener("change",()=>{
- $("marketValue").textContent=$("market").value;
-});
-
-checkConnection();
-</script>
-</body>
-</html>
+    
